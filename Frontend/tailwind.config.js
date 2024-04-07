@@ -1,6 +1,6 @@
 /** @type {import('tailwindcss').Config} */
 module.exports = {
-  darkMode: ["class"],
+  darkMode: "selector",
   content: [
     "./pages/**/*.{ts,tsx}",
     "./components/**/*.{ts,tsx}",
@@ -19,12 +19,12 @@ module.exports = {
     extend: {
       colors: {
         // My colors
-        text: "#ECE1F3",
-        background: "#07030A",
-        primary: "#A5A0D3",
-        secondary: "#50346F",
-        textboxes: "#2B2332",
-        accent: "#A073BD",
+        // text: "#ECE1F3",
+        // background: "#07030A",
+        // primary: "#A5A0D3",
+        // secondary: "#50346F",
+        // textboxes: "#2B2332",
+        // accent: "#A073BD",
         // ^ My colors ^
         // My fonts
         fontFamily: {
