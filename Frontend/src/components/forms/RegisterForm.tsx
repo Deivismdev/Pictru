@@ -37,12 +37,11 @@ const RegisterForm = () => {
 
   return (
     <Form {...form}>
-      <div className="sm:w-420 flex flex-col justify-center items-center w-3/5">
+      <div className="sm:w-420 flex flex-col justify-center w-full text-foreground">
         {/* <img className="max-w-96" src="/assets/images/logo.jpg" alt="logo" /> */}
-        <h2 className="text-2xl font-bold pt-5 sm:pt-12">
+        <h2 className="font-outfit text-2xl pt-5 sm:pt-12">
           Create a new account
         </h2>
-        <p className="text-light-3 text-xl ">Enter account details</p>
         <form
           onSubmit={form.handleSubmit(onSubmit)}
           className="flex flex-col gap-5 w-full mt-4"

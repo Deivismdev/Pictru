@@ -6,6 +6,7 @@ import ErrorPage from './routes/error-page';
 import Login from './routes/login';
 import Register from './routes/register';
 import "./globals.css";
+import Gallery from './routes/gallery';
 
 
 const router = createBrowserRouter([
@@ -21,6 +22,10 @@ const router = createBrowserRouter([
             {
                 path: '/register',
                 element: <Register/>,
+            },
+            {
+                path: '/gallery',
+                element: <Gallery/>,
             },
         ]
 
