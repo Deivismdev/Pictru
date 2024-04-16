@@ -1,0 +1,13 @@
+DROP TABLE IF EXISTS public."ImageComments" CASCADE;
+DROP TABLE IF EXISTS public."ImageTags" CASCADE;
+DROP TABLE IF EXISTS public."Images" CASCADE;
+DROP TABLE IF EXISTS public."Likes" CASCADE;
+DROP TABLE IF EXISTS public."ProfileComments" CASCADE;
+DROP TABLE IF EXISTS public."Reports" CASCADE;
+DROP TABLE IF EXISTS public."Users" CASCADE;
+DROP TABLE IF EXISTS public."Tags" CASCADE;
+DROP TABLE IF EXISTS public."__EFMigrationsHistory" CASCADE;
+
+
+dotnet ef migrations add InitialCreate -o Data/Migrations
+dotnet ef database update
