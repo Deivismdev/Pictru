@@ -11,5 +11,17 @@ namespace API.Models
         public string Text { get; set; }
         public DateTime Date = DateTime.Now;
         public bool Edited = false;
+        public int UserId { get; set; }
+        public User User { get; set; }
+    }
+
+    public class CreateProfileCommentDto
+    {
+        public string Text { get; set; }
+    }
+    public class UpdateProfileCommentDto
+    {
+        public string Text { get; set; }
+
     }
 }

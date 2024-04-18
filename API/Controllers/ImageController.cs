@@ -36,11 +36,9 @@ namespace API.Controllers
             Console.WriteLine(imageDto.Name, imageDto.Description, imageDto.ImageUrl);
             foreach (var tagId in imageDto.Tags)
             {
-                // Find the Tag entity by its Name property
                 var tag = context.Tags.FirstOrDefault(t => t.Name == tagId);
                 if (tag != null)
                 {
-                    // Create an ImageTag entity and associate it with the found Tag
                     var imageTag = new ImageTag
                     {
                         TagName = tag
@@ -52,8 +50,6 @@ namespace API.Controllers
             await context.SaveChangesAsync();
 
             return CreatedAtAction(nameof(GetImage), new { imageId = image.Id }, image);
-
-            // return StatusCode(201);
         }
 
         [HttpGet("{imageId}")]
@@ -89,5 +85,48 @@ namespace API.Controllers
 
             return Ok(images);
         }
+
+        [HttpPut("{imageId}")]
+        public async Task<IActionResult> UpdateImage(int imageId, UpdateImageDto imageDto)
+        {
+            var image = await context.Images.FirstOrDefaultAsync(i => i.Id == imageId);
+            if (image == null)
+            {
+                return NotFound();
+            }
+            image.Name = imageDto.Name;
+            image.Description = imageDto.Description;
+            // this might be broken
+            foreach (var tagId in imageDto.Tags)
+            {
+                var tag = context.Tags.FirstOrDefault(t => t.Name == tagId);
+                if (tag != null)
+                {
+                    var imageTag = new ImageTag
+                    {
+                        TagName = tag
+                    };
+                    image.Tags.Add(imageTag);
+                }
+            }
+            return Ok();
+        }
+
+        [HttpDelete("{imageId}")]
+        public async Task<IActionResult> DeletImage(int imageId)
+        {
+            var album = await context.Images.FirstOrDefaultAsync(a => a.Id == imageId);
+            if (album == null)
+            {
+                return NotFound();
+            }
+
+
+            context.Images.Remove(album);
+            await context.SaveChangesAsync();
+
+            return NoContent();
+        }
+
     }
 }

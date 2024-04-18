@@ -33,6 +33,13 @@ namespace API.Models
         public List<TagNames> Tags { get; set; }
 
     }
+    public class UpdateImageDto()
+    {
+        public string Name { get; set; }
+        public string Description { get; set; }
+        public List<TagNames> Tags { get; set; }
+
+    }
 
     public class ReadImageDto()
     {
