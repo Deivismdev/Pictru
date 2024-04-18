@@ -7,6 +7,7 @@ import Login from './routes/login';
 import Register from './routes/register';
 import "./globals.css";
 import Gallery from './routes/gallery';
+import ImagePage from './routes/ImagePage';
 
 
 const router = createBrowserRouter([
@@ -26,6 +27,10 @@ const router = createBrowserRouter([
             {
                 path: '/gallery',
                 element: <Gallery/>,
+            },
+            {
+                path: '/gallery/image/:imageId',
+                element: <ImagePage/>,
             },
         ]
 

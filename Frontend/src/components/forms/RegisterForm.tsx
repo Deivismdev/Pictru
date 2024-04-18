@@ -21,7 +21,6 @@ const RegisterForm = () => {
   const form = useForm<z.infer<typeof RegisterValidation>>({
     resolver: zodResolver(RegisterValidation),
     defaultValues: {
-      name: "",
       username: "",
       email: "",
       password: "",
@@ -48,19 +47,6 @@ const RegisterForm = () => {
         >
           <FormField
             control={form.control}
-            name="name"
-            render={({ field }) => (
-              <FormItem>
-                <FormLabel>Name</FormLabel>
-                <FormControl>
-                  <Input type="text" className="shadow-input" {...field} />
-                </FormControl>
-                <FormMessage />
-              </FormItem>
-            )}
-          />
-          <FormField
-            control={form.control}
             name="username"
             render={({ field }) => (
               <FormItem>
@@ -68,9 +54,34 @@ const RegisterForm = () => {
                 <FormControl>
                   <Input type="text" className="shadow-input" {...field} />
                 </FormControl>
-                {/* <FormDescription>
-                        This is your public display name.
-                        </FormDescription> */}
+                <FormDescription>
+                  This is your public display name.
+                </FormDescription>
+              </FormItem>
+            )}
+          />
+          <FormField
+            control={form.control}
+            name="email"
+            render={({ field }) => (
+              <FormItem>
+                <FormLabel>Email</FormLabel>
+                <FormControl>
+                  <Input type="email" className="shadow-input" {...field} />
+                </FormControl>
+                <FormMessage />
+              </FormItem>
+            )}
+          />
+          <FormField
+            control={form.control}
+            name="password"
+            render={({ field }) => (
+              <FormItem>
+                <FormLabel>Password</FormLabel>
+                <FormControl>
+                  <Input type="password" className="shadow-input" {...field} />
+                </FormControl>
               </FormItem>
             )}
           />

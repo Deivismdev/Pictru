@@ -19,8 +19,6 @@ const LoginForm = () => {
   const form = useForm<z.infer<typeof RegisterValidation>>({
     resolver: zodResolver(RegisterValidation),
     defaultValues: {
-      name: "",
-      username: "",
       email: "",
       password: "",
     },
@@ -43,12 +41,12 @@ const LoginForm = () => {
         >
           <FormField
             control={form.control}
-            name="username"
+            name="email"
             render={({ field }) => (
               <FormItem>
-                <FormLabel>Username</FormLabel>
+                <FormLabel>Email</FormLabel>
                 <FormControl>
-                  <Input type="text" {...field} />
+                  <Input type="email" {...field} />
                 </FormControl>
               </FormItem>
             )}
