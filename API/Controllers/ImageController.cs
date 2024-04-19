@@ -10,6 +10,7 @@ using Microsoft.EntityFrameworkCore;
 using System.Security.Claims;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Authorization;
+using AutoMapper;
 
 namespace API.Controllers
 {
@@ -17,21 +18,28 @@ namespace API.Controllers
     public class ImageController : ControllerBase
     {
         private readonly AppDbContext context;
-        public ImageController(AppDbContext context)
+        private readonly IMapper mapper; // should use _ for private fields
+
+
+        public ImageController(AppDbContext context, IMapper mapper)
         {
             this.context = context;
+            this.mapper = mapper;
         }
         [HttpPost]
         public async Task<IActionResult> CreateImage(CreateImageDto imageDto)
         {
-            var image = new Image
-            {
-                Name = imageDto.Name,
-                Description = imageDto.Description,
-                ImageUrl = imageDto.ImageUrl,
-                UserId = 1,
-                Tags = new List<ImageTag>()
-            };
+
+            // hmm how does automapper handle tags?
+            var image = mapper.Map<Image>(imageDto);
+            // var image = new Image
+            // {
+            //     Name = imageDto.Name,
+            //     Description = imageDto.Description,
+            //     ImageUrl = imageDto.ImageUrl,
+            //     UserId = 1,
+            //     Tags = new List<ImageTag>()
+            // };
 
             Console.WriteLine(imageDto.Name, imageDto.Description, imageDto.ImageUrl);
             foreach (var tagId in imageDto.Tags)

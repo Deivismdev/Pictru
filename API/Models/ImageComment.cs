@@ -31,7 +31,7 @@ namespace API.Models
         public DateTime Date = DateTime.UtcNow;
         public int XCoord { get; set; }
         public int YCoord { get; set; }
-
     }
+    
 
 }

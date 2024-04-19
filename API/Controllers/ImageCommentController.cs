@@ -4,6 +4,7 @@ using System.Linq;
 using System.Threading.Tasks;
 using API.Data;
 using API.Models;
+using AutoMapper;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 
@@ -14,9 +15,10 @@ namespace API.Controllers
     public class ImageCommentController : ControllerBase
     {
         private readonly AppDbContext context;
-        public ImageCommentController(AppDbContext context)
+        public ImageCommentController(AppDbContext context, IMapper mapper)
         {
             this.context = context;
+
         }
 
 
