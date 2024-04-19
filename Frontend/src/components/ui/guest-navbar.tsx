@@ -21,7 +21,7 @@ export function Navbar({
       </Link>
       <Link
         to="/"
-        className="text-sm font-medium text-muted-foreground transition-colors hover:text-primary"
+        className="text-sm font-medium text-muted-foreground transition-colors hover:text-primary hover:underline-offset-4"
       >
         Log in
       </Link>

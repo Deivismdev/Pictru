@@ -2,8 +2,11 @@ import CommentForm from "@/components/forms/CommentForm";
 import { Badge } from "@/components/ui/badge";
 import { ScrollArea } from "@/components/ui/scroll-area";
 import { BadgeInfoIcon, Scroll, ThumbsDown, ThumbsUp } from "lucide-react";
+import React, { useState } from "react";
 
 export default function ImagePage() {
+  const [isEnlarged, setIsEnlarged] = useState(false);
+
   const imageData = {
     id: 0,
     title: "Sad mummy",
@@ -71,10 +74,23 @@ export default function ImagePage() {
           </div>
           <div className="flex-1 ">
             <img
-              // src={"/assets/images/wide.bmp"}
               src={"/assets/images/dangerfloof.jpg"}
-              className="w-auto h-full  m-auto object-scale-down"
+              className="w-auto h-full m-auto object-scale-down"
+              onClick={() => setIsEnlarged(true)}
+              style={isEnlarged ? { display: "none" } : {}}
             />
+            {isEnlarged && (
+              <div className="fixed inset-0 backdrop-blur-sm bg-purple-950/10 flex items-center justify-center z-50">
+                <div
+                  className="absolute inset-0"
+                  onClick={() => setIsEnlarged(false)}
+                ></div>
+                <img
+                  src={"/assets/images/dangerfloof.jpg"}
+                  className="w-auto h-auto max-w-full max-h-full"
+                />
+              </div>
+            )}
           </div>
         </div>
         <div className="border border-border h-64 p-2 mt-6">
