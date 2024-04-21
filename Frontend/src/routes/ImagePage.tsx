@@ -9,12 +9,15 @@ export default function ImagePage() {
 
   const imageData = {
     id: 0,
-    title: "Sad mummy",
-    userName: "league_addict 420",
+    title: "Title",
+    userName: "Usernameeee",
     likeCount: 6,
     dislikeCount: 420,
     viewCount: 420,
+    imageUrl: "/assets/images/dangerfloof.jpg",
     comments: [
+      { id: 0, user: "true lol", comment: "yo this website sucks" },
+      { id: 0, user: "true lol", comment: "yo this website sucks" },
       { id: 0, user: "true lol", comment: "yo this website sucks" },
       { id: 0, user: "true lol", comment: "yo this website sucks" },
     ],
@@ -74,7 +77,7 @@ export default function ImagePage() {
           </div>
           <div className="flex-1 ">
             <img
-              src={"/assets/images/dangerfloof.jpg"}
+              src={imageData.imageUrl}
               className="w-auto h-full m-auto object-scale-down"
               onClick={() => setIsEnlarged(true)}
               style={isEnlarged ? { display: "none" } : {}}
@@ -86,7 +89,7 @@ export default function ImagePage() {
                   onClick={() => setIsEnlarged(false)}
                 ></div>
                 <img
-                  src={"/assets/images/dangerfloof.jpg"}
+                  src={imageData.imageUrl}
                   className="w-auto h-auto max-w-full max-h-full"
                 />
               </div>

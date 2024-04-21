@@ -18,7 +18,6 @@ namespace API.Controllers
         public ImageCommentController(AppDbContext context, IMapper mapper)
         {
             this.context = context;
-
         }
 
 
