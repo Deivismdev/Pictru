@@ -49,11 +49,12 @@ namespace API.Controllers
             return Ok();
         }
 
-        [HttpDelete("{likeId}")]
-        public async Task<IActionResult> DislikeImage(int imageId, int likeId)
+        [HttpDelete()]
+        public async Task<IActionResult> DislikeImage(int imageId)
         {
+            var userId = 1;
             var like = await context.Likes
-                .FirstOrDefaultAsync(l => l.ImageId == imageId && l.Id == likeId);
+                .FirstOrDefaultAsync(l => l.ImageId == imageId && l.UserId == userId);
 
             if (like == null)
             {

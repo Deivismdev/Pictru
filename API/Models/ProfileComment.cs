@@ -9,7 +9,7 @@ namespace API.Models
     {
         public int Id { get; set; }
         public string Text { get; set; }
-        public DateTime Date = DateTime.Now;
+        public DateTime Date { get; set; } = DateTime.UtcNow;
         public bool Edited = false;
         public int UserId { get; set; }
         public User User { get; set; }

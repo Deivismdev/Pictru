@@ -9,7 +9,7 @@ using Microsoft.EntityFrameworkCore;
 
 namespace API.Controllers
 {
-    [Route("api/{profileId}/comments")]
+    [Route("api/profiles/{userId}/comments")]
     [ApiController]
     public class ProfileCommentController : ControllerBase
     {
@@ -21,10 +21,10 @@ namespace API.Controllers
         }
 
         [HttpGet]
-        public async Task<IActionResult> GetComments(int profileId)
+        public async Task<IActionResult> GetProfileComments(int userId)
         {
             var comments = await context.ProfileComments
-                .Where(i => i.User.Id == profileId)
+                .Where(i => i.User.Id == userId)
                 .ToListAsync();
 
             if (comments.Count == 0)
@@ -35,10 +35,10 @@ namespace API.Controllers
             return Ok();
         }
         [HttpGet("{commentId}")]
-        public async Task<IActionResult> GetComment(int profileId, int commentId)
+        public async Task<IActionResult> GetProfileComment(int userId, int commentId)
         {
             var comment = await context.ProfileComments
-                .Where(i => i.User.Id == profileId && i.Id == commentId)
+                .Where(i => i.User.Id == userId && i.Id == commentId)
                 .FirstOrDefaultAsync();
 
             if (comment == null)
@@ -50,7 +50,7 @@ namespace API.Controllers
         }
 
         [HttpPost]
-        public async Task<IActionResult> CreateComment(int userId, CreateProfileCommentDto commentDto)
+        public async Task<IActionResult> CreateProfileComment(int userId, CreateProfileCommentDto commentDto)
         {
             var user = await context.Users.FindAsync(userId);
             if (user == null)
@@ -66,15 +66,16 @@ namespace API.Controllers
             context.ProfileComments.Add(comment);
             await context.SaveChangesAsync();
 
-            return CreatedAtAction("GetComment", new { userId, commentId = comment.Id }, comment);
+            return Ok(comment);
+            // return CreatedAtAction("GetComment", new { userId, commentId = comment.Id }, comment);
             // return CreatedAtAction("GetComment", new { imageId, commentId = comment.Id }, comment);
         }
 
         [HttpDelete("{commentId}")]
-        public async Task<IActionResult> DeleteComment(int profileId, int commentId)
+        public async Task<IActionResult> DeleteProfileComment(int userId, int commentId)
         {
             var comment = await context.ProfileComments
-                .Where(i => i.User.Id == profileId && i.Id == commentId)
+                .Where(i => i.User.Id == userId && i.Id == commentId)
                 .FirstOrDefaultAsync();
 
             if (comment == null)

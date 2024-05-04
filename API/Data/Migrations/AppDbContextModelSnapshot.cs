@@ -45,6 +45,9 @@ namespace API.Data.Migrations
                     b.Property<int>("ReportCount")
                         .HasColumnType("integer");
 
+                    b.Property<int>("State")
+                        .HasColumnType("integer");
+
                     b.Property<DateTime>("UploadDate")
                         .HasColumnType("timestamp with time zone");
 
@@ -69,46 +72,31 @@ namespace API.Data.Migrations
 
                     NpgsqlPropertyBuilderExtensions.UseIdentityByDefaultColumn(b.Property<int>("Id"));
 
+                    b.Property<DateTime>("Date")
+                        .HasColumnType("timestamp with time zone");
+
                     b.Property<int>("ImageId")
                         .HasColumnType("integer");
 
-                    b.Property<int>("Text")
+                    b.Property<string>("Text")
+                        .HasColumnType("text");
+
+                    b.Property<int>("UserId")
                         .HasColumnType("integer");
 
-                    b.Property<int>("XCoord")
+                    b.Property<int?>("XCoord")
                         .HasColumnType("integer");
 
-                    b.Property<int>("YCoord")
+                    b.Property<int?>("YCoord")
                         .HasColumnType("integer");
 
                     b.HasKey("Id");
 
                     b.HasIndex("ImageId");
+
+                    b.HasIndex("UserId");
 
                     b.ToTable("ImageComments");
-                });
-
-            modelBuilder.Entity("API.Models.ImageTag", b =>
-                {
-                    b.Property<int>("Id")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("integer");
-
-                    NpgsqlPropertyBuilderExtensions.UseIdentityByDefaultColumn(b.Property<int>("Id"));
-
-                    b.Property<int?>("ImageId")
-                        .HasColumnType("integer");
-
-                    b.Property<int?>("TagNameId")
-                        .HasColumnType("integer");
-
-                    b.HasKey("Id");
-
-                    b.HasIndex("ImageId");
-
-                    b.HasIndex("TagNameId");
-
-                    b.ToTable("ImageTags");
                 });
 
             modelBuilder.Entity("API.Models.Like", b =>
@@ -142,10 +130,13 @@ namespace API.Data.Migrations
 
                     NpgsqlPropertyBuilderExtensions.UseIdentityByDefaultColumn(b.Property<int>("Id"));
 
+                    b.Property<DateTime>("Date")
+                        .HasColumnType("timestamp with time zone");
+
                     b.Property<string>("Text")
                         .HasColumnType("text");
 
-                    b.Property<int?>("UserId")
+                    b.Property<int>("UserId")
                         .HasColumnType("integer");
 
                     b.HasKey("Id");
@@ -245,11 +236,20 @@ namespace API.Data.Migrations
                     b.Property<string>("Email")
                         .HasColumnType("text");
 
+                    b.Property<bool>("IsPremium")
+                        .HasColumnType("boolean");
+
                     b.Property<string>("Password")
                         .HasColumnType("text");
 
                     b.Property<string>("ProfileImageUrl")
                         .HasColumnType("text");
+
+                    b.Property<DateTime>("RegisterDate")
+                        .HasColumnType("timestamp with time zone");
+
+                    b.Property<int>("Reputation")
+                        .HasColumnType("integer");
 
                     b.Property<string>("Username")
                         .HasColumnType("text");
@@ -257,6 +257,35 @@ namespace API.Data.Migrations
                     b.HasKey("Id");
 
                     b.ToTable("Users");
+
+                    b.HasData(
+                        new
+                        {
+                            Id = 1,
+                            Description = "This is a test user.",
+                            Email = "test@example.com",
+                            IsPremium = false,
+                            Password = "TestPassword123",
+                            ProfileImageUrl = "https://example.com/test-user-profile.jpg",
+                            RegisterDate = new DateTime(2024, 5, 4, 14, 33, 2, 296, DateTimeKind.Utc).AddTicks(7031),
+                            Reputation = 0,
+                            Username = "TestUser"
+                        });
+                });
+
+            modelBuilder.Entity("ImageTag", b =>
+                {
+                    b.Property<int>("ImagesId")
+                        .HasColumnType("integer");
+
+                    b.Property<int>("TagsId")
+                        .HasColumnType("integer");
+
+                    b.HasKey("ImagesId", "TagsId");
+
+                    b.HasIndex("TagsId");
+
+                    b.ToTable("ImageTag");
                 });
 
             modelBuilder.Entity("API.Models.Image", b =>
@@ -278,20 +307,15 @@ namespace API.Data.Migrations
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 
-                    b.Navigation("Image");
-                });
-
-            modelBuilder.Entity("API.Models.ImageTag", b =>
-                {
-                    b.HasOne("API.Models.Image", null)
-                        .WithMany("Tags")
-                        .HasForeignKey("ImageId");
-
-                    b.HasOne("API.Models.Tag", "TagName")
+                    b.HasOne("API.Models.User", "User")
                         .WithMany()
-                        .HasForeignKey("TagNameId");
+                        .HasForeignKey("UserId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
 
-                    b.Navigation("TagName");
+                    b.Navigation("Image");
+
+                    b.Navigation("User");
                 });
 
             modelBuilder.Entity("API.Models.Like", b =>
@@ -315,9 +339,13 @@ namespace API.Data.Migrations
 
             modelBuilder.Entity("API.Models.ProfileComment", b =>
                 {
-                    b.HasOne("API.Models.User", null)
+                    b.HasOne("API.Models.User", "User")
                         .WithMany("ProfileComments")
-                        .HasForeignKey("UserId");
+                        .HasForeignKey("UserId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.Navigation("User");
                 });
 
             modelBuilder.Entity("API.Models.Report", b =>
@@ -339,6 +367,21 @@ namespace API.Data.Migrations
                     b.Navigation("User");
                 });
 
+            modelBuilder.Entity("ImageTag", b =>
+                {
+                    b.HasOne("API.Models.Image", null)
+                        .WithMany()
+                        .HasForeignKey("ImagesId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.HasOne("API.Models.Tag", null)
+                        .WithMany()
+                        .HasForeignKey("TagsId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+                });
+
             modelBuilder.Entity("API.Models.Image", b =>
                 {
                     b.Navigation("ImageComments");
@@ -346,8 +389,6 @@ namespace API.Data.Migrations
                     b.Navigation("Likes");
 
                     b.Navigation("Reports");
-
-                    b.Navigation("Tags");
                 });
 
             modelBuilder.Entity("API.Models.User", b =>

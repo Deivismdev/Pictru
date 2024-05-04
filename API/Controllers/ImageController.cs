@@ -11,6 +11,8 @@ using System.Security.Claims;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Authorization;
 using AutoMapper;
+using System.Security.Cryptography;
+using API.Extensions;
 
 namespace API.Controllers
 {
@@ -29,99 +31,99 @@ namespace API.Controllers
         [HttpPost]
         public async Task<IActionResult> CreateImage(CreateImageDto imageDto)
         {
-
-            // hmm how does automapper handle tags?
-            var image = mapper.Map<Image>(imageDto);
-            // var image = new Image
-            // {
-            //     Name = imageDto.Name,
-            //     Description = imageDto.Description,
-            //     ImageUrl = imageDto.ImageUrl,
-            //     UserId = 1,
-            //     Tags = new List<ImageTag>()
-            // };
-
-            Console.WriteLine(imageDto.Name, imageDto.Description, imageDto.ImageUrl);
-            foreach (var tagId in imageDto.Tags)
+            var image = new Image
             {
-                var tag = context.Tags.FirstOrDefault(t => t.Name == tagId);
-                if (tag != null)
-                {
-                    var imageTag = new ImageTag
-                    {
-                        TagName = tag
-                    };
-                    image.Tags.Add(imageTag);
-                }
+                Name = imageDto.Name,
+                Description = imageDto.Description,
+                ImageUrl = imageDto.ImageUrl,
+                UserId = 1,
+            };
+
+            foreach (var tagName in imageDto.Tags)
+            {
+                var tag = await context.Tags
+                   .FirstOrDefaultAsync(t => t.Name == tagName);
+                image.Tags.Add(tag);
             }
+
             context.Images.Add(image);
             await context.SaveChangesAsync();
-
-            return CreatedAtAction(nameof(GetImage), new { imageId = image.Id }, image);
+            return StatusCode(201);
+            // return CreatedAtAction(nameof(GetImage), new { imageId = image.Id }, image);
         }
 
         [HttpGet("{imageId}")]
-        public IActionResult GetImage(int imageId)
+        public async Task<IActionResult> GetImage(int imageId)
         {
-            var image = context.Images
-                .FirstOrDefault(a => a.Id == imageId);
+            var image = context.Images.AsNoTracking()
+                .Include(i => i.User)
+                .Include(i => i.Tags)
+                .Include(i => i.ImageComments)
+                .FirstOrDefault(i => i.Id == imageId);
 
             if (image == null)
             {
                 return NotFound();
             }
-            var readImageDto = new ReadImageDto
-            {
-                Name = image.Name,
-                Description = image.Description,
-                ImageUrl = image.ImageUrl,
-            };
+
+            image.ViewCount += 1;
+            await context.SaveChangesAsync();
+
+            var readImageDto = mapper.Map<GetImageDto>(image);
             return Ok(readImageDto);
         }
 
         [HttpGet]
-        public IActionResult GetImages()
+        public async Task<IActionResult> GetImages(string orderBy = "uploadDate", TagNames? tag = null, int pageNumber = 1, int pageSize = 10)
         {
-            var images = context.Images
-            // .Include(i => i.User)
-            // .Include(i => i.Likes)
-            // .Include(i => i.Reports)
-            // .Include(i => i.ImageComments)
-            // .Include(i => i.Tags)
-            // .Where(i => i.Tags.Any(t => t.TagName.Name == TagNames.Nature))
-            .ToList();
+            var query = context.Images
+                    .Include(i => i.User)
+                   .Include(i => i.Tags)
+                   .Include(i => i.ImageComments)
+                   .Sort(orderBy)
+                   .FilterByTag(tag)
+                   .AsQueryable();
 
-            return Ok(images);
+            var images = await query
+            .Skip((pageNumber - 1) * pageSize)
+            .Take(pageSize)
+            .ToListAsync();
+
+            if (images == null || images.Count == 0)
+            {
+                return NotFound();
+            }
+            var readImagesDto = mapper.Map<IEnumerable<GetImageDto>>(images);
+
+            return Ok(readImagesDto);
         }
 
-        [HttpPut("{imageId}")]
+        [HttpPatch("{imageId}")]
         public async Task<IActionResult> UpdateImage(int imageId, UpdateImageDto imageDto)
         {
-            var image = await context.Images.FirstOrDefaultAsync(i => i.Id == imageId);
+            var image = await context.Images.Include(i => i.Tags).FirstOrDefaultAsync(i => i.Id == imageId);
             if (image == null)
             {
                 return NotFound();
             }
+
             image.Name = imageDto.Name;
             image.Description = imageDto.Description;
-            // this might be broken
-            foreach (var tagId in imageDto.Tags)
+
+            image.Tags.Clear();
+
+            foreach (var tagName in imageDto.Tags)
             {
-                var tag = context.Tags.FirstOrDefault(t => t.Name == tagId);
-                if (tag != null)
-                {
-                    var imageTag = new ImageTag
-                    {
-                        TagName = tag
-                    };
-                    image.Tags.Add(imageTag);
-                }
+                var tag = await context.Tags.FirstOrDefaultAsync(t => t.Name == tagName);
+                image.Tags.Add(tag);
             }
-            return Ok();
+            await context.SaveChangesAsync();
+
+            return NoContent();
         }
 
         [HttpDelete("{imageId}")]
-        public async Task<IActionResult> DeletImage(int imageId)
+        public async Task<IActionResult> DeleteImage(int imageId)
         {
             var album = await context.Images.FirstOrDefaultAsync(a => a.Id == imageId);
             if (album == null)
@@ -129,12 +131,81 @@ namespace API.Controllers
                 return NotFound();
             }
 
-
             context.Images.Remove(album);
             await context.SaveChangesAsync();
 
             return NoContent();
         }
 
+        // idk about thi
+        // also appeal is not a good name, since mods could set directly to protected
+        [HttpPatch("suspended/{imageId}")]
+        public async Task<IActionResult> AppealImageSuspension(int imageId, AppealImageSuspensionImageDto imageDto)
+        {
+            var image = await context.Images.Include(i => i.Tags).FirstOrDefaultAsync(i => i.Id == imageId);
+            if (image == null)
+            {
+                return NotFound();
+            }
+
+            if (image.State != ImageState.Suspended)
+            {
+                return BadRequest("Image is not suspended.");
+            }
+
+            image.Tags.Clear();
+
+            foreach (var tagName in imageDto.Tags)
+            {
+                var tag = await context.Tags.FirstOrDefaultAsync(t => t.Name == tagName);
+                image.Tags.Add(tag);
+            }
+            // if user:
+            image.State = ImageState.Appealed;
+
+            // if admin:
+            // image.State = ImageState.Protected;
+            // image.ReportCount = 0;
+            // 
+
+
+            context.Images.Update(image);
+            await context.SaveChangesAsync();
+
+            return NoContent();
+        }
+
+        // [HttpPatch("appealed/{imageId}")]
+        // public async Task<IActionResult> ApproveAppealedImageSuspension(int imageId, AppealImageSuspensionImageDto imageDto)
+        // {
+        //     var image = await context.Images.Include(i => i.Tags).FirstOrDefaultAsync(i => i.Id == imageId);
+        //     if (image == null)
+        //     {
+        //         return NotFound();
+        //     }
+
+        //     if (image.State != ImageState.Suspended)
+        //     {
+        //         return BadRequest("Image is not suspended.");
+        //     }
+
+        //     image.Tags.Clear();
+
+        //     foreach (var tagName in imageDto.Tags)
+        //     {
+        //         var tag = await context.Tags.FirstOrDefaultAsync(t => t.Name == tagName);
+        //         image.Tags.Add(tag);
+        //     }
+
+        //     image.State = ImageState.Protected;
+        //     image.ReportCount = 0;
+
+
+
+        //     context.Images.Update(image);
+        //     await context.SaveChangesAsync();
+
+        //     return NoContent();
+        // }
     }
 }

@@ -1,6 +1,8 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Runtime.Serialization;
+using System.Text.Json.Serialization;
 using System.Threading.Tasks;
 using API.Models.Enums;
 using Microsoft.AspNetCore.SignalR;
@@ -17,11 +19,13 @@ namespace API.Models
         public int LikeCount { get; set; } = 0;
         public int ReportCount { get; set; } = 0;
         public DateTime UploadDate { get; set; } = DateTime.UtcNow;
+        public int UserId { get; set; }
+        public ImageState State { get; set; } = ImageState.Active;
+
         public ICollection<ImageComment> ImageComments { get; }
         public ICollection<Like> Likes { get; }
         public ICollection<Report> Reports { get; }
-        public ICollection<ImageTag> Tags { get; set; }
-        public int UserId { get; set; }
+        public ICollection<Tag> Tags { get; set; } = [];
         public User User { get; set; }
     }
 
@@ -30,28 +34,38 @@ namespace API.Models
         public string Name { get; set; }
         public string Description { get; set; }
         public string ImageUrl { get; set; }
-        public List<TagNames> Tags { get; set; }
+        public ICollection<TagNames> Tags { get; set; }
 
     }
     public class UpdateImageDto()
     {
         public string Name { get; set; }
         public string Description { get; set; }
-        public List<TagNames> Tags { get; set; }
+        public ICollection<TagNames> Tags { get; set; }
 
     }
 
-    public class ReadImageDto()
+    // nice and short name :)
+    public class AppealImageSuspensionImageDto()
     {
+        public ICollection<TagNames> Tags { get; set; }
+
+    }
+
+    public class GetImageDto()
+    {
+        public int Id { get; set; }
         public string Name { get; set; }
         public string Description { get; set; }
         public string ImageUrl { get; set; }
-        // public List<ImageTag> Tags { get; set; }
-        // public string ViewCount { get; set; }
-        // public DateTime UploadDate { get; set; } = DateTime.UtcNow;
-        // public User User { get; set; }
-        // public int LikeCount { get; set; }
-        // public int ReportCount { get; set; }
-        // public ICollection<ImageComment> ImageComments { get; set; }
+        public int ViewCount { get; set; }
+        public int LikeCount { get; set; }
+        public int ReportCount { get; set; }
+        public DateTime UploadDate { get; set; }
+        public ImageState ImageState { get; set; }
+        public GetUserDto User { get; set; }
+        public ICollection<GetImageCommentDto> ImageComments { get; set; }
+        public ICollection<TagNames> Tags { get; set; }
+
     }
 }

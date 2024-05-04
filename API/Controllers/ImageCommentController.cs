@@ -10,19 +10,21 @@ using Microsoft.EntityFrameworkCore;
 
 namespace API.Controllers
 {
-    [Route("api/{imageId}/comments")]
+    [Route("api/images/{imageId}/comments")]
     [ApiController]
     public class ImageCommentController : ControllerBase
     {
         private readonly AppDbContext context;
+        private readonly IMapper mapper;
         public ImageCommentController(AppDbContext context, IMapper mapper)
         {
             this.context = context;
+            this.mapper = mapper;
         }
 
 
         [HttpGet]
-        public async Task<IActionResult> GetComments(int imageId)
+        public async Task<IActionResult> GetImageComments(int imageId)
         {
             var comments = await context.ImageComments
                 .Where(i => i.Image.Id == imageId)
@@ -33,11 +35,11 @@ namespace API.Controllers
                 return NotFound();
             }
 
-            return Ok();
+            return Ok(comments);
         }
 
         [HttpGet("{commentId}")]
-        public async Task<IActionResult> GetComment(int imageId, int commentId)
+        public async Task<IActionResult> GetImageComment(int imageId, int commentId)
         {
             var comment = await context.ImageComments
                 .Where(i => i.Image.Id == imageId && i.Id == commentId)
@@ -48,12 +50,12 @@ namespace API.Controllers
                 return NotFound();
             }
 
-            return Ok();
+            return Ok(comment);
         }
 
         [HttpPost]
-        public async Task<IActionResult> CreateComment(int imageId, GetImageCommentDto commentDto)
-        {                                                           // uh dto naujo reik CreateImageCommentDto
+        public async Task<IActionResult> CreateImageComment(int imageId, CreateImageCommentDto commentDto)
+        {
             var image = await context.Images.FindAsync(imageId);
             if (image == null)
             {
@@ -64,25 +66,28 @@ namespace API.Controllers
             {
                 Text = commentDto.Text,
                 XCoord = commentDto.XCoord,
-                YCoord = commentDto.YCoord
+                YCoord = commentDto.YCoord,
+                UserId = 1,
+                ImageId = image.Id
             };
 
             context.ImageComments.Add(comment);
             await context.SaveChangesAsync();
 
-            return CreatedAtAction("GetComment", new { imageId, commentId = comment.Id }, comment);
+            return Ok(comment);
             // return CreatedAtAction("GetComment", new { imageId, commentId = comment.Id }, comment);
         }
 
-        [HttpPut("{commentId}")]
-        public async Task<IActionResult> UpdateComment(int imageId, int commentId, UpdateImageCommentDto imageDto)
-        {
-            // edit comments or nah?
-            return Ok();
-        }
+        // [HttpPut("{commentId}")]
+        // public async Task<IActionResult> UpdateImageComment(int imageId, int commentId, UpdateImageCommentDto imageDto)
+        // {
+
+
+        //     return Ok();
+        // }
 
         [HttpDelete("{commentId}")]
-        public async Task<IActionResult> DeleteComment(int imageId, int commentId)
+        public async Task<IActionResult> DeleteImageComment(int imageId, int commentId)
         {
             var comment = await context.ImageComments
                 .Where(i => i.Image.Id == imageId && i.Id == commentId)
