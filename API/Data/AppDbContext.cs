@@ -4,11 +4,13 @@ using System.Linq;
 using System.Threading.Tasks;
 using API.Models;
 using API.Models.Enums;
+using Microsoft.AspNetCore.Identity;
+using Microsoft.AspNetCore.Identity.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore;
 
 namespace API.Data
 {
-    public class AppDbContext : DbContext
+    public class AppDbContext : IdentityDbContext<User>
     {
         public AppDbContext(DbContextOptions options) : base(options)
         {
@@ -22,7 +24,6 @@ namespace API.Data
         public DbSet<ProfileComment> ProfileComments { get; set; }
         public DbSet<Like> Likes { get; set; }
         public DbSet<Report> Reports { get; set; }
-        public DbSet<User> Users { get; set; }
 
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {
@@ -34,19 +35,13 @@ namespace API.Data
             modelBuilder.Entity<Tag>().HasData(tagNames);
             // modelBuilder.Entity<ImageTag>(x => x.HasKey(p => new { p.ImageId, p.TagId }));
 
-            var testUser = new User
-            {
-                Id = 1,
-                Email = "test@example.com",
-                Username = "TestUser",
-                Password = "TestPassword123",
-                Description = "This is a test user.",
-                ProfileImageUrl = "https://example.com/test-user-profile.jpg",
-                RegisterDate = DateTime.UtcNow
-            };
-            modelBuilder.Entity<User>().HasData(testUser);
-
             base.OnModelCreating(modelBuilder);
+
+            modelBuilder.Entity<IdentityRole>()
+            .HasData(
+                new IdentityRole { Name = "Member", NormalizedName = "MEMBER" },
+                new IdentityRole { Name = "Moderator", NormalizedName = "MODERATOR" }
+            );
         }
     }
 }

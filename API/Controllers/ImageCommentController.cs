@@ -67,7 +67,7 @@ namespace API.Controllers
                 Text = commentDto.Text,
                 XCoord = commentDto.XCoord,
                 YCoord = commentDto.YCoord,
-                UserId = 1,
+                UserId = "1",
                 ImageId = image.Id
             };
 

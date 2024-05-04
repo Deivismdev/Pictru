@@ -22,7 +22,7 @@ namespace API.Controllers
         [HttpPost]
         public async Task<IActionResult> ReportImage(int imageId)
         {
-            var userId = 1;
+            var userId = "1";
             const int reportThreshold = 1;
 
             var existingReport = await context.Reports

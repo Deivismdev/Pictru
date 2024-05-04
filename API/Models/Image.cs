@@ -19,7 +19,7 @@ namespace API.Models
         public int LikeCount { get; set; } = 0;
         public int ReportCount { get; set; } = 0;
         public DateTime UploadDate { get; set; } = DateTime.UtcNow;
-        public int UserId { get; set; }
+        public string UserId { get; set; }
         public ImageState State { get; set; } = ImageState.Active;
 
         public ICollection<ImageComment> ImageComments { get; }

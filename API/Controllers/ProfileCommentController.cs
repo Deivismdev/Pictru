@@ -21,7 +21,7 @@ namespace API.Controllers
         }
 
         [HttpGet]
-        public async Task<IActionResult> GetProfileComments(int userId)
+        public async Task<IActionResult> GetProfileComments(string userId)
         {
             var comments = await context.ProfileComments
                 .Where(i => i.User.Id == userId)
@@ -35,7 +35,7 @@ namespace API.Controllers
             return Ok();
         }
         [HttpGet("{commentId}")]
-        public async Task<IActionResult> GetProfileComment(int userId, int commentId)
+        public async Task<IActionResult> GetProfileComment(string userId, int commentId)
         {
             var comment = await context.ProfileComments
                 .Where(i => i.User.Id == userId && i.Id == commentId)
@@ -72,7 +72,7 @@ namespace API.Controllers
         }
 
         [HttpDelete("{commentId}")]
-        public async Task<IActionResult> DeleteProfileComment(int userId, int commentId)
+        public async Task<IActionResult> DeleteProfileComment(string userId, int commentId)
         {
             var comment = await context.ProfileComments
                 .Where(i => i.User.Id == userId && i.Id == commentId)

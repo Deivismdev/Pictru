@@ -18,7 +18,7 @@ namespace API.Models
         public int ImageId { get; set; }
         [JsonIgnore]
         public Image Image { get; set; }
-        public int UserId { get; set; }
+        public string UserId { get; set; }
         [JsonIgnore]
         public User User { get; set; }
     }
@@ -28,7 +28,7 @@ namespace API.Models
         public string Text { get; set; }
         public int XCoord { get; set; }
         public int YCoord { get; set; }
-        public int UserId { get; set; }
+        public string UserId { get; set; }
         public int ImageId { get; set; }
     }
 
@@ -38,7 +38,7 @@ namespace API.Models
         public DateTime Date { get; set; }
         public int XCoord { get; set; }
         public int YCoord { get; set; }
-        public int UserId { get; set; }
+        public string UserId { get; set; }
         public GetUserDto User { get; set; }
     }
 

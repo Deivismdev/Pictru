@@ -23,7 +23,7 @@ namespace API.Controllers
         [HttpPost]
         public async Task<IActionResult> LikeImage(int imageId)
         {
-            var userId = 1;
+            var userId = "1";
             var existingLike = await context.Likes
                 .FirstOrDefaultAsync(l => l.ImageId == imageId && l.UserId == userId);
 
@@ -52,7 +52,7 @@ namespace API.Controllers
         [HttpDelete()]
         public async Task<IActionResult> DislikeImage(int imageId)
         {
-            var userId = 1;
+            var userId = "1";
             var like = await context.Likes
                 .FirstOrDefaultAsync(l => l.ImageId == imageId && l.UserId == userId);
 

@@ -36,7 +36,7 @@ namespace API.Controllers
                 Name = imageDto.Name,
                 Description = imageDto.Description,
                 ImageUrl = imageDto.ImageUrl,
-                UserId = 1,
+                UserId = "1",
             };
 
             foreach (var tagName in imageDto.Tags)

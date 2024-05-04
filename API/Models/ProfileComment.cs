@@ -11,7 +11,7 @@ namespace API.Models
         public string Text { get; set; }
         public DateTime Date { get; set; } = DateTime.UtcNow;
         public bool Edited = false;
-        public int UserId { get; set; }
+        public string UserId { get; set; }
         public User User { get; set; }
     }
 
