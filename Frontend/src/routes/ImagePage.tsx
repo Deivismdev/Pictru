@@ -6,8 +6,6 @@ import {
   BadgeInfoIcon,
   Eye,
   MousePointerClick,
-  Scroll,
-  ThumbsDown,
   ThumbsUp,
 } from "lucide-react";
 import React, { useState } from "react";
@@ -138,7 +136,6 @@ export default function ImagePage() {
                 onClick={() => setIsEnlarged(true)}
                 style={isEnlarged ? { display: "none" } : {}}
               />
-              // user selected point
               {selectedCoordinates && (
                 <div
                   className={`${
@@ -151,7 +148,6 @@ export default function ImagePage() {
                   }}
                 />
               )}
-              // other users' selected points
               {commentCoordinates && (
                 <div
                   className={`${
@@ -165,7 +161,6 @@ export default function ImagePage() {
                 />
               )}
             </div>
-            // enlarged image view
             {isEnlarged && (
               <div className="fixed inset-0 backdrop-blur-sm bg-purple-950/10 flex items-center justify-center z-50">
                 <div
