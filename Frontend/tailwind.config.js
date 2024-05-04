@@ -97,5 +97,9 @@ module.exports = {
       },
     },
   },
+  experimental: {
+    optimizeUniversalDefaults: true
+  },
+
   plugins: [require("tailwindcss-animate")],
 };

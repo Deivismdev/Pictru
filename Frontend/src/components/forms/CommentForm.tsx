@@ -15,7 +15,12 @@ import { useForm } from "react-hook-form";
 import { RegisterValidation } from "@/lib/validation";
 import { MousePointerClick, SendHorizonal } from "lucide-react";
 
-const CommentForm = () => {
+interface CommentFormProps {
+  onSelectImagePoint: () => void;
+  coordinates: {x: number, y:number}| null;
+ }
+
+const CommentForm = ({ onSelectImagePoint, coordinates }: CommentFormProps) => {
   const formSchema = z.object({
     comment: z.string().min(3, {
       message: "Comment must be at least 3 characters.",
@@ -31,6 +36,7 @@ const CommentForm = () => {
 
   function onSubmit(values: z.infer<typeof formSchema>) {
     //TODO: submit comment
+    console.log(coordinates)
     console.log(values);
   }
 
@@ -47,11 +53,11 @@ const CommentForm = () => {
             <FormItem>
               <FormLabel>Leave a comment</FormLabel>
               <div className="flex">
-                <Button type="submit">
+                <Button type="button" onClick={onSelectImagePoint}>
                   <MousePointerClick />
                 </Button>
                 <FormControl>
-                  <Input type="email" {...field} />
+                  <Input type="text" {...field} />
                 </FormControl>
                 <Button type="submit">
                   <SendHorizonal />
