@@ -13,21 +13,14 @@ import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
 import { useForm } from "react-hook-form";
 import { RegisterValidation } from "@/lib/validation";
+import { LoginValidation } from "@/lib/validation";
 
 const LoginForm = () => {
-  // 1. Define your form.
-  const form = useForm<z.infer<typeof RegisterValidation>>({
-    resolver: zodResolver(RegisterValidation),
-    defaultValues: {
-      email: "",
-      password: "",
-    },
-  });
 
-  // 2. Define a submit handler.
-  function onSubmit(values: z.infer<typeof RegisterValidation>) {
-    // Do something with the form values.
-    // ✅ This will be type-safe and validated.
+  const form = useForm<z.infer<typeof LoginValidation>>({
+    resolver: zodResolver(LoginValidation),
+  });
+  function onSubmit(values: z.infer<typeof LoginValidation>) {
     console.log(values);
   }
 

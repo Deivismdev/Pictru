@@ -2,7 +2,7 @@ import LoginForm from "@/components/forms/LoginForm";
 
 export default function Login() {
   return (
-    <div className="xl:px-36 px-12 flex justify-center ">
+    <div className="xl:px-36 px-12 flex bg-background justify-center ">
       <div className="xl:w-92 w-2/3 flex gap-16">
         <div className="xl:w-1/2 w-full">
           <LoginForm />

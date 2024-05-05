@@ -1,6 +1,5 @@
 import { z } from "zod";
 import { zodResolver } from "@hookform/resolvers/zod";
-import { Link } from "react-router-dom";
 
 import {
   Form,
@@ -12,7 +11,6 @@ import {
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
 import { useForm } from "react-hook-form";
-import { RegisterValidation } from "@/lib/validation";
 import { MousePointerClick, SendHorizonal } from "lucide-react";
 
 interface CommentFormProps {
