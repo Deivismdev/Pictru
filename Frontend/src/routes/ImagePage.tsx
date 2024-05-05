@@ -2,12 +2,7 @@ import CoordinateSelector from "@/components/CoordinateSelector";
 import CommentForm from "@/components/forms/CommentForm";
 import { Badge } from "@/components/ui/badge";
 import { ScrollArea } from "@/components/ui/scroll-area";
-import {
-  BadgeInfoIcon,
-  Eye,
-  MousePointerClick,
-  ThumbsUp,
-} from "lucide-react";
+import { BadgeInfoIcon, Eye, MousePointerClick, ThumbsUp } from "lucide-react";
 import React, { useState } from "react";
 
 export default function ImagePage() {
@@ -67,7 +62,7 @@ export default function ImagePage() {
   };
 
   return (
-    <div className="xl:px-36 px-12 flex flex-col text-foreground">
+    <div className="xl:px-36 px-12 flex flex-col text-foreground bg-background">
       <div className="grid grid-cols-2 p-2">
         <div className="col-span-1 flex flex-col">
           <div className="flex gap-6 text-2xl">
@@ -113,7 +108,7 @@ export default function ImagePage() {
                     <div className="flex flex-row justify-between items-center">
                       <div className="brightness-75">{comment.user}</div>
                       {comment.coordinates && (
-                        <MousePointerClick className="stroke-purple-500/20" />
+                        <MousePointerClick className="stroke-white" />
                       )}
                     </div>
                     <div>{comment.comment}</div>
@@ -179,7 +174,7 @@ export default function ImagePage() {
             )}
           </div>
         </div>
-        <div className="border border-border h-64 p-2 mt-6">
+        <div className="border border-border h-max p-2 mt-6">
           <h6 className="font-bold">Description</h6>
           <ScrollArea className="h-full">{imageData.description}</ScrollArea>
         </div>
