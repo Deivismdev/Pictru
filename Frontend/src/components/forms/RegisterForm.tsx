@@ -16,21 +16,13 @@ import { Button } from "@/components/ui/button";
 import { useForm } from "react-hook-form";
 import { RegisterValidation } from "@/lib/validation";
 
+
 const RegisterForm = () => {
-  // 1. Define your form.
   const form = useForm<z.infer<typeof RegisterValidation>>({
-    resolver: zodResolver(RegisterValidation),
-    defaultValues: {
-      username: "",
-      email: "",
-      password: "",
-    },
+    resolver: zodResolver(RegisterValidation)
   });
 
-  // 2. Define a submit handler.
   function onSubmit(values: z.infer<typeof RegisterValidation>) {
-    // Do something with the form values.
-    // ✅ This will be type-safe and validated.
     console.log(values);
   }
 

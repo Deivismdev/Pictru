@@ -2,7 +2,7 @@ import RegisterForm from "@/components/forms/RegisterForm";
 
 export default function Register() {
     return (
-        <div className="xl:px-36 px-12 flex justify-center ">
+        <div className="xl:px-36 bg-background px-12 flex justify-center ">
           <div className="xl:w-92 w-2/3 flex gap-16">
             <div className="xl:w-1/2 w-full">
               <RegisterForm />

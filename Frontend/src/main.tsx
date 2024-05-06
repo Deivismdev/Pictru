@@ -1,5 +1,5 @@
 import ReactDOM from 'react-dom/client';
-import { BrowserRouter, RouterProvider, createBrowserRouter } from 'react-router-dom';
+import { RouterProvider, createBrowserRouter } from 'react-router-dom';
 import React from 'react';
 import Root from './routes/root';
 import ErrorPage from './routes/error-page';
@@ -8,6 +8,7 @@ import Register from './routes/register';
 import "./globals.css";
 import Gallery from './routes/gallery';
 import ImagePage from './routes/ImagePage';
+import UploadPage from './routes/UploadPage';
 
 
 const router = createBrowserRouter([
@@ -31,6 +32,10 @@ const router = createBrowserRouter([
             {
                 path: '/gallery/image/:imageId',
                 element: <ImagePage/>,
+            },
+            {
+                path: '/upload',
+                element: <UploadPage/>,
             },
         ]
 
