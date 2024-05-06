@@ -12,7 +12,15 @@ namespace API.RequestHelpers
     {
         public MappingProfiles()
         {
+
+            CreateMap<CreateImageDto, Image>()
+            .ForMember(dest => dest.Tags, opt => opt.MapFrom(src => src.Tags.Select(t => new Tag { Name = t })));
+
             CreateMap<Image, GetImageDto>()
+               .ForMember(dest => dest.Tags, opt => opt.MapFrom(src => src.Tags.Select(t => t.Name)))
+                .ForMember(dest => dest.ImageState, opt => opt.MapFrom(src => src.State));
+
+            CreateMap<Image, GetImagesDto>()
                .ForMember(dest => dest.Tags, opt => opt.MapFrom(src => src.Tags.Select(t => t.Name)))
                 .ForMember(dest => dest.ImageState, opt => opt.MapFrom(src => src.State));
 
@@ -26,7 +34,9 @@ namespace API.RequestHelpers
             CreateMap<UpdateImageDto, Image>();
 
             CreateMap<CreateImageCommentDto, ImageComment>();
-            CreateMap<ImageComment, GetImageCommentDto>();
+            CreateMap<ImageComment, GetImageCommentDto>()
+                .ForMember(dest => dest.UserName, opt => opt.MapFrom(src => src.User.UserName));
+
 
         }
     }

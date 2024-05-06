@@ -4,6 +4,7 @@ using System.Linq;
 using System.Threading.Tasks;
 using API.Data;
 using API.Models;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 
@@ -50,8 +51,11 @@ namespace API.Controllers
         }
 
         [HttpPost]
+        [Authorize]
+        // TODO: userId = profile of the user where we want to leave a comment, rename to make it clearer
         public async Task<IActionResult> CreateProfileComment(int userId, CreateProfileCommentDto commentDto)
         {
+            var currentUserId = User.Claims.SingleOrDefault(x => x.Type.Equals("http://schemas.xmlsoap.org/ws/2005/05/identity/claims/nameidentifier")).Value;
             var user = await context.Users.FindAsync(userId);
             if (user == null)
             {
@@ -61,6 +65,7 @@ namespace API.Controllers
             var comment = new ProfileComment
             {
                 Text = commentDto.Text,
+                UserId = currentUserId
             };
 
             context.ProfileComments.Add(comment);
@@ -72,6 +77,7 @@ namespace API.Controllers
         }
 
         [HttpDelete("{commentId}")]
+        [Authorize]
         public async Task<IActionResult> DeleteProfileComment(string userId, int commentId)
         {
             var comment = await context.ProfileComments

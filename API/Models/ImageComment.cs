@@ -39,7 +39,7 @@ namespace API.Models
         public int XCoord { get; set; }
         public int YCoord { get; set; }
         public string UserId { get; set; }
-        public GetUserDto User { get; set; }
+        public string UserName { get; set; }
     }
 
     public class UpdateImageCommentDto

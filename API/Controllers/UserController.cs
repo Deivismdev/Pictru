@@ -56,16 +56,23 @@ namespace API.Controllers
 
         [Authorize]
         [HttpGet("currentUser")]
-        public async Task<ActionResult<UserDto>> GetCurrentUser()
+        public async Task<ActionResult<GetLoggedInUserDto>> GetCurrentUser()
         {
             var user = await _userManager.FindByNameAsync(User.Identity.Name);
-            return new UserDto
+            if (user == null)
             {
-                Email = user.Email,
-                Token = await _tokenService.GenerateToken(user)
+                return NotFound();
+            }
+            var roles = await _userManager.GetRolesAsync(user);
+
+            return new GetLoggedInUserDto
+            {
+                Username = user.UserName,
+                Token = await _tokenService.GenerateToken(user),
+                IsPremium = user.IsPremium,
+                Roles = roles
+
             };
-
-
 
         }
 

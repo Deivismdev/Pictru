@@ -61,20 +61,23 @@ namespace API.Controllers
             {
                 return NotFound();
             }
-
+            var userId = User.Claims.SingleOrDefault(x => x.Type.Equals("http://schemas.xmlsoap.org/ws/2005/05/identity/claims/nameidentifier")).Value;
             var comment = new ImageComment
             {
                 Text = commentDto.Text,
                 XCoord = commentDto.XCoord,
                 YCoord = commentDto.YCoord,
-                UserId = "1",
+                UserId = userId,
                 ImageId = image.Id
             };
 
             context.ImageComments.Add(comment);
             await context.SaveChangesAsync();
 
-            return Ok(comment);
+
+            var commentDtoToReturn = mapper.Map<GetImageCommentDto>(comment);
+
+            return Ok(commentDtoToReturn); // TODO: returns UserName null
             // return CreatedAtAction("GetComment", new { imageId, commentId = comment.Id }, comment);
         }
 

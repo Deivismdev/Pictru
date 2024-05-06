@@ -9,7 +9,6 @@ namespace API.Models
 {
     public class User : IdentityUser
     {
-        public string Password { get; set; }
         public string Description { get; set; }
         public string ProfileImageUrl { get; set; }
         public DateTime RegisterDate { get; set; } = DateTime.UtcNow;
@@ -44,7 +43,15 @@ namespace API.Models
         public int Reputation { get; set; }
         public bool IsPremium { get; set; }
         public DateTime RegisterDate { get; set; }
+    }
+
+    public class GetLoggedInUserDto
+    {
+        public string Username { get; set; }
+        public bool IsPremium { get; set; }
         public string Token { get; set; }
+        public IList<string> Roles { get; set; }
+
     }
 
     public class CreateUserDto

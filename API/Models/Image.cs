@@ -1,5 +1,6 @@
 using System;
 using System.Collections.Generic;
+using System.ComponentModel.DataAnnotations;
 using System.Linq;
 using System.Runtime.Serialization;
 using System.Text.Json.Serialization;
@@ -12,6 +13,7 @@ namespace API.Models
     public class Image
     {
         public int Id { get; set; }
+        public string PublicId { get; set; } // cloudinary
         public string Name { get; set; }
         public string Description { get; set; }
         public string ImageUrl { get; set; }
@@ -31,9 +33,13 @@ namespace API.Models
 
     public class CreateImageDto()
     {
+        [Required]
         public string Name { get; set; }
+        [Required]
         public string Description { get; set; }
-        public string ImageUrl { get; set; }
+        [Required]
+        public IFormFile File { get; set; }
+        [Required]
         public ICollection<TagNames> Tags { get; set; }
 
     }
@@ -52,6 +58,22 @@ namespace API.Models
 
     }
 
+
+    public class GetImagesDto()
+    {
+        public int Id { get; set; }
+        public string Name { get; set; }
+        public string Description { get; set; }
+        public string ImageUrl { get; set; }
+        public int ViewCount { get; set; }
+        public int LikeCount { get; set; }
+        public int ReportCount { get; set; }
+        public DateTime UploadDate { get; set; }
+        public ImageState ImageState { get; set; }
+        public GetUserDto User { get; set; }
+        public ICollection<TagNames> Tags { get; set; }
+
+    }
     public class GetImageDto()
     {
         public int Id { get; set; }

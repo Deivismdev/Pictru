@@ -30,5 +30,15 @@ namespace API.Extensions
             }
             return query.Where(i => i.Tags.Any(t => t.Name == tag));
         }
+
+        public static IQueryable<Image> FilterByUsername(this IQueryable<Image> query, string username)
+        {
+            if (string.IsNullOrEmpty(username))
+            {
+                return query;
+            }
+            return query.Where(i => i.User.UserName == username);
+        }
+
     }
 }
