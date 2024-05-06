@@ -5,6 +5,8 @@ using System.Threading.Tasks;
 using API.Data;
 using API.Models;
 using AutoMapper;
+using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 
@@ -16,12 +18,15 @@ namespace API.Controllers
     {
         private readonly AppDbContext context;
         private readonly IMapper mapper;
-        public ImageCommentController(AppDbContext context, IMapper mapper)
+        private readonly UserManager<User> _userManager;
+
+        public ImageCommentController(AppDbContext context, IMapper mapper, UserManager<User> userManager)
         {
             this.context = context;
             this.mapper = mapper;
-        }
+            _userManager = userManager;
 
+        }
 
         [HttpGet]
         public async Task<IActionResult> GetImageComments(int imageId)
@@ -54,6 +59,7 @@ namespace API.Controllers
         }
 
         [HttpPost]
+        [Authorize]
         public async Task<IActionResult> CreateImageComment(int imageId, CreateImageCommentDto commentDto)
         {
             var image = await context.Images.FindAsync(imageId);
@@ -89,9 +95,11 @@ namespace API.Controllers
         //     return Ok();
         // }
 
+        [Authorize]
         [HttpDelete("{commentId}")]
         public async Task<IActionResult> DeleteImageComment(int imageId, int commentId)
         {
+            var userId = User.Claims.SingleOrDefault(x => x.Type.Equals("http://schemas.xmlsoap.org/ws/2005/05/identity/claims/nameidentifier")).Value;
             var comment = await context.ImageComments
                 .Where(i => i.Image.Id == imageId && i.Id == commentId)
                 .FirstOrDefaultAsync();
@@ -99,6 +107,11 @@ namespace API.Controllers
             if (comment == null)
             {
                 return NotFound();
+            }
+
+            if (comment.UserId != userId && !await _userManager.IsInRoleAsync(await _userManager.FindByIdAsync(userId), "Moderator"))
+            {
+                return Unauthorized();
             }
 
             context.ImageComments.Remove(comment);
