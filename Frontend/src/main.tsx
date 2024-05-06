@@ -9,6 +9,7 @@ import "./globals.css";
 import Gallery from './routes/gallery';
 import ImagePage from './routes/ImagePage';
 import UploadPage from './routes/UploadPage';
+import ProfilePage, { loader as profileLoader } from './routes/ProfilePage';
 
 
 const router = createBrowserRouter([
@@ -36,6 +37,11 @@ const router = createBrowserRouter([
             {
                 path: '/upload',
                 element: <UploadPage/>,
+            },
+            {
+                path: '/user/:profileId',
+                element: <ProfilePage/>,
+                loader: profileLoader,
             },
         ]
 

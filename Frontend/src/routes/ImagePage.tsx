@@ -1,5 +1,5 @@
 import CoordinateSelector from "@/components/CoordinateSelector";
-import CommentForm from "@/components/forms/CommentForm";
+import ImageCommentForm from "@/components/forms/ImageCommentForm";
 import { Badge } from "@/components/ui/badge";
 import { ScrollArea } from "@/components/ui/scroll-area";
 import { BadgeInfoIcon, Eye, MousePointerClick, ThumbsUp } from "lucide-react";
@@ -116,7 +116,7 @@ export default function ImagePage() {
                 ))}
               </ScrollArea>
               <div className="p-2">
-                <CommentForm
+                <ImageCommentForm
                   onSelectImagePoint={() => setIsEnlarged(true)}
                   coordinates={selectedCoordinates}
                 />

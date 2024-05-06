@@ -18,7 +18,7 @@ interface CommentFormProps {
   coordinates: {x: number, y:number}| null;
  }
 
-const CommentForm = ({ onSelectImagePoint, coordinates }: CommentFormProps) => {
+const ImageCommentForm = ({ onSelectImagePoint, coordinates }: CommentFormProps) => {
   const formSchema = z.object({
     comment: z.string().min(3, {
       message: "Comment must be at least 3 characters.",
@@ -32,6 +32,7 @@ const CommentForm = ({ onSelectImagePoint, coordinates }: CommentFormProps) => {
     },
   });
 
+  // TODO: it has no user id, maybe pass the submit outside the compoennt?
   function onSubmit(values: z.infer<typeof formSchema>) {
     //TODO: submit comment
     console.log(coordinates)
@@ -69,4 +70,4 @@ const CommentForm = ({ onSelectImagePoint, coordinates }: CommentFormProps) => {
   );
 };
 
-export default CommentForm;
+export default ImageCommentForm;
