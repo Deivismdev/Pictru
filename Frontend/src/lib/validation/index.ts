@@ -20,3 +20,8 @@ export const LoginValidation = z.object({
   password: z.string().min(8, { message: 'Too short' }).default(""),
 });
 
+export const ProfileEditValidation = z.object({
+  description: z.string().default(""),
+  image: z.string().default(""),
+});
+
