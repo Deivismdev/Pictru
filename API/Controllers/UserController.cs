@@ -2,25 +2,35 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
+using API.Data;
 using API.Models;
 using API.Services;
+using AutoMapper;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.EntityFrameworkCore;
 
 namespace API.Controllers
 {
     public class UserController : ControllerBase
     {
+        private readonly AppDbContext _context;
         private readonly UserManager<User> _userManager;
         private readonly TokenService _tokenService;
-        public UserController(UserManager<User> userManager, TokenService tokenService)
+        private readonly IMapper _mapper;
+        private readonly ImageService _imageService;
+
+        public UserController(UserManager<User> userManager, TokenService tokenService, IMapper mapper, ImageService imageService)
         {
             _tokenService = tokenService;
             _userManager = userManager;
+            _mapper = mapper;
+            _imageService = imageService;
+
         }
 
-        [HttpPost(("login"))]
+        [HttpPost("login")]
         public async Task<ActionResult<UserDto>> Login(LoginDto loginDto)
         {
             var user = await _userManager.FindByNameAsync(loginDto.UserName);
@@ -73,6 +83,35 @@ namespace API.Controllers
                 Roles = roles
 
             };
+
+        }
+
+
+        public async Task<ActionResult<EditUserDto>> EditUser(EditUserDto userDto)
+        {
+            var userId = User.Claims.SingleOrDefault(x => x.Type.Equals("http://schemas.xmlsoap.org/ws/2005/05/identity/claims/nameidentifier")).Value;
+            var image = await _context.Users.FirstOrDefaultAsync(i => i.Id == userId);
+
+            var user = _mapper.Map<User>(userDto);
+
+            if (userDto.File != null)
+            {
+                var maxSize = 1 * 1024 * 1024;
+                if (userDto.File.Length > maxSize)
+                {
+                    return BadRequest(new ProblemDetails { Title = "File size exceeds the limit of 5MB." });
+                }
+                var imageResult = await _imageService.AddImageAsync(userDto.File);
+
+                if (imageResult.Error != null) return BadRequest(new ProblemDetails { Title = imageResult.Error.Message });
+
+                user.ImageUrl = imageResult.SecureUrl.ToString();
+                user.PublicId = imageResult.PublicId;
+            }
+
+            await _context.SaveChangesAsync();
+            return NoContent();
+
 
         }
 

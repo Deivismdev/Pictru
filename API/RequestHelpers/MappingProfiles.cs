@@ -12,6 +12,7 @@ namespace API.RequestHelpers
     {
         public MappingProfiles()
         {
+            //TODO: this is a mess
 
             CreateMap<CreateImageDto, Image>()
             .ForMember(dest => dest.Tags, opt => opt.MapFrom(src => src.Tags.Select(t => new Tag { Name = t })));
@@ -36,6 +37,12 @@ namespace API.RequestHelpers
             CreateMap<CreateImageCommentDto, ImageComment>();
             CreateMap<ImageComment, GetImageCommentDto>()
                 .ForMember(dest => dest.UserName, opt => opt.MapFrom(src => src.User.UserName));
+
+            CreateMap<EditUserDto, User>();
+
+            CreateMap<ProfileComment, GetProfileCommentsDto>()
+                .ForMember(dest => dest.UserName, opt => opt.MapFrom(src => src.User.UserName));
+
 
 
         }

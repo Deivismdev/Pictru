@@ -10,7 +10,9 @@ namespace API.Models
     public class User : IdentityUser
     {
         public string Description { get; set; }
-        public string ProfileImageUrl { get; set; }
+        public string ImageUrl { get; set; } = "https://res.cloudinary.com/dtj5bkeq3/image/upload/v1715155325/PICTRU_mvhgee.jpg";
+        public string PublicId { get; set; } = "PICTRU_mvhgee";
+
         public DateTime RegisterDate { get; set; } = DateTime.UtcNow;
         public ICollection<ProfileComment> ProfileComments { get; }
         [JsonIgnore]
@@ -65,7 +67,7 @@ namespace API.Models
     public class EditUserDto
     {
         public string Description { get; set; }
-        public string ProfileImageUrl { get; set; }
+        public IFormFile File { get; set; }
     }
 
     public class SetUserPremiumDto

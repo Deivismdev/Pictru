@@ -28,6 +28,9 @@ namespace API.Controllers
             var userId = User.Claims.SingleOrDefault(x => x.Type.Equals("http://schemas.xmlsoap.org/ws/2005/05/identity/claims/nameidentifier")).Value;
             const int reportThreshold = 1;
 
+            // increase threshold,
+            // if mod reports, change state immediately to suspended
+
             var existingReport = await context.Reports
                 .FirstOrDefaultAsync(l => l.ImageId == imageId && l.UserId == userId);
 

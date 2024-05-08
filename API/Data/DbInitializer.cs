@@ -17,21 +17,19 @@ namespace API.Data
                 {
                     UserName = "premium",
                     Email = "premium@bobber.com",
-                    Description = "poremium user",
-                    ProfileImageUrl = "profile/premium",
+                    Description = "premium user",
                     IsPremium = true,
                     Reputation = 100
                 };
 
                 await userManager.CreateAsync(moderator, "P@ssword1");
-                await userManager.AddToRolesAsync(moderator, new[] { "Moderator" });
+                await userManager.AddToRolesAsync(moderator, new[] { "Member", "Moderator" });
 
                 var pleb = new User
                 {
                     UserName = "pleb",
                     Email = "pleb@bobber.com",
                     Description = "just a pleb",
-                    ProfileImageUrl = "profile/pleb",
                     Reputation = -10
                 };
                 await userManager.CreateAsync(pleb, "P@ssword1");
