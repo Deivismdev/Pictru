@@ -26,18 +26,17 @@ namespace API.Models
     public class CreateImageCommentDto
     {
         public string Text { get; set; }
-        public int XCoord { get; set; }
-        public int YCoord { get; set; }
-        public string UserId { get; set; }
-        public int ImageId { get; set; }
+        public int? XCoord { get; set; } = null;
+        public int? YCoord { get; set; } = null;
     }
 
     public class GetImageCommentDto
     {
+        public int Id { get; set; }
         public string Text { get; set; }
         public DateTime Date { get; set; }
-        public int XCoord { get; set; }
-        public int YCoord { get; set; }
+        public int? XCoord { get; set; }
+        public int? YCoord { get; set; }
         public string UserId { get; set; }
         public string UserName { get; set; }
     }

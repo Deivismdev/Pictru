@@ -6,6 +6,7 @@ import {
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
 import { ScrollArea, ScrollBar } from "@/components/ui/scroll-area";
+import { GalleryImage } from "@/lib/types";
 import {
   Brush,
   Car,
@@ -15,8 +16,20 @@ import {
   Pizza,
   Rabbit,
 } from "lucide-react";
+import { useLoaderData } from "react-router-dom";
+
+export async function loader({ params }: any) {
+  const response = await fetch(
+    `http://localhost:5095/api/image?orderBy=uploadDate&pageNumber=1&pageSize=10`
+  );
+  if (!response.ok) throw new Error("Error loading images");
+
+  return response;
+}
 
 export default function Gallery() {
+  const images = useLoaderData() as GalleryImage[];
+
   return (
     <div className="text-foreground m-auto w-9/12">
       <h1 className="text-3xl py-2">Gallery</h1>
@@ -64,17 +77,11 @@ export default function Gallery() {
       </ScrollArea>
 
       <div className="flex flex-col gap-6">
-        <div className="bg-gray-900 w-36 h-36">hello</div>
-        <div className="bg-gray-900 w-36 h-36">hello</div>
-        <div className="bg-gray-900 w-36 h-36">hello</div>
-        <div className="bg-gray-900 w-36 h-36">hello</div>
-        <div className="bg-gray-900 w-36 h-36">hello</div>
-        <div className="bg-gray-900 w-36 h-36">hello</div>
-        <div className="bg-gray-900 w-36 h-36">hello</div>
-        <div className="bg-gray-900 w-36 h-36">hello</div>
-        <div className="bg-gray-900 w-36 h-36">hello</div>
-        <div className="bg-gray-900 w-36 h-36">hello</div>
-        <div className="bg-gray-900 w-36 h-36">hello</div>
+        {images.map((image) => (
+          <div>
+            {image.id} <img src={image.imageUrl}></img>
+          </div>
+        ))}
       </div>
     </div>
   );

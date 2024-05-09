@@ -2,8 +2,20 @@ import CoordinateSelector from "@/components/CoordinateSelector";
 import ImageCommentForm from "@/components/forms/ImageCommentForm";
 import { Badge } from "@/components/ui/badge";
 import { ScrollArea } from "@/components/ui/scroll-area";
+import { Image } from "@/lib/types";
 import { BadgeInfoIcon, Eye, MousePointerClick, ThumbsUp } from "lucide-react";
 import React, { useState } from "react";
+import { useLoaderData } from "react-router-dom";
+
+export async function loader({ params }: any) {
+  console.log(params);
+  const response = await fetch(
+    `http://localhost:5095/api/image/${params.imageId}`
+  );
+  if (!response.ok) throw new Error("Error loading images");
+
+  return response;
+}
 
 export default function ImagePage() {
   const [isEnlarged, setIsEnlarged] = useState(false);
@@ -22,52 +34,15 @@ export default function ImagePage() {
     setIsSelectedCoordinates(coordinates);
   };
 
-  const imageData = {
-    id: 0,
-    title: "Title",
-    userName: "Usernameeee",
-    likeCount: 6,
-    dislikeCount: 420,
-    viewCount: 420,
-    imageUrl: "/assets/images/dangerfloof.jpg",
-    comments: [
-      {
-        id: 0,
-        user: "true lol",
-        comment: "yo this website sucks",
-        coordinates: null,
-      },
-      {
-        id: 1,
-        user: "true lol",
-        comment: "yo this website sucks",
-        coordinates: { x: 20, y: 20 },
-      },
-      {
-        id: 2,
-        user: "true lol",
-        comment: "yo this website sucks",
-        coordinates: { x: 50, y: 50 },
-      },
-      {
-        id: 3,
-        user: "true lol",
-        comment: "yo this website sucks",
-        coordinates: { x: 30, y: 70 },
-      },
-    ],
-    tags: [0, 1, 2],
-    description:
-      "Lorem ipsum, dolor sit amet consectetur adipisicing elit. Distinctio et laboriosam tenetur delectus aliquam sint n ipsum, dolor sit amet consectetur adipisicing elit. Distinctio et laboriosam tenetur delectus aliquam sint non quis est dolo ipsum, dolor sit amet consectetur adipisicing elit. Distinctio et laboriosam tenetur delectus aliquam sint non quis est dolo ipsum, dolor sit amet consectetur adipisicing elit. Distinctio et laboriosam tenetur delectus aliquam sint non quis est dolo ipsum, dolor sit amet consectetur adipisicing elit. Distinctio et laboriosam tenetur delectus aliquam sint non quis est doloon quis est dolores, dolore sapiente officiis explicabo inventore quae maxime eum fugit aspernatur deserunt?",
-  };
+  const image = useLoaderData() as Image;
 
   return (
     <div className="xl:px-36 px-12 flex flex-col text-foreground bg-background">
       <div className="grid grid-cols-2 p-2">
         <div className="col-span-1 flex flex-col">
           <div className="flex gap-6 text-2xl">
-            <span>{imageData.userName}</span>
-            <span className="font-bold">{imageData.title}</span>
+            <span>{image.user.username}</span>
+            <span className="font-bold">{image.name}</span>
           </div>
           <div className="flex gap-2">
             <Badge>sad</Badge>
@@ -80,11 +55,11 @@ export default function ImagePage() {
           <div className="flex gap-6">
             <span className="flex gap-1">
               <Eye className="h-full w-auto" />
-              {imageData.viewCount}
+              {image.viewCount}
             </span>
             <span className="flex gap-1">
               <ThumbsUp className="h-full w-auto" />
-              {imageData.likeCount}
+              {image.likeCount}
             </span>
           </div>
           <BadgeInfoIcon />
@@ -96,22 +71,26 @@ export default function ImagePage() {
           <div className="w-1/2 ">
             <div className="border border-border rounded-sm flex flex-col h-full justify-between">
               <ScrollArea>
-                {imageData.comments.map((comment) => (
+                {image.imageComments.map((comment) => (
                   <div
                     key={comment.id}
                     className="bg-muted p-2 m-2 rounded-md hover:brightness-110"
-                    onMouseEnter={() =>
-                      setCommentCoordinates(comment.coordinates)
-                    }
+                    onMouseEnter={() => {
+                      if (comment.xCoord && comment.yCoord)
+                        setCommentCoordinates({
+                          x: comment.xCoord,
+                          y: comment.yCoord,
+                        });
+                    }}
                     onMouseLeave={() => setCommentCoordinates(null)}
                   >
                     <div className="flex flex-row justify-between items-center">
-                      <div className="brightness-75">{comment.user}</div>
-                      {comment.coordinates && (
+                      <div className="brightness-75">{comment.userName}</div>
+                      {comment.xCoord && comment.yCoord && (
                         <MousePointerClick className="stroke-white" />
                       )}
                     </div>
-                    <div>{comment.comment}</div>
+                    <div>{comment.text}</div>
                   </div>
                 ))}
               </ScrollArea>
@@ -126,7 +105,7 @@ export default function ImagePage() {
           <div className="w-1/2 h-full">
             <div className="m-auto h-full w-max relative">
               <img
-                src={imageData.imageUrl}
+                src={image.imageUrl}
                 className="w-auto h-full max-h-full object-contain m-auto"
                 onClick={() => setIsEnlarged(true)}
                 style={isEnlarged ? { display: "none" } : {}}
@@ -166,7 +145,7 @@ export default function ImagePage() {
                   onCoordinatesUpdate={handleCoordinatesUpdate}
                 >
                   <img
-                    src={imageData.imageUrl}
+                    src={image.imageUrl}
                     className="w-auto h-auto max-w-full max-h-full"
                   />
                 </CoordinateSelector>
@@ -176,7 +155,7 @@ export default function ImagePage() {
         </div>
         <div className="border border-border h-max p-2 mt-6">
           <h6 className="font-bold">Description</h6>
-          <ScrollArea className="h-full">{imageData.description}</ScrollArea>
+          <ScrollArea className="h-full">{image.description}</ScrollArea>
         </div>
       </div>
     </div>

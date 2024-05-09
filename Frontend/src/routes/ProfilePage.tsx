@@ -1,9 +1,7 @@
 import ProfileCommentForm from "@/components/forms/ProfileCommentForm";
 import ProfileEditForm from "@/components/forms/ProfileEditForm";
 import { ScrollArea } from "@/components/ui/scroll-area";
-import {
-  PencilIcon,
-} from "lucide-react";
+import { PencilIcon } from "lucide-react";
 import { useState } from "react";
 import { useLoaderData } from "react-router-dom";
 
@@ -56,7 +54,7 @@ export async function loader({ params }: any) {
 export default function ProfilePage() {
   const { profileData } = useLoaderData() as any;
 
-  const [IsEditing, setIsEditing] = useState(true);
+  const [IsEditing, setIsEditing] = useState(false);
 
   console.log(profileData);
 
@@ -104,7 +102,10 @@ export default function ProfilePage() {
                 </>
               ) : (
                 <>
-                 <ProfileEditForm endEdit={()=>setIsEditing(false)} profileData={profileData}/>
+                  <ProfileEditForm
+                    endEdit={() => setIsEditing(false)}
+                    profileData={profileData}
+                  />
                 </>
               )}
             </div>

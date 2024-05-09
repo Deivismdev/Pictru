@@ -14,9 +14,6 @@ namespace API.RequestHelpers
         {
             //TODO: this is a mess
 
-            CreateMap<CreateImageDto, Image>()
-            .ForMember(dest => dest.Tags, opt => opt.MapFrom(src => src.Tags.Select(t => new Tag { Name = t })));
-
             CreateMap<Image, GetImageDto>()
                .ForMember(dest => dest.Tags, opt => opt.MapFrom(src => src.Tags.Select(t => t.Name)))
                 .ForMember(dest => dest.ImageState, opt => opt.MapFrom(src => src.State));
@@ -32,7 +29,7 @@ namespace API.RequestHelpers
             CreateMap<Tag, GetTagDto>();
             CreateMap<User, GetUserDto>();
 
-            CreateMap<UpdateImageDto, Image>();
+            // CreateMap<UpdateImageDto, Image>();
 
             CreateMap<CreateImageCommentDto, ImageComment>();
             CreateMap<ImageComment, GetImageCommentDto>()

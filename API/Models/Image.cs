@@ -41,7 +41,6 @@ namespace API.Models
         public IFormFile File { get; set; }
         [Required]
         public ICollection<TagNames> Tags { get; set; }
-
     }
     public class UpdateImageDto()
     {

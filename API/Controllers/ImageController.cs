@@ -40,15 +40,25 @@ namespace API.Controllers
         [Authorize]
         public async Task<IActionResult> CreateImage(CreateImageDto imageDto)
         {
-            // TODO: create a method GetUserId instead of this mess
+            System.Console.WriteLine("\n\n");
+            System.Console.WriteLine(imageDto.Name);
+            System.Console.WriteLine(imageDto.Description);
+            System.Console.WriteLine("\n\n");
             var userId = User.Claims.SingleOrDefault(x => x.Type.Equals("http://schemas.xmlsoap.org/ws/2005/05/identity/claims/nameidentifier")).Value;
 
-            var image = mapper.Map<Image>(imageDto);
+            var image = new Image
+            {
+                Name = imageDto.Name,
+                Description = imageDto.Description,
+                UserId = userId,
+                Tags = new List<Tag>()
+            };
+
             image.UserId = userId;
 
             if (imageDto.File != null)
             {
-                var maxSize = 2 * 1024 * 1024;
+                var maxSize = 5 * 1024 * 1024;
                 if (imageDto.File.Length > maxSize)
                 {
                     return BadRequest(new ProblemDetails { Title = "File size exceeds the limit of 5MB." });
@@ -75,8 +85,9 @@ namespace API.Controllers
 
             await context.SaveChangesAsync();
 
-            return StatusCode(201);
-            // return CreatedAtAction(nameof(GetImage), new { imageId = image.Id }, image);
+            var readImageDto = mapper.Map<GetImageDto>(image);
+
+            return Ok(readImageDto);
         }
 
         [HttpGet("{imageId}")]

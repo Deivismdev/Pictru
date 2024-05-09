@@ -62,6 +62,11 @@ namespace API.Controllers
         [Authorize]
         public async Task<IActionResult> CreateImageComment(int imageId, CreateImageCommentDto commentDto)
         {
+            System.Console.WriteLine("\n\n");
+            Console.WriteLine(commentDto.Text);
+            Console.WriteLine(commentDto.XCoord);
+            Console.WriteLine(commentDto.YCoord);
+            System.Console.WriteLine("\n\n");
             var image = await context.Images.FindAsync(imageId);
             if (image == null)
             {

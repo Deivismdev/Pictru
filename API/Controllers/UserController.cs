@@ -21,8 +21,9 @@ namespace API.Controllers
         private readonly IMapper _mapper;
         private readonly ImageService _imageService;
 
-        public UserController(UserManager<User> userManager, TokenService tokenService, IMapper mapper, ImageService imageService)
+        public UserController(AppDbContext context, UserManager<User> userManager, TokenService tokenService, IMapper mapper, ImageService imageService)
         {
+            _context = context;
             _tokenService = tokenService;
             _userManager = userManager;
             _mapper = mapper;
