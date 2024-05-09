@@ -13,6 +13,8 @@ using Microsoft.EntityFrameworkCore;
 
 namespace API.Controllers
 {
+    [Route("api/")]
+    [ApiController]
     public class UserController : ControllerBase
     {
         private readonly AppDbContext _context;
@@ -34,6 +36,9 @@ namespace API.Controllers
         [HttpPost("login")]
         public async Task<ActionResult<UserDto>> Login(LoginDto loginDto)
         {
+            System.Console.WriteLine("\n\n\n");
+            System.Console.WriteLine(loginDto.UserName);
+            System.Console.WriteLine(loginDto.Password);
             var user = await _userManager.FindByNameAsync(loginDto.UserName);
             if (user == null || !await _userManager.CheckPasswordAsync(user, loginDto.Password))
             {
@@ -87,7 +92,7 @@ namespace API.Controllers
 
         }
 
-
+        [HttpPatch]
         public async Task<ActionResult<EditUserDto>> EditUser(EditUserDto userDto)
         {
             var userId = User.Claims.SingleOrDefault(x => x.Type.Equals("http://schemas.xmlsoap.org/ws/2005/05/identity/claims/nameidentifier")).Value;

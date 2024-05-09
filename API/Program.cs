@@ -49,7 +49,6 @@ builder.Services.AddDbContext<AppDbContext>(opt =>
     opt.UseNpgsql(builder.Configuration.GetConnectionString("DefaultConnection"));
 });
 
-builder.Services.AddCors();
 builder.Services.AddControllers();
 
 // identity core
@@ -90,8 +89,10 @@ if (app.Environment.IsDevelopment())
 // if cors errors, check port
 app.UseCors(opt =>
 {
-    opt.AllowAnyHeader().AllowAnyMethod().WithOrigins("http://localhost:5173");
+    opt.WithOrigins("http://localhost:5173").AllowAnyHeader().AllowAnyMethod().AllowCredentials();
 });
+builder.Services.AddCors();
+
 app.UseHttpsRedirection();
 
 app.UseAuthentication();

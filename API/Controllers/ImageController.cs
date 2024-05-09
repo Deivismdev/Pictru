@@ -19,6 +19,7 @@ using Microsoft.AspNetCore.Identity;
 namespace API.Controllers
 {
     [Route("api/image")]
+    [ApiController]
     public class ImageController : ControllerBase
     {
         private readonly AppDbContext context;
@@ -37,13 +38,14 @@ namespace API.Controllers
             _imageService = imageService;
         }
         [HttpPost]
-        [Authorize]
+        // [Authorize]
         public async Task<IActionResult> CreateImage(CreateImageDto imageDto)
         {
             System.Console.WriteLine("\n\n");
             System.Console.WriteLine(imageDto.Name);
             System.Console.WriteLine(imageDto.Description);
             System.Console.WriteLine("\n\n");
+            System.Console.WriteLine("--------------------------------------------");
             var userId = User.Claims.SingleOrDefault(x => x.Type.Equals("http://schemas.xmlsoap.org/ws/2005/05/identity/claims/nameidentifier")).Value;
 
             var image = new Image

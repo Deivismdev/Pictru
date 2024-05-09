@@ -12,20 +12,32 @@ import {
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
 import { useForm } from "react-hook-form";
-import { RegisterValidation } from "@/lib/validation";
-import { LoginValidation } from "@/lib/validation";
 
 const LoginForm = () => {
+  const form = useForm();
+  async function onSubmit(values: any) {
+    // console.log(values.UserName);
+    // console.log(values.Password);
 
-  const form = useForm<z.infer<typeof LoginValidation>>({
-    resolver: zodResolver(LoginValidation),
-  });
-  function onSubmit(values: z.infer<typeof LoginValidation>) {
-    console.log(values);
+    const data = {
+      UserName: values.UserName,
+      Password: values.Password,
+    };
+    console.log(data);
+    const response = await fetch(`http://localhost:5095/api/login`, {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+        Accept: "application/json",
+      },
+      body: JSON.stringify(data),
+    });
+    console.log(response);
+    return true;
   }
 
   return (
-    <Form {...form} >
+    <Form {...form}>
       <div className="sm:w-420 flex flex-col justify-center w-full text-foreground">
         <h2 className="font-outfit text-2xl pt-5 sm:pt-12">Log in</h2>
         <form
@@ -34,19 +46,19 @@ const LoginForm = () => {
         >
           <FormField
             control={form.control}
-            name="email"
+            name="UserName"
             render={({ field }) => (
               <FormItem>
-                <FormLabel>Email</FormLabel>
+                <FormLabel>Username</FormLabel>
                 <FormControl>
-                  <Input type="email" {...field} />
+                  <Input type="UserName" {...field} />
                 </FormControl>
               </FormItem>
             )}
           />
           <FormField
             control={form.control}
-            name="password"
+            name="Password"
             render={({ field }) => (
               <FormItem>
                 <FormLabel>Password</FormLabel>
@@ -56,21 +68,20 @@ const LoginForm = () => {
               </FormItem>
             )}
           />
-          <Button type="submit">
-            Login
-          </Button>
-          <p className="self-center">
-            or
-         </p>
+          <Button type="submit">Login</Button>
+          {/* <p className="self-center">or</p>
           <Button type="button" variant={"secondary"}>
             Continue with Google
           </Button>
           <Button type="button" variant={"secondary"}>
             Continue with Facebook
-          </Button>
+          </Button> */}
           <p className="text-small-regular text-light-2 text-center mt-2">
             Don't have an account?
-            <Link to="/register" className="text-primary ml-1 underline underline-offset-1">
+            <Link
+              to="/register"
+              className="text-primary ml-1 underline underline-offset-1"
+            >
               Register
             </Link>
           </p>

@@ -55,7 +55,7 @@ const ImageCommentForm = ({
         headers: {
           "Content-Type": "application/json",
           Accept: "application/json",
-          Authorization: `Bearer eyJhbGciOiJIUzUxMiIsInR5cCI6IkpXVCJ9.eyJodHRwOi8vc2NoZW1hcy54bWxzb2FwLm9yZy93cy8yMDA1LzA1L2lkZW50aXR5L2NsYWltcy9lbWFpbGFkZHJlc3MiOiJwcmVtaXVtQGJvYmJlci5jb20iLCJodHRwOi8vc2NoZW1hcy54bWxzb2FwLm9yZy93cy8yMDA1LzA1L2lkZW50aXR5L2NsYWltcy9uYW1lIjoicHJlbWl1bSIsImh0dHA6Ly9zY2hlbWFzLnhtbHNvYXAub3JnL3dzLzIwMDUvMDUvaWRlbnRpdHkvY2xhaW1zL25hbWVpZGVudGlmaWVyIjoiYTY1MzgyZmEtNDA4My00OGE4LTk5NDMtMzA3NjIyYzk3NGExIiwiZXhwIjoxNzE1Nzk1NzgyfQ.GgGCY85j_b0wZvQ8Gn0dtX-ALrukHzcBfhE4xB3PvRlHz0HrQPIyjflyxPrDiDVaCHWjAuruUvte5EJ0MKwxKw`,
+          Authorization: `bearer eyJhbGciOiJIUzUxMiIsInR5cCI6IkpXVCJ9.eyJodHRwOi8vc2NoZW1hcy54bWxzb2FwLm9yZy93cy8yMDA1LzA1L2lkZW50aXR5L2NsYWltcy9lbWFpbGFkZHJlc3MiOiJwcmVtaXVtQGJvYmJlci5jb20iLCJodHRwOi8vc2NoZW1hcy54bWxzb2FwLm9yZy93cy8yMDA1LzA1L2lkZW50aXR5L2NsYWltcy9uYW1lIjoicHJlbWl1bSIsImh0dHA6Ly9zY2hlbWFzLnhtbHNvYXAub3JnL3dzLzIwMDUvMDUvaWRlbnRpdHkvY2xhaW1zL25hbWVpZGVudGlmaWVyIjoiM2NmZWU4NzQtYmM1Ny00NTU5LThjYTQtN2IzMDA0MjI1YjcwIiwiaHR0cDovL3NjaGVtYXMubWljcm9zb2Z0LmNvbS93cy8yMDA4LzA2L2lkZW50aXR5L2NsYWltcy9yb2xlIjpbIk1vZGVyYXRvciIsIk1lbWJlciJdLCJleHAiOjE3MTU4NzExNDR9.1FKfVNXFiKyR_lE-nLwCSHYlwZmHed8LC7suIY7rQoM6DngLaXuDIgzb9UtPlyB_YSiX2KT0_qONMhnLW4YgXQ`,
         },
         body: JSON.stringify(data),
       }

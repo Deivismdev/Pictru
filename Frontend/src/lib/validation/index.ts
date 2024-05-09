@@ -14,10 +14,10 @@ export const RegisterValidation = z.object({
 //  Tags: z.array(z.enum(Object.values(TagNames))),   // tags: z.array(z.nativeEnum(TagNames)).nonempty("At least one tag is required").default([]),
 // });
 
-export const LoginValidation = z.object({
-  email: z.string().email().default(""),
-  password: z.string().min(8, { message: "Too short" }).default(""),
-});
+// export const LoginValidation = z.object({
+//   email: z.string().email().default(""),
+//   password: z.string().min(8, { message: "Too short" }).default(""),
+// });
 
 export const ProfileEditValidation = z.object({
   description: z.string().default(""),
