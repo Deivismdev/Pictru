@@ -33,6 +33,19 @@ const LoginForm = () => {
       body: JSON.stringify(data),
     });
     console.log(response);
+    if (response.ok) {
+      const result = await response.json();
+      localStorage.setItem("token", result.token);
+      localStorage.setItem("roles", JSON.stringify(result.roles));
+
+      console.log("Login successful:", result);
+    } else {
+      console.log("Login failed");
+    }
+
+    const token = localStorage.getItem("token");
+    console.log(token);
+
     return true;
   }
 

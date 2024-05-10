@@ -44,10 +44,13 @@ namespace API.Controllers
             {
                 return Unauthorized();
             }
+            var roles = await _userManager.GetRolesAsync(user);
+
             return new UserDto
             {
                 Email = user.Email,
-                Token = await _tokenService.GenerateToken(user)
+                Token = await _tokenService.GenerateToken(user),
+                Roles = roles
             };
         }
 
