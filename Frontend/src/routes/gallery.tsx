@@ -1,3 +1,4 @@
+import ImageCard from "@/components/ImageCard";
 import { Button } from "@/components/ui/button";
 import {
   DropdownMenu,
@@ -17,18 +18,34 @@ import {
   Rabbit,
 } from "lucide-react";
 import { useLoaderData } from "react-router-dom";
+import { MasonryInfiniteGrid, PackingInfiniteGrid } from "@egjs/react-infinitegrid";
+import { useState } from "react";
+
+
 
 export async function loader({ params }: any) {
   const response = await fetch(
-    `http://localhost:5095/api/image?orderBy=uploadDate&pageNumber=1&pageSize=10`
+    `http://localhost:5095/api/image?orderBy=uploadDate&pageNumber=1&pageSize=25`
   );
-  if (!response.ok) throw new Error("Error loading images");
+  if (!response.ok) return [];
 
   return response;
 }
 
 export default function Gallery() {
   const images = useLoaderData() as GalleryImage[];
+
+  const [items, setItems] = useState(images);
+
+  if (images.length === 0) {
+    return (
+      <div>
+        <h1 className="text-3xl py-2 text-foreground text-center w-full">
+          Error fetching images :( try again later{" "}
+        </h1>
+      </div>
+    );
+  }
 
   return (
     <div className="text-foreground m-auto w-9/12">
@@ -76,13 +93,17 @@ export default function Gallery() {
         <ScrollBar orientation="horizontal" />
       </ScrollArea>
 
-      <div className="flex flex-col gap-6">
+      <MasonryInfiniteGrid
+        gap={3}
+        column={4}
+        onRequestAppend={(e) => {
+          console.log("REQUEST FOR MROE IMAGES");
+        }}
+      >
         {images.map((image) => (
-          <div>
-            {image.id} <img src={image.imageUrl}></img>
-          </div>
+          <ImageCard image={image} key={image.id} />
         ))}
-      </div>
+      </MasonryInfiniteGrid>
     </div>
   );
 }
