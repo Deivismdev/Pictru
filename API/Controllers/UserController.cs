@@ -48,6 +48,8 @@ namespace API.Controllers
 
             return new UserDto
             {
+                UserId = user.Id,
+                UserName = user.UserName,
                 Email = user.Email,
                 Token = await _tokenService.GenerateToken(user),
                 Roles = roles

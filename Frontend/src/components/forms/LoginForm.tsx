@@ -1,6 +1,6 @@
 import { z } from "zod";
 import { zodResolver } from "@hookform/resolvers/zod";
-import { Link } from "react-router-dom";
+import { Link, Navigate, useNavigate } from "react-router-dom";
 
 import {
   Form,
@@ -12,9 +12,12 @@ import {
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
 import { useForm } from "react-hook-form";
+import { useAuth } from "@/context/useAuth";
 
 const LoginForm = () => {
   const form = useForm();
+  const navigate = useNavigate();
+  const { loginUser } = useAuth();
   async function onSubmit(values: any) {
     // console.log(values.UserName);
     // console.log(values.Password);
@@ -23,28 +26,7 @@ const LoginForm = () => {
       UserName: values.UserName,
       Password: values.Password,
     };
-    console.log(data);
-    const response = await fetch(`http://localhost:5095/api/login`, {
-      method: "POST",
-      headers: {
-        "Content-Type": "application/json",
-        Accept: "application/json",
-      },
-      body: JSON.stringify(data),
-    });
-    console.log(response);
-    if (response.ok) {
-      const result = await response.json();
-      localStorage.setItem("token", result.token);
-      localStorage.setItem("roles", JSON.stringify(result.roles));
-
-      console.log("Login successful:", result);
-    } else {
-      console.log("Login failed");
-    }
-
-    const token = localStorage.getItem("token");
-    console.log(token);
+    loginUser(data);
 
     return true;
   }

@@ -18,15 +18,17 @@ import {
   Rabbit,
 } from "lucide-react";
 import { useLoaderData } from "react-router-dom";
-import { MasonryInfiniteGrid, PackingInfiniteGrid } from "@egjs/react-infinitegrid";
+import {
+  MasonryInfiniteGrid,
+  PackingInfiniteGrid,
+} from "@egjs/react-infinitegrid";
 import { useState } from "react";
-
-
 
 export async function loader({ params }: any) {
   const response = await fetch(
     `http://localhost:5095/api/image?orderBy=uploadDate&pageNumber=1&pageSize=25`
   );
+
   if (!response.ok) return [];
 
   return response;
@@ -53,7 +55,7 @@ export default function Gallery() {
       <ScrollArea className="py-2 w-full whitespace-nowrap h-20" type="always">
         <div className="flex w-max gap-3 h-max">
           <DropdownMenu>
-            <DropdownMenuTrigger>
+            <DropdownMenuTrigger asChild>
               <Button>
                 New
                 <ChevronDown className="ml-2" />
@@ -100,9 +102,9 @@ export default function Gallery() {
           console.log("REQUEST FOR MROE IMAGES");
         }}
       >
-        {images.map((image) => (
-          <ImageCard image={image} key={image.id} />
-        ))}
+        {images.map((image) => {
+          return <ImageCard image={image} key={image.id} />;
+        })}
       </MasonryInfiniteGrid>
     </div>
   );

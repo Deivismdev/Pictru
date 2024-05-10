@@ -10,6 +10,7 @@ import Gallery, { loader as galleryLoader } from "./routes/gallery";
 import ImagePage, { loader as imageLoader } from "./routes/ImagePage";
 import UploadPage from "./routes/UploadPage";
 import ProfilePage, { loader as profileLoader } from "./routes/ProfilePage";
+import ProtectedRoute from "./routes/protectedRoute";
 
 const router = createBrowserRouter([
   {
@@ -37,7 +38,11 @@ const router = createBrowserRouter([
       },
       {
         path: "/upload",
-        element: <UploadPage />,
+        element: (
+          <ProtectedRoute>
+            <UploadPage />
+          </ProtectedRoute>
+        ),
       },
       {
         path: "/user/:profileId",
