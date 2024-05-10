@@ -14,6 +14,8 @@ namespace API.Models
         public string PublicId { get; set; } = "PICTRU_mvhgee";
 
         public DateTime RegisterDate { get; set; } = DateTime.UtcNow;
+        public string PaymentIntentId { get; set; } // stripe TODO: not sure if this is where I want this to be 
+        public string ClientSecret { get; set; }    // stripe
         public ICollection<ProfileComment> ProfileComments { get; }
         [JsonIgnore]
         public ICollection<Image> Images { get; }
@@ -78,5 +80,17 @@ namespace API.Models
     public class SetUserPremiumDto
     {
         public bool IsPremium { get; set; }
+    }
+
+    // TODO: this is just stupid. Make separate table "payments"?
+    public class UserPaymentDto
+    {
+
+        public string UserId { get; set; }
+        public string UserName { get; set; }
+
+        // TODO: ClientSecret is enough here
+        public string ClientSecret { get; set; }
+        public string PaymentIntentId { get; set; }
     }
 }
