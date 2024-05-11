@@ -76,6 +76,7 @@ export default function ProfilePage() {
                 <ProfileEditForm
                   endEdit={() => setIsEditing(false)}
                   profileData={profileData}
+                  userId={profile.id}
                 />
               </>
             )}

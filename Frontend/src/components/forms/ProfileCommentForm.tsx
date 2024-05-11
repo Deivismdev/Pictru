@@ -55,6 +55,8 @@ const ProfileCommentForm = ({
       }
     );
     onCommentSubmit();
+    form.reset();
+
     console.log(response);
     return true;
   }

@@ -109,9 +109,14 @@ namespace API.Controllers
             {
                 return Unauthorized();
             }
-
+            System.Console.WriteLine("\n\n");
+            Console.WriteLine(userDto.File);
+            System.Console.WriteLine("Is image null?");
             if (userDto.File != null)
             {
+                System.Console.WriteLine("No! yay");
+                System.Console.WriteLine("\n\n");
+
                 var maxSize = 1 * 1024 * 1024;
                 if (userDto.File.Length > maxSize)
                 {
@@ -121,11 +126,13 @@ namespace API.Controllers
 
                 if (imageResult.Error != null) return BadRequest(new ProblemDetails { Title = imageResult.Error.Message });
 
+                if (!string.IsNullOrEmpty(user.PublicId)) await _imageService.DeleteImageAsync(user.PublicId);
+
                 user.ImageUrl = imageResult.SecureUrl.ToString();
                 user.PublicId = imageResult.PublicId;
             }
             user.Description = userDto.Description;
-            _context.Update(user);
+            // _context.Update(user);
             await _context.SaveChangesAsync();
 
             var updatedUserDto = _mapper.Map<GetUserDto>(user);

@@ -62,6 +62,7 @@ namespace API.Models
     {
         public string Username { get; set; }
         public string Description { get; set; }
+        public string ImageUrl { get; set; }
         public int Reputation { get; set; }
         public bool IsPremium { get; set; }
         public DateTime RegisterDate { get; set; }

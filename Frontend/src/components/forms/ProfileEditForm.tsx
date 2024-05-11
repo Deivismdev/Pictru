@@ -16,19 +16,39 @@ import { CheckIcon, XIcon } from "lucide-react";
 interface CommentFormProps {
   endEdit: () => void;
   profileData: any;
+  userId: string;
 }
 
-export default function ProfileEditForm({
+const ProfileEditForm = ({
   endEdit,
   profileData,
-}: CommentFormProps) {
-  const form = useForm<z.infer<typeof ProfileEditValidation>>({
-    resolver: zodResolver(ProfileEditValidation),
-  });
+  userId,
+}: CommentFormProps) => {
+  const form = useForm();
 
-  const onSubmit = (data: z.infer<typeof ProfileEditValidation>) => {
-    console.log(data);
-  };
+  async function onSubmit(values: any) {
+    console.log(values.image);
+    const token = localStorage.getItem("token");
+
+    // const data = {
+    //   Description: values.description,
+    //   File: values.image,
+    // };
+
+    const formData = new FormData();
+    formData.append("Description", values.description);
+    formData.append("File", values.image);
+
+    const response = await fetch(`http://localhost:5095/api/user/${userId}`, {
+      method: "PATCH",
+      headers: {
+        Accept: "application/json",
+        Authorization: `bearer ${token}`,
+      },
+      body: formData,
+    });
+    console.log(response);
+  }
 
   return (
     <Form {...form}>
@@ -51,12 +71,7 @@ export default function ProfileEditForm({
                 <FormItem className="h-full w-full">
                   <FormLabel>Image</FormLabel>
                   <FormControl className="flex items-center content-center">
-                    <Input
-                      className="w-48 h-32"
-                      accept="image/*"
-                      type="file"
-                      {...field}
-                    />
+                    <Input className="w-48 h-32" type="file" {...field} />
                   </FormControl>
                 </FormItem>
               )}
@@ -90,4 +105,6 @@ export default function ProfileEditForm({
       </form>
     </Form>
   );
-}
+};
+
+export default ProfileEditForm;
