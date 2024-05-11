@@ -99,13 +99,13 @@ namespace API.Controllers
 
         }
         [Authorize]
-        [HttpPatch]
-        public async Task<ActionResult> EditUser(EditUserDto userDto)
+        [HttpPatch("{userId}")]
+        public async Task<ActionResult> EditUser(string userId, EditUserDto userDto)
         {
-            var userId = User.Claims.SingleOrDefault(x => x.Type.Equals("http://schemas.xmlsoap.org/ws/2005/05/identity/claims/nameidentifier")).Value;
+            var currentUser = User.Claims.SingleOrDefault(x => x.Type.Equals("http://schemas.xmlsoap.org/ws/2005/05/identity/claims/nameidentifier")).Value;
 
             var user = await _context.Users.FirstOrDefaultAsync(i => i.Id == userId);
-            if (user.Id != userId && !await _userManager.IsInRoleAsync(await _userManager.FindByIdAsync(userId), "Moderator"))
+            if (user.Id != currentUser && !await _userManager.IsInRoleAsync(await _userManager.FindByIdAsync(userId), "Moderator"))
             {
                 return Unauthorized();
             }
