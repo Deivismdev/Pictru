@@ -9,11 +9,12 @@ namespace API.Models
 {
     public class User : IdentityUser
     {
-        public string Description { get; set; }
+        public string Description { get; set; } = "I'm great!";
         public string ImageUrl { get; set; } = "https://res.cloudinary.com/dtj5bkeq3/image/upload/v1715155325/PICTRU_mvhgee.jpg";
         public string PublicId { get; set; } = "PICTRU_mvhgee";
 
         public DateTime RegisterDate { get; set; } = DateTime.UtcNow;
+        // TODO: this is stupid, create another table for everything payment related
         public string PaymentIntentId { get; set; } // stripe TODO: not sure if this is where I want this to be 
         public string ClientSecret { get; set; }    // stripe
         public ICollection<ProfileComment> ProfileComments { get; }

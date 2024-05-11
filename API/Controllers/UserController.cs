@@ -13,7 +13,7 @@ using Microsoft.EntityFrameworkCore;
 
 namespace API.Controllers
 {
-    [Route("api/")]
+    [Route("api/user")]
     [ApiController]
     public class UserController : ControllerBase
     {
@@ -92,18 +92,20 @@ namespace API.Controllers
                 Token = await _tokenService.GenerateToken(user),
                 IsPremium = user.IsPremium,
                 Roles = roles
-
             };
 
         }
-
+        [Authorize]
         [HttpPatch]
-        public async Task<ActionResult<EditUserDto>> EditUser(EditUserDto userDto)
+        public async Task<ActionResult> EditUser(EditUserDto userDto)
         {
             var userId = User.Claims.SingleOrDefault(x => x.Type.Equals("http://schemas.xmlsoap.org/ws/2005/05/identity/claims/nameidentifier")).Value;
-            var image = await _context.Users.FirstOrDefaultAsync(i => i.Id == userId);
 
-            var user = _mapper.Map<User>(userDto);
+            var user = await _context.Users.FirstOrDefaultAsync(i => i.Id == userId);
+            if (user.Id != userId && !await _userManager.IsInRoleAsync(await _userManager.FindByIdAsync(userId), "Moderator"))
+            {
+                return Unauthorized();
+            }
 
             if (userDto.File != null)
             {
@@ -119,14 +121,13 @@ namespace API.Controllers
                 user.ImageUrl = imageResult.SecureUrl.ToString();
                 user.PublicId = imageResult.PublicId;
             }
-
+            user.Description = userDto.Description;
+            _context.Update(user);
             await _context.SaveChangesAsync();
-            return NoContent();
 
-
+            var updatedUserDto = _mapper.Map<GetUserDto>(user);
+            return Ok(updatedUserDto);
         }
-
-
 
     }
 }

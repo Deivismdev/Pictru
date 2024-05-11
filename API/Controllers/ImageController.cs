@@ -150,7 +150,7 @@ namespace API.Controllers
             {
                 return NotFound();
             }
-            // TODO: extract this into a seperate method. lol
+            // TODO: extract this into a seperate method?
             if (image.UserId != userId && !await _userManager.IsInRoleAsync(await _userManager.FindByIdAsync(userId), "Moderator"))
             {
                 return Unauthorized();
