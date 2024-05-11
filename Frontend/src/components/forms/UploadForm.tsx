@@ -22,6 +22,7 @@ export default function UploadForm() {
 
   const onSubmit = async (data: any) => {
     const formData = new FormData();
+    const token = localStorage.getItem("token");
     formData.append("Name", data.Name);
     formData.append("Description", data.Description);
 
@@ -37,6 +38,11 @@ export default function UploadForm() {
       const response = await fetch("http://localhost:5095/api/image", {
         method: "POST",
         body: formData,
+        headers: {
+          "Content-Type": "multipart/form-data",
+          Accept: "application/json",
+          Authorization: `bearer ${token}`,
+        },
       });
 
       if (!response.ok) {
