@@ -132,5 +132,20 @@ namespace API.Controllers
             return Ok(updatedUserDto);
         }
 
+        [HttpGet("{userId}")]
+        public IActionResult GetUser(string userId)
+        {
+            var user = _context.Users
+            .Include(i => i.ProfileComments)
+            .FirstOrDefault(i => i.Id == userId);
+
+            if (user == null)
+            {
+                return NotFound();
+            }
+            var getUserDto = _mapper.Map<GetUserProfileDto>(user);
+            return Ok(getUserDto);
+        }
+
     }
 }

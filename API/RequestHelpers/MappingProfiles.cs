@@ -29,7 +29,11 @@ namespace API.RequestHelpers
             .ForMember(dest => dest.Tags, opt => opt.MapFrom(src => src.Tags.Select(t => new Tag { Name = t })));
 
             CreateMap<Tag, GetTagDto>();
+
             CreateMap<User, GetUserDto>();
+
+            CreateMap<User, GetUserProfileDto>()
+                .ForMember(dest => dest.ProfileComments, opt => opt.MapFrom(src => src.ProfileComments));
 
             // CreateMap<UpdateImageDto, Image>();
 

@@ -14,6 +14,7 @@ namespace API.Models
         public DateTime Date { get; set; } = DateTime.UtcNow;
         public bool Edited = false;
         public string UserId { get; set; }
+        [JsonIgnore]
         public User User { get; set; }
     }
 
