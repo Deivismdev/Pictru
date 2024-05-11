@@ -12,6 +12,7 @@ import { Button } from "@/components/ui/button";
 import { useForm } from "react-hook-form";
 import { ProfileEditValidation } from "@/lib/validation";
 import { CheckIcon, XIcon } from "lucide-react";
+import { useState } from "react";
 
 interface CommentFormProps {
   endEdit: () => void;
@@ -26,6 +27,9 @@ const ProfileEditForm = ({
 }: CommentFormProps) => {
   const form = useForm();
 
+  const [description, setDescription] = useState("")
+  const [file, setFile] = useState(null)
+
   async function onSubmit(values: any) {
     console.log(values.image);
     const token = localStorage.getItem("token");
@@ -36,8 +40,8 @@ const ProfileEditForm = ({
     // };
 
     const formData = new FormData();
-    formData.append("Description", values.description);
-    formData.append("File", values.image);
+    formData.append("Description", description);
+    formData.append("File", file!, file!.name);
 
     const response = await fetch(`http://localhost:5095/api/user/${userId}`, {
       method: "PATCH",
@@ -48,7 +52,18 @@ const ProfileEditForm = ({
       body: formData,
     });
     console.log(response);
+
+
+
+
   }
+
+  const handleDescriptionChange = (event:any) => {
+    setDescription(event.target.value);
+  };
+  const handleFileChange = (event:any) => {
+    setFile(event.target.files[0])
+  };
 
   return (
     <Form {...form}>
@@ -68,7 +83,7 @@ const ProfileEditForm = ({
             <div className="text-2xl flex items-center"></div>
           </div>
           <div className="max-w-48 max-h-48 relative">
-            <FormField
+            {/* <FormField
               control={form.control}
               name="image"
               render={({ field }) => (
@@ -84,11 +99,12 @@ const ProfileEditForm = ({
                   </FormControl>
                 </FormItem>
               )}
-            />
+            /> */}
+            <input type="file" onChange={handleFileChange}/>
           </div>
         </div>
         <div>
-          <FormField
+          {/* <FormField
             control={form.control}
             name="description"
             render={({ field }) => (
@@ -101,7 +117,11 @@ const ProfileEditForm = ({
                 </FormControl>
               </FormItem>
             )}
-          />
+          /> */}
+           <textarea
+                    className="h-full w-full text-start bg-background border-border border rounded-md text-xl text-foreground p-2"
+                    onChange={handleDescriptionChange}
+                  />
         </div>
         <div className="flex gap-6">
           <Button type="submit" className="px-4">
