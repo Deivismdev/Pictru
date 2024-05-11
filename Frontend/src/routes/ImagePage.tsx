@@ -40,11 +40,13 @@ export default function ImagePage() {
     <div className="xl:px-36 px-12 flex flex-col text-foreground bg-background">
       <div className="grid grid-cols-2 p-2">
         <div className="col-span-1 flex flex-col">
-          <div className="flex gap-6 text-2xl">
-            <span>{image.user.username}</span>
-            <span className="font-bold">{image.name}</span>
+          <div className="flex gap-12 text-4xl">
+            <span>"{image.name}"</span>
           </div>
-          <div className="flex gap-2">
+          <div className="flex gap-12 text-xl">
+            <span>Uploaded by: {image.user.username}</span>
+          </div>
+          <div className="flex gap-2 pt-3">
             <Badge>sad</Badge>
             <Badge>cat</Badge>
             <Badge>nature</Badge>
@@ -62,7 +64,8 @@ export default function ImagePage() {
               {image.likeCount}
             </span>
           </div>
-          <BadgeInfoIcon />
+          {/* Change badge to more report like? */}
+          <BadgeInfoIcon className="stroke-red-700 size-10" />
         </div>
       </div>
 
