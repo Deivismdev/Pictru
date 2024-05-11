@@ -52,7 +52,11 @@ const ProfileEditForm = ({
 
   return (
     <Form {...form}>
-      <form onSubmit={form.handleSubmit(onSubmit)} className="">
+      <form
+        encType="multipart/form-data"
+        onSubmit={form.handleSubmit(onSubmit)}
+        className=""
+      >
         <div className="font-bold text-3xl px-3 pb-6">
           Edit your description or profile picture
         </div>
@@ -71,7 +75,12 @@ const ProfileEditForm = ({
                 <FormItem className="h-full w-full">
                   <FormLabel>Image</FormLabel>
                   <FormControl className="flex items-center content-center">
-                    <Input className="w-48 h-32" type="file" {...field} />
+                    <Input
+                      className="w-48 h-32"
+                      type="file"
+                      accept="image/*"
+                      {...field}
+                    />
                   </FormControl>
                 </FormItem>
               )}
