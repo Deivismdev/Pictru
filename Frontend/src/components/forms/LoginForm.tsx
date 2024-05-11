@@ -16,12 +16,8 @@ import { useAuth } from "@/context/useAuth";
 
 const LoginForm = () => {
   const form = useForm();
-  const navigate = useNavigate();
   const { loginUser } = useAuth();
   async function onSubmit(values: any) {
-    // console.log(values.UserName);
-    // console.log(values.Password);
-
     const data = {
       UserName: values.UserName,
       Password: values.Password,

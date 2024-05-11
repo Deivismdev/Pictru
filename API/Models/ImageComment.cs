@@ -41,6 +41,17 @@ namespace API.Models
         public string UserName { get; set; }
     }
 
+    public class GetImageCommentsDto
+    {
+        public int Id { get; set; }
+        public string Text { get; set; }
+        public DateTime Date { get; set; }
+        public int? XCoord { get; set; }
+        public int? YCoord { get; set; }
+        public string UserId { get; set; }
+        public string UserName { get; set; }
+    }
+
     public class UpdateImageCommentDto
     {
         public int Text { get; set; }

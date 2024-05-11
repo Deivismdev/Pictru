@@ -49,7 +49,7 @@ export const UserProvider = ({ children }: Props) => {
   };
 
   const loginUser = async (data: any) => {
-    const response = await fetch(`http://localhost:5095/api/login`, {
+    const response = await fetch(`http://localhost:5095/api/user/login`, {
       method: "POST",
       headers: {
         "Content-Type": "application/json",
@@ -76,7 +76,7 @@ export const UserProvider = ({ children }: Props) => {
 
       navigate("/gallery");
     } else {
-      console.log("Login failed");
+      console.log(response.body);
     }
 
     // const token = localStorage.getItem("token");

@@ -34,7 +34,22 @@ export default function ImagePage() {
     setIsSelectedCoordinates(coordinates);
   };
 
-  const image = useLoaderData() as Image;
+  const imageData = useLoaderData() as Image;
+
+  const [image, setImage] = useState<Image>(imageData);
+
+  async function onCommentSubmit() {
+    const response = await fetch(
+      `http://localhost:5095/api/images/${image.id}/comments`
+    );
+    if (!response.ok) throw new Error("Error loading images");
+    else {
+      console.log(response.body);
+      const data = await response.json();
+
+      setImage((prevImage) => ({ ...prevImage, imageComments: data }));
+    }
+  }
 
   return (
     <div className="xl:px-36 px-12 flex flex-col text-foreground bg-background">
@@ -99,6 +114,8 @@ export default function ImagePage() {
               </ScrollArea>
               <div className="p-2">
                 <ImageCommentForm
+                  onCommentSubmit={onCommentSubmit}
+                  imageId={image.id}
                   onSelectImagePoint={() => setIsEnlarged(true)}
                   coordinates={selectedCoordinates}
                 />

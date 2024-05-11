@@ -22,6 +22,8 @@ namespace API.RequestHelpers
                .ForMember(dest => dest.Tags, opt => opt.MapFrom(src => src.Tags.Select(t => t.Name)))
                 .ForMember(dest => dest.ImageState, opt => opt.MapFrom(src => src.State));
 
+            CreateMap<ImageComment, GetImageCommentsDto>()
+                .ForMember(dest => dest.UserName, opt => opt.MapFrom(src => src.User.UserName));
 
             CreateMap<UpdateImageDto, Image>()
             .ForMember(dest => dest.Tags, opt => opt.MapFrom(src => src.Tags.Select(t => new Tag { Name = t })));

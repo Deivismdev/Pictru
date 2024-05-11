@@ -1,6 +1,6 @@
 import { z } from "zod";
 import { zodResolver } from "@hookform/resolvers/zod";
-import { Link } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
 
 import {
   Form,
@@ -16,20 +16,36 @@ import { Button } from "@/components/ui/button";
 import { useForm } from "react-hook-form";
 import { RegisterValidation } from "@/lib/validation";
 
-
 const RegisterForm = () => {
   const form = useForm<z.infer<typeof RegisterValidation>>({
-    resolver: zodResolver(RegisterValidation)
+    resolver: zodResolver(RegisterValidation),
   });
 
-  function onSubmit(values: z.infer<typeof RegisterValidation>) {
-    console.log(values);
+  const navigate = useNavigate();
+  async function onSubmit(values: z.infer<typeof RegisterValidation>) {
+    const data = {
+      userName: values.userName,
+      email: values.email,
+      password: values.password,
+    };
+
+    const response = await fetch(`http://localhost:5095/api/user/register`, {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+        Accept: "application/json",
+      },
+      body: JSON.stringify(data),
+    });
+    if (response.ok) {
+      navigate("/login");
+    }
+    return true;
   }
 
   return (
     <Form {...form}>
       <div className="sm:w-420 flex flex-col justify-center w-full text-foreground">
-        {/* <img className="max-w-96" src="/assets/images/logo.jpg" alt="logo" /> */}
         <h2 className="font-outfit text-2xl pt-5 sm:pt-12">
           Create a new account
         </h2>
@@ -39,7 +55,7 @@ const RegisterForm = () => {
         >
           <FormField
             control={form.control}
-            name="username"
+            name="userName"
             render={({ field }) => (
               <FormItem>
                 <FormLabel>Username</FormLabel>

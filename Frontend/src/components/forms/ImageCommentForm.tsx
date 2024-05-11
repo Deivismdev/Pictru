@@ -12,15 +12,20 @@ import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
 import { useForm } from "react-hook-form";
 import { MousePointerClick, SendHorizonal } from "lucide-react";
+import { useAuth } from "@/context/useAuth";
 
 interface CommentFormProps {
   onSelectImagePoint: () => void;
+  onCommentSubmit: () => void;
   coordinates: { x: number; y: number } | null;
+  imageId: number;
 }
 
 const ImageCommentForm = ({
   onSelectImagePoint,
   coordinates,
+  imageId,
+  onCommentSubmit,
 }: CommentFormProps) => {
   const formSchema = z.object({
     comment: z.string().min(3, {
@@ -40,7 +45,8 @@ const ImageCommentForm = ({
     //TODO: submit comment
     console.log(coordinates);
     console.log(values);
-    const imageId = 1;
+
+    const token = localStorage.getItem("token");
 
     const data = {
       text: values.comment,
@@ -49,17 +55,18 @@ const ImageCommentForm = ({
     };
 
     const response = await fetch(
-      `http://localhost:5095/api/images/${1}/comments`,
+      `http://localhost:5095/api/images/${imageId}/comments`,
       {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
           Accept: "application/json",
-          Authorization: `bearer eyJhbGciOiJIUzUxMiIsInR5cCI6IkpXVCJ9.eyJodHRwOi8vc2NoZW1hcy54bWxzb2FwLm9yZy93cy8yMDA1LzA1L2lkZW50aXR5L2NsYWltcy9lbWFpbGFkZHJlc3MiOiJwcmVtaXVtQGJvYmJlci5jb20iLCJodHRwOi8vc2NoZW1hcy54bWxzb2FwLm9yZy93cy8yMDA1LzA1L2lkZW50aXR5L2NsYWltcy9uYW1lIjoicHJlbWl1bSIsImh0dHA6Ly9zY2hlbWFzLnhtbHNvYXAub3JnL3dzLzIwMDUvMDUvaWRlbnRpdHkvY2xhaW1zL25hbWVpZGVudGlmaWVyIjoiM2NmZWU4NzQtYmM1Ny00NTU5LThjYTQtN2IzMDA0MjI1YjcwIiwiaHR0cDovL3NjaGVtYXMubWljcm9zb2Z0LmNvbS93cy8yMDA4LzA2L2lkZW50aXR5L2NsYWltcy9yb2xlIjpbIk1vZGVyYXRvciIsIk1lbWJlciJdLCJleHAiOjE3MTU4NzExNDR9.1FKfVNXFiKyR_lE-nLwCSHYlwZmHed8LC7suIY7rQoM6DngLaXuDIgzb9UtPlyB_YSiX2KT0_qONMhnLW4YgXQ`,
+          Authorization: `bearer ${token}`,
         },
         body: JSON.stringify(data),
       }
     );
+    onCommentSubmit();
     console.log(response);
     return true;
   }

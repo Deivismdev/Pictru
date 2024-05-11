@@ -2,7 +2,7 @@ import { z } from "zod";
 import { TagNames } from "../tags";
 
 export const RegisterValidation = z.object({
-  username: z.string().min(2, { message: "Too short" }).default(""),
+  userName: z.string().min(2, { message: "Too short" }).default(""),
   email: z.string().email().default(""),
   password: z.string().min(8, { message: "Too short" }).default(""),
 });

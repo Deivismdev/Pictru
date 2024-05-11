@@ -33,6 +33,8 @@ namespace API.Controllers
         {
             var comments = await context.ImageComments
                 .Where(i => i.Image.Id == imageId)
+                .Include(i => i.User)
+                .OrderBy(i => i.Id)
                 .ToListAsync();
 
             if (comments.Count == 0)
@@ -40,7 +42,9 @@ namespace API.Controllers
                 return NotFound();
             }
 
-            return Ok(comments);
+            var readCommentDto = mapper.Map<IEnumerable<GetImageCommentsDto>>(comments);
+
+            return Ok(readCommentDto);
         }
 
         [HttpGet("{commentId}")]
