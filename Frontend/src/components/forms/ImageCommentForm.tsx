@@ -33,6 +33,8 @@ const ImageCommentForm = ({
     }),
   });
 
+  const { token } = useAuth();
+
   const form = useForm<z.infer<typeof formSchema>>({
     resolver: zodResolver(formSchema),
     defaultValues: {
@@ -40,8 +42,8 @@ const ImageCommentForm = ({
     },
   });
 
-  // TODO: it has no user id, maybe pass the submit outside the compoennt?
   async function onSubmit(values: z.infer<typeof formSchema>) {
+    //TODO: submit comment
     console.log(coordinates);
     console.log(values);
 
@@ -66,7 +68,9 @@ const ImageCommentForm = ({
       }
     );
     onCommentSubmit();
-    console.log(response);
+
+    form.reset();
+
     return true;
   }
 

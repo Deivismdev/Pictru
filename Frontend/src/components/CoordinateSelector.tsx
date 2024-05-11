@@ -40,7 +40,7 @@ export default function CoordinateSelector({
   }, [onCoordinatesUpdate]);
 
   return (
-    <div ref={containerRef} className="w-max h-screen relative bg-red-200">
+    <div ref={containerRef} className="w-max h-screen relative">
       {children}
       {coordinates && (
         <div

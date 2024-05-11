@@ -86,7 +86,7 @@ export default function ImagePage() {
 
       <div className=" h-screen">
         <div className="flex md:flex-row flex-col-reverse h-4/5">
-          <div className="w-1/2 ">
+          <div className="flex-1 ">
             <div className="border border-border rounded-sm flex flex-col h-full justify-between">
               <ScrollArea>
                 {image.imageComments.map((comment) => (
@@ -122,12 +122,12 @@ export default function ImagePage() {
               </div>
             </div>
           </div>
-          <div className="w-1/2 h-full">
-            <div className="m-auto h-full w-auto relative">
-              <div className="m-auto h-full max-h-max max-w-max w-auto relative">
+          <div className="flex-1 h-full">
+            <div className="m-auto h-full w-full flex items-center justify-center overflow-hidden">
+              <div className="m-auto h-max w-auto max-h-full max-w-full relative">
                 <img
                   src={image.imageUrl}
-                  className="w-auto h-full max-h-full object-contain m-auto"
+                  className="w-full h-full object-scale-down m-auto"
                   onClick={() => setIsEnlarged(true)}
                   style={isEnlarged ? { display: "none" } : {}}
                 />
