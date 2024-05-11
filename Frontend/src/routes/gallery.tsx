@@ -43,7 +43,7 @@ export default function Gallery() {
     return (
       <div>
         <h1 className="text-3xl py-2 text-foreground text-center w-full">
-          Error fetching images :( try again later{" "}
+          No more images{" "}
         </h1>
       </div>
     );

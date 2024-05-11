@@ -103,37 +103,39 @@ export default function ImagePage() {
             </div>
           </div>
           <div className="w-1/2 h-full">
-            <div className="m-auto h-full w-max relative">
-              <img
-                src={image.imageUrl}
-                className="w-auto h-full max-h-full object-contain m-auto"
-                onClick={() => setIsEnlarged(true)}
-                style={isEnlarged ? { display: "none" } : {}}
-              />
-              {selectedCoordinates && (
-                <div
-                  className={`${
-                    isEnlarged && "hidden"
-                  } absolute w-[30px] h-[30px] border-2 bg-primary/20 border-secondary rounded-full`}
-                  style={{
-                    left: `${selectedCoordinates.x}%`,
-                    top: `${selectedCoordinates.y}%`,
-                    transform: "translate(-50%, -50%)",
-                  }}
+            <div className="m-auto h-full w-auto relative">
+              <div className="m-auto h-full max-h-max max-w-max w-auto relative">
+                <img
+                  src={image.imageUrl}
+                  className="w-auto h-full max-h-full object-contain m-auto"
+                  onClick={() => setIsEnlarged(true)}
+                  style={isEnlarged ? { display: "none" } : {}}
                 />
-              )}
-              {commentCoordinates && (
-                <div
-                  className={`${
-                    isEnlarged && "hidden"
-                  } absolute w-[30px] h-[30px] border-2 bg-primary/30 border-secondary rounded-full backdrop-invert`}
-                  style={{
-                    left: `${commentCoordinates.x}%`,
-                    top: `${commentCoordinates.y}%`,
-                    transform: "translate(-50%, -50%)",
-                  }}
-                />
-              )}
+                {selectedCoordinates && (
+                  <div
+                    className={`${
+                      isEnlarged && "hidden"
+                    } absolute w-[30px] h-[30px] border-2 bg-primary/20 border-secondary rounded-full`}
+                    style={{
+                      left: `${selectedCoordinates.x}%`,
+                      top: `${selectedCoordinates.y}%`,
+                      transform: "translate(-50%, -50%)",
+                    }}
+                  />
+                )}
+                {commentCoordinates && (
+                  <div
+                    className={`${
+                      isEnlarged && "hidden"
+                    } absolute w-[30px] h-[30px] border-2 bg-primary/30 border-secondary rounded-full backdrop-invert`}
+                    style={{
+                      left: `${commentCoordinates.x}%`,
+                      top: `${commentCoordinates.y}%`,
+                      transform: "translate(-50%, -50%)",
+                    }}
+                  />
+                )}
+              </div>
             </div>
             {isEnlarged && (
               <div className="fixed inset-0 backdrop-blur-sm bg-purple-950/10 flex items-center justify-center z-50">
@@ -144,10 +146,7 @@ export default function ImagePage() {
                 <CoordinateSelector
                   onCoordinatesUpdate={handleCoordinatesUpdate}
                 >
-                  <img
-                    src={image.imageUrl}
-                    className="w-auto h-auto max-w-full max-h-full"
-                  />
+                  <img src={image.imageUrl} className="w-auto h-full" />
                 </CoordinateSelector>
               </div>
             )}
