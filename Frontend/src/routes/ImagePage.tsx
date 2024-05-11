@@ -42,7 +42,7 @@ export default function ImagePage() {
     const response = await fetch(
       `http://localhost:5095/api/images/${image.id}/comments`
     );
-    if (!response.ok) throw new Error("Error loading images");
+    if (!response.ok) throw new Error("Error loading comments");
     else {
       console.log(response.body);
       const data = await response.json();

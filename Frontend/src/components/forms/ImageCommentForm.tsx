@@ -42,7 +42,6 @@ const ImageCommentForm = ({
 
   // TODO: it has no user id, maybe pass the submit outside the compoennt?
   async function onSubmit(values: z.infer<typeof formSchema>) {
-    //TODO: submit comment
     console.log(coordinates);
     console.log(values);
 

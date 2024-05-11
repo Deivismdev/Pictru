@@ -43,12 +43,14 @@ namespace API.Models
 
     public class GetUserProfileDto
     {
+        public string Id { get; set; }
         public string Username { get; set; }
         public string Description { get; set; }
+        public string ImageUrl { get; set; }
         public int Reputation { get; set; }
         public bool IsPremium { get; set; }
         public DateTime RegisterDate { get; set; }
-        public ICollection<ProfileComment> ProfileComments { get; set; }
+        public ICollection<GetProfileCommentsDto> ProfileComments { get; set; }
     }
     public class RegisterDto // could derive from logindto
     {

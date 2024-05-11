@@ -46,3 +46,19 @@ export type Image = {
   }[];
   tags: number[];
 };
+
+export type UserProfile = {
+  id: any;
+  username: string;
+  description: string;
+  imageUrl: string;
+  reputation: number;
+  isPremium: boolean;
+  registerDate: string;
+  profileComments: {
+    id: number;
+    text: string;
+    userId: string;
+    userName: string;
+  }[];
+};
