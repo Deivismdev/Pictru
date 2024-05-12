@@ -20,10 +20,10 @@ import { UploadValidation } from "@/lib/validation";
 import { useAuth } from "@/context/useAuth";
 
 interface UploadFormProps {
-  onImageUpload: ((id: number) => void);
+  onImageUpload: (id: number) => void;
 }
 
-export default function UploadForm({onImageUpload} : UploadFormProps) {
+export default function UploadForm({ onImageUpload }: UploadFormProps) {
   const form = useForm<z.infer<typeof UploadValidation>>({
     resolver: zodResolver(UploadValidation),
   });
@@ -31,9 +31,9 @@ export default function UploadForm({onImageUpload} : UploadFormProps) {
   const { token } = useAuth();
 
   const [isLoading, setIsLoading] = useState(false);
+  const [picturePreview, setPicturePreview] = useState<any>(null);
 
   const onSubmit = async (values: z.infer<typeof UploadValidation>) => {
-
     setIsLoading(true);
     const formData = new FormData();
     // const token = localStorage.getItem("token");
@@ -62,14 +62,12 @@ export default function UploadForm({onImageUpload} : UploadFormProps) {
       throw new Error("Network response was not OK");
     }
 
-
     const res = await response.json();
     onImageUpload(res.id);
 
-    form.reset({Description: "", Name: "", Tags: [], File: undefined});
+    form.reset({ Description: "", Name: "", Tags: [], File: undefined });
 
     setIsLoading(false);
-
   };
 
   const handleToggleChange = (newSelection: string[]) => {
@@ -143,25 +141,33 @@ export default function UploadForm({onImageUpload} : UploadFormProps) {
             control={form.control}
             name="File"
             render={({ field: { value, onChange, ...field } }) => (
-              <FormItem className="h-full w-full">
+              <FormItem className="h-full w-full relative">
                 <FormLabel>Picture</FormLabel>
-                <FormControl className="flex items-center content-center">
+                <FormControl className="flex items-center content-center absolute top-5 left-0 z-10">
                   <Input
-                    className="h-full w-full"
+                    className=""
                     type="file"
+                    placeholder="Select picture here"
                     {...field}
-                    onChange={(event) =>
-                      onChange(event.target.files && event.target.files[0])
-                    }
+                    onChange={(event) => {
+                      if (!event.target.files) return;
+
+                      const file = event.target.files[0] ?? null;
+
+                      onChange(file);
+
+                      setPicturePreview(URL.createObjectURL(file));
+                    }}
                   />
                 </FormControl>
+                <img src={picturePreview} className={`absolute top-10 left-0 h-full w-full z-0 object-contain ${picturePreview ? 'block' : 'hidden'}`} />
               </FormItem>
             )}
           />
         </div>
 
         <Button disabled={isLoading} className="w-1/2" type="submit">
-          {isLoading ? "Posting...":"Post"}
+          {isLoading ? "Posting..." : "Post"}
         </Button>
       </form>
     </Form>
