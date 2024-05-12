@@ -5,10 +5,9 @@ import { ScrollArea } from "@/components/ui/scroll-area";
 import { useAuth } from "@/context/useAuth";
 import { UserProfile } from "@/lib/types";
 import { MasonryInfiniteGrid } from "@egjs/react-infinitegrid";
-import { Loader2Icon, PencilIcon, Scroll } from "lucide-react";
-import { useEffect, useState } from "react";
+import { PencilIcon } from "lucide-react";
+import { useState } from "react";
 import { useLoaderData } from "react-router-dom";
-import { LoadingSpinner } from "../components/LoadingSpinner";
 
 export async function loader({ params }: any) {
   const response = await fetch(

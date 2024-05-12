@@ -2,7 +2,7 @@ import { useAuth } from "@/context/useAuth";
 import { Link } from "react-router-dom";
 
 export default function Navbar() {
-  const { isLoggedIn, user, logout } = useAuth();
+  const { user, logout } = useAuth();
 
   const renderNavbar = () => {
     let links;

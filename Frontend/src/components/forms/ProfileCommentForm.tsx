@@ -11,7 +11,7 @@ import {
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
 import { useForm } from "react-hook-form";
-import { MousePointerClick, SendHorizonal } from "lucide-react";
+import { SendHorizonal } from "lucide-react";
 
 interface ProfileCommentFormProps {
   onCommentSubmit: () => void;

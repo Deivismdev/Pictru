@@ -11,11 +11,9 @@ import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
 import { useForm } from "react-hook-form";
 import { TagNames } from "@/lib/tags";
-import { Checkbox } from "../ui/checkbox";
 import { useState } from "react";
 import { ToggleGroup, ToggleGroupItem } from "../ui/toggle-group";
 // import { UploadValidation } from "@/lib/validation";
-import { ok } from "assert";
 import { UploadValidation } from "@/lib/validation";
 import { useAuth } from "@/context/useAuth";
 
@@ -43,7 +41,7 @@ export default function UploadForm({ onImageUpload }: UploadFormProps) {
 
     if (values.File) formData.append("File", values.File, values.File.name);
 
-    for (let tag of values.Tags) {
+    for (const tag of values.Tags) {
       formData.append("Tags[]", tag.toString());
     }
 

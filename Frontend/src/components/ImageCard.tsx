@@ -1,7 +1,6 @@
 import { TagNames } from "@/lib/tags";
-import { GalleryImage, Image } from "@/lib/types";
+import { GalleryImage } from "@/lib/types";
 import { ThumbsUpIcon } from "lucide-react";
-import React, { useRef, useState, useEffect } from "react";
 import { NavLink } from "react-router-dom";
 
 interface ImageCardProps {
