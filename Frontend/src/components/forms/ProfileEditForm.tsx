@@ -1,6 +1,4 @@
-import {
-  Form,
-} from "@/components/ui/form";
+import { Form } from "@/components/ui/form";
 import { Button } from "@/components/ui/button";
 import { useForm } from "react-hook-form";
 import { CheckIcon, XIcon } from "lucide-react";

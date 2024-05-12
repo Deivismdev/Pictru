@@ -6,11 +6,17 @@ import ErrorPage from "./routes/error-page";
 import Login from "./routes/login";
 import Register from "./routes/register";
 import "./globals.css";
-import Gallery  from "./routes/gallery";
+import Gallery from "./routes/gallery";
 import ImagePage, { loader as imageLoader } from "./routes/ImagePage";
 import UploadPage from "./routes/UploadPage";
 import ProfilePage, { loader as profileLoader } from "./routes/ProfilePage";
 import ProtectedRoute from "./routes/protectedRoute";
+import SuspendedImagePage from "./routes/SuspendedImagesPage";
+import AdminRoute from "./routes/adminRoute";
+import SuspendedImage, {
+  loader as suspendedLoader,
+} from "./routes/suspendedImage";
+import LandingPage from "./routes/landingPage";
 
 const router = createBrowserRouter([
   {
@@ -18,6 +24,10 @@ const router = createBrowserRouter([
     element: <Root />,
     errorElement: <ErrorPage />,
     children: [
+      {
+        path: "/home",
+        element: <LandingPage />,
+      },
       {
         path: "/login",
         element: <Login />,
@@ -47,6 +57,21 @@ const router = createBrowserRouter([
         path: "/user/:profileId",
         element: <ProfilePage />,
         loader: profileLoader,
+      },
+
+      {
+        path: "/suspended",
+        element: (
+          <ProtectedRoute>
+            <SuspendedImagePage />
+          </ProtectedRoute>
+        ),
+      },
+
+      {
+        path: "/suspended/:imageId",
+        element: <SuspendedImage />,
+        loader: suspendedLoader,
       },
     ],
   },

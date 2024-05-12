@@ -11,7 +11,7 @@ export default function Navbar() {
         <>
           <Link to={"/gallery"}>Gallery</Link>
           <Link to={`/user/${user.userId}`}>My account</Link>
-          <Link to={"/register"}>My images</Link>
+          <Link to={"/suspended"}>Suspended images</Link>
           <Link to={"/upload"}>Upload</Link>
           <button onClick={() => logout()}>Logout</button>
         </>
@@ -19,11 +19,11 @@ export default function Navbar() {
     } else if (user?.roles.includes("Moderator")) {
       links = (
         <>
-          <Link to={"/gallery"}>Admin</Link>
+          <Link to={"/suspended"}>Suspended images</Link>
+          {/* <Link to={"/appealed"}>Appealed suspensions</Link> */}
           <Link to={"/gallery"}>Gallery</Link>
-          <Link to={"/login"}>My account</Link>
+          <Link to={`/user/${user.userId}`}>My account</Link>
           <Link to={"/upload"}>Upload</Link>
-          <Link to={"/register"}>My images</Link>
           <button onClick={() => logout()}>Logout</button>
         </>
       );

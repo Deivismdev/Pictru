@@ -1,12 +1,19 @@
 import CoordinateSelector from "@/components/CoordinateSelector";
 import ImageCommentForm from "@/components/forms/ImageCommentForm";
 import { Badge } from "@/components/ui/badge";
+import { Button } from "@/components/ui/button";
 import { ScrollArea } from "@/components/ui/scroll-area";
 import { TagNames } from "@/lib/tags";
-import { Image } from "@/lib/types";
-import { BadgeInfoIcon, Eye, MousePointerClick, ThumbsUp } from "lucide-react";
-import React, { useState } from "react";
+import { Image as imageType } from "@/lib/types";
+import {
+  Eye,
+  MessageCircleWarningIcon,
+  MousePointerClick,
+  ThumbsUp,
+} from "lucide-react";
+import React, { useEffect, useRef, useState } from "react";
 import { NavLink, useLoaderData } from "react-router-dom";
+import { number } from "zod";
 
 export async function loader({ params }: any) {
   console.log(params);
@@ -36,12 +43,32 @@ export default function ImagePage() {
     setIsSelectedCoordinates(coordinates);
   };
 
-  const imageData = useLoaderData() as Image;
+  const imageData = useLoaderData() as imageType;
 
   document.title = `PICTRU | "${imageData.name}"`;
 
-  const [image, setImage] = useState<Image>(imageData);
+  const [image, setImage] = useState<imageType>(imageData);
+  const [liked, setLiked] = useState<Boolean>(false);
+  const [imageClass, setImageClass] = useState(""); // State to hold the CSS class for the image
 
+  const imageRef = useRef<HTMLImageElement>(null); // Ref to access the image element
+
+  useEffect(() => {
+    const img = new Image();
+    img.src = image.imageUrl;
+    img.onload = () => {
+      if (imageRef.current) {
+        const aspectRatio = img.width / img.height;
+        if (aspectRatio > 1) {
+          // Image is wider
+          setImageClass("w-full h-max");
+        } else {
+          // Image is taller
+          setImageClass("h-full w-max");
+        }
+      }
+    };
+  }, [image.imageUrl]);
   // if image is wider, w-full h-max, if taller, h-full w-max
 
   async function onCommentSubmit() {
@@ -55,6 +82,44 @@ export default function ImagePage() {
 
       setImage((prevImage) => ({ ...prevImage, imageComments: data }));
     }
+  }
+
+  async function onLikeClick(imageId: any) {
+    const token = localStorage.getItem("token");
+    //TODO: Need new endpoint to get image like count
+    const response = await fetch(`http://localhost:5095/api/${imageId}/likes`, {
+      method: "POST",
+      headers: {
+        Accept: "application/json",
+        Authorization: `bearer ${token}`,
+      },
+    });
+    if (!response.ok) {
+      throw new Error("oof");
+    }
+
+    // setImage({ ...image, likeCount: image.likeCount + 1 });
+    setLiked(true);
+    console.log("Imageliked");
+  }
+
+  async function onReportClick(imageId: any) {
+    const token = localStorage.getItem("token");
+
+    const response = await fetch(
+      `http://localhost:5095/api/${imageId}/reports`,
+      {
+        method: "POST",
+        headers: {
+          Accept: "application/json",
+          Authorization: `bearer ${token}`,
+        },
+      }
+    );
+    if (!response.ok) {
+      throw new Error("oof");
+    }
+    console.log("Image reported");
   }
 
   return (
@@ -82,18 +147,29 @@ export default function ImagePage() {
           </div>
         </div>
         <div className="col-span-1 flex self-center justify-between text-2xl">
-          <div className="flex gap-6">
-            <span className="flex gap-1">
-              <Eye className="h-full w-auto" />
+          <div className="flex flex-row gap-12 items-center">
+            <span className="flex gap-1 items-center">
+              <Eye className="size-10" />
               {image.viewCount}
             </span>
-            <span className="flex gap-1">
-              <ThumbsUp className="h-full w-auto" />
-              {image.likeCount}
+            <span className="flex gap-1 items-center">
+              <button onClick={() => onLikeClick(image.id)}>
+                <ThumbsUp
+                  className={`size-10 hover:stroke-green-500 ${
+                    liked && "fill-white "
+                  }`}
+                />
+              </button>
+              {image.likeCount + Number(liked)}
             </span>
           </div>
-          {/* Change badge to more report like? */}
-          <BadgeInfoIcon className="stroke-red-700 size-10" />
+          <span className="flex gap-5 items-center">
+            <span className="text-sm">Report mistagged image</span>
+            {/* Change badge to more report like? */}
+            <button onClick={() => onReportClick(image.id)}>
+              <MessageCircleWarningIcon className="hover:stroke-red-700 size-10" />
+            </button>
+          </span>
         </div>
       </div>
 
@@ -136,11 +212,14 @@ export default function ImagePage() {
             </div>
           </div>
           <div className="flex-1 h-full w-full flex items-center justify-center">
-            <div className="m-auto flex items-center h-max w-full justify-center">
+            <div
+              className={`m-auto flex items-center  ${imageClass} justify-center `}
+            >
               <div className="m-auto h-full w-full relative">
                 <img
                   src={image.imageUrl}
-                  className="w-full h-full object-contain m-auto"
+                  // TODO: IMAGE OVERFLOWS REEE
+                  className={`object-contain m-auto`}
                   onClick={() => setIsEnlarged(true)}
                   style={isEnlarged ? { display: "none" } : {}}
                 />

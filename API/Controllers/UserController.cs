@@ -109,12 +109,12 @@ namespace API.Controllers
             {
                 return Unauthorized();
             }
-                        System.Console.WriteLine("--------------------------------------------");
+            System.Console.WriteLine("--------------------------------------------");
 
             System.Console.WriteLine("\n\n");
             Console.WriteLine(userDto.Description);
             Console.WriteLine(userDto.File.Length);
-                        System.Console.WriteLine("--------------------------------------------");
+            System.Console.WriteLine("--------------------------------------------");
 
             if (userDto.File != null)
             {
@@ -127,8 +127,8 @@ namespace API.Controllers
                     return BadRequest(new ProblemDetails { Title = "File size exceeds the limit of 5MB." });
                 }
                 var imageResult = await _imageService.AddImageAsync(userDto.File);
-System.Console.WriteLine("DONE MAYBE");
-System.Console.WriteLine(imageResult);
+                System.Console.WriteLine("DONE MAYBE");
+                System.Console.WriteLine(imageResult);
                 System.Console.WriteLine("\n\n");
                 if (imageResult.Error != null) return BadRequest(new ProblemDetails { Title = imageResult.Error.Message });
 

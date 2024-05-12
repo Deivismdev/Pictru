@@ -156,8 +156,8 @@ export default function ProfilePage() {
       </div>
       <div className=" w-full py-6">
         <div className="text-xl text-center w-full pb-6">
-          images uploaded by{" "}
-          <span className="font-bold">{profile.username}</span>
+          images uploaded by
+          <span className="font-bold"> {profile.username}</span>
         </div>
         <MasonryInfiniteGrid
           loading={<div className="animate-spin">/</div>}

@@ -14,6 +14,10 @@ export const UploadValidation = z.object({
   Tags: z.array(z.nativeEnum(TagNames)).default([]),
 });
 
+export const EditValidation = z.object({
+  Tags: z.array(z.nativeEnum(TagNames)).default([]),
+});
+
 // export const LoginValidation = z.object({
 //   email: z.string().email().default(""),
 //   password: z.string().min(8, { message: "Too short" }).default(""),

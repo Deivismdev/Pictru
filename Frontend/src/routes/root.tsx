@@ -1,6 +1,7 @@
 import Navbar from "@/components/navbar";
 import { UserProvider, useAuth } from "@/context/useAuth";
-import { Outlet } from "react-router-dom";
+import { useEffect } from "react";
+import { Outlet, useNavigate } from "react-router-dom";
 
 // export const UserContext = createContext<User>(null);
 
@@ -10,6 +11,13 @@ import { Outlet } from "react-router-dom";
 // } | null;
 
 const Root = () => {
+  const navigate = useNavigate();
+
+  useEffect(() => {
+    if (window.location.pathname === "/") {
+      navigate("/home");
+    }
+  }, [navigate]);
 
   return (
     <UserProvider>

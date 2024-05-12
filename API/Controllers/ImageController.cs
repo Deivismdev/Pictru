@@ -227,13 +227,15 @@ namespace API.Controllers
                 image.Tags.Add(tag);
             }
             // if user:
-            image.State = ImageStates.Appealed;
+            // image.State = ImageStates.Appealed;
 
             // if admin:
             // image.State = ImageState.Protected;
             // image.ReportCount = 0;
             //
 
+            //TODO: TEMPORARY SOLUTION 
+            image.State = ImageStates.Active;
 
             context.Images.Update(image);
             await context.SaveChangesAsync();
@@ -261,6 +263,7 @@ namespace API.Controllers
             // but fetching by two states (active and protected) is not supported rn too bad
             image.State = ImageStates.Active;
             image.ReportCount = 0;
+            // image.reports should be cleared
 
             context.Images.Update(image);
             await context.SaveChangesAsync();

@@ -24,7 +24,8 @@ namespace API.Controllers
         [Authorize]
         public async Task<IActionResult> ReportImage(int imageId)
         {
-            // TODO: Prevent low rep users from reporting
+            System.Console.WriteLine("Hello?");
+            // TODO: Prevent low rep users from reporting?
             var userId = User.Claims.SingleOrDefault(x => x.Type.Equals("http://schemas.xmlsoap.org/ws/2005/05/identity/claims/nameidentifier")).Value;
             const int reportThreshold = 1;
 
