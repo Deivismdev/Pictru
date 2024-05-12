@@ -13,9 +13,10 @@ import { useForm } from "react-hook-form";
 import { ProfileEditValidation } from "@/lib/validation";
 import { CheckIcon, XIcon } from "lucide-react";
 import { useState } from "react";
+import { UserProfile } from "@/lib/types";
 
 interface CommentFormProps {
-  endEdit: () => void;
+  endEdit: (newProfile: {description: string, imageUrl: string} | null) => void;
   profileData: any;
   userId: string;
 }
@@ -27,42 +28,50 @@ const ProfileEditForm = ({
 }: CommentFormProps) => {
   const form = useForm();
 
-  const [description, setDescription] = useState("")
-  const [file, setFile] = useState(null)
+  const [description, setDescription] = useState("");
+  const [isLoading, setIsLoading] = useState(false);
+  const [file, setFile] = useState<File | null>(null);
 
   async function onSubmit(values: any) {
-    console.log(values.image);
-    const token = localStorage.getItem("token");
 
-    // const data = {
-    //   Description: values.description,
-    //   File: values.image,
-    // };
+    setIsLoading(true);
+    const token = localStorage.getItem("token");
 
     const formData = new FormData();
     formData.append("Description", description);
-    formData.append("File", file!, file!.name);
+
+    if (file) formData.append("File", file, file.name);
 
     const response = await fetch(`http://localhost:5095/api/user/${userId}`, {
       method: "PATCH",
+      body: formData,
       headers: {
         Accept: "application/json",
         Authorization: `bearer ${token}`,
       },
-      body: formData,
     });
     console.log(response);
 
+    if (!response.ok) {
+      throw new Error("Network response was not OK");
+    }
+
+    const res = await response.json();
+
+    console.log(res);
+
+    form.reset();
 
 
-
+    setIsLoading(false);
+    endEdit({description: res.description, imageUrl: res.imageUrl});
   }
 
-  const handleDescriptionChange = (event:any) => {
+  const handleDescriptionChange = (event: any) => {
     setDescription(event.target.value);
   };
-  const handleFileChange = (event:any) => {
-    setFile(event.target.files[0])
+  const handleFileChange = (event: any) => {
+    setFile(event.target.files[0]);
   };
 
   return (
@@ -100,7 +109,7 @@ const ProfileEditForm = ({
                 </FormItem>
               )}
             /> */}
-            <input type="file" onChange={handleFileChange}/>
+            <input type="file" onChange={handleFileChange} />
           </div>
         </div>
         <div>
@@ -118,16 +127,16 @@ const ProfileEditForm = ({
               </FormItem>
             )}
           /> */}
-           <textarea
-                    className="h-full w-full text-start bg-background border-border border rounded-md text-xl text-foreground p-2"
-                    onChange={handleDescriptionChange}
-                  />
+          <textarea
+            className="h-full w-full text-start bg-background border-border border rounded-md text-xl text-foreground p-2"
+            onChange={handleDescriptionChange}
+          />
         </div>
         <div className="flex gap-6">
-          <Button type="submit" className="px-4">
+          <Button disabled={isLoading} type="submit" className="px-4">
             <CheckIcon />
           </Button>
-          <Button onClick={endEdit} className="px-4">
+          <Button onClick={()=>endEdit(null)} className="px-4">
             <XIcon />
           </Button>
         </div>

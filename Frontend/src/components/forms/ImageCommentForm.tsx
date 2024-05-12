@@ -43,12 +43,6 @@ const ImageCommentForm = ({
   });
 
   async function onSubmit(values: z.infer<typeof formSchema>) {
-    //TODO: submit comment
-    console.log(coordinates);
-    console.log(values);
-
-    const token = localStorage.getItem("token");
-
     const data = {
       text: values.comment,
       xCoord: coordinates ? Math.round(coordinates?.x) : null,

@@ -16,44 +16,60 @@ import { useState } from "react";
 import { ToggleGroup, ToggleGroupItem } from "../ui/toggle-group";
 // import { UploadValidation } from "@/lib/validation";
 import { ok } from "assert";
+import { UploadValidation } from "@/lib/validation";
+import { useAuth } from "@/context/useAuth";
 
-export default function UploadForm() {
-  const form = useForm();
+interface UploadFormProps {
+  onImageUpload: ((id: number) => void);
+}
 
-  const onSubmit = async (data: any) => {
+export default function UploadForm({onImageUpload} : UploadFormProps) {
+  const form = useForm<z.infer<typeof UploadValidation>>({
+    resolver: zodResolver(UploadValidation),
+  });
+
+  const { token } = useAuth();
+
+  const [isLoading, setIsLoading] = useState(false);
+
+  const onSubmit = async (values: z.infer<typeof UploadValidation>) => {
+
+    setIsLoading(true);
     const formData = new FormData();
-    const token = localStorage.getItem("token");
-    formData.append("Name", data.Name);
-    formData.append("Description", data.Description);
+    // const token = localStorage.getItem("token");
 
-    const file = data.File;
-    formData.append("File", file); // append the file object to FormData
+    formData.append("Name", values.Name);
+    formData.append("Description", values.Description);
 
-    const tagNames = data.Tags.map((tagId: any) => TagNames[tagId]);
-    formData.append("Tags", JSON.stringify(tagNames));
+    if (values.File) formData.append("File", values.File, values.File.name);
+
+    for (let tag of values.Tags) {
+      formData.append("Tags[]", tag.toString());
+    }
 
     console.log(formData);
 
-    try {
-      const response = await fetch("http://localhost:5095/api/image", {
-        method: "POST",
-        body: formData,
-        headers: {
-          "Content-Type": "multipart/form-data",
-          Accept: "application/json",
-          Authorization: `bearer ${token}`,
-        },
-      });
+    const response = await fetch("http://localhost:5095/api/image", {
+      method: "POST",
+      body: formData,
+      headers: {
+        Accept: "application/json",
+        Authorization: `bearer ${token}`,
+      },
+    });
 
-      if (!response.ok) {
-        throw new Error("Network response was not OK");
-      }
-
-      const result = await response.json();
-      console.log("Image created successfully:", result);
-    } catch (error) {
-      console.error("Error creating image:", error);
+    if (!response.ok) {
+      throw new Error("Network response was not OK");
     }
+
+
+    const res = await response.json();
+    onImageUpload(res.id);
+
+    form.reset({Description: "", Name: "", Tags: [], File: undefined});
+
+    setIsLoading(false);
+
   };
 
   const handleToggleChange = (newSelection: string[]) => {
@@ -67,6 +83,7 @@ export default function UploadForm() {
   return (
     <Form {...form}>
       <form
+        encType="multipart/form-data"
         onSubmit={form.handleSubmit(onSubmit)}
         className="gap-5 w-full mt-4 grid grid-cols-2"
       >
@@ -78,13 +95,13 @@ export default function UploadForm() {
               <FormItem>
                 <FormLabel>Title</FormLabel>
                 <FormControl>
-                  <Input placeholder="title" {...field} />
+                  <Input type="text" placeholder="title" {...field} />
                 </FormControl>
               </FormItem>
             )}
           />
 
-          <label>Tags:</label>
+          <FormLabel>Tags:</FormLabel>
           <ToggleGroup
             type="multiple"
             variant="outline"
@@ -114,7 +131,7 @@ export default function UploadForm() {
               <FormItem>
                 <FormLabel>Description</FormLabel>
                 <FormControl>
-                  <Input placeholder="title" {...field} />
+                  <Input type="text" placeholder="description" {...field} />
                 </FormControl>
               </FormItem>
             )}
@@ -125,19 +142,26 @@ export default function UploadForm() {
           <FormField
             control={form.control}
             name="File"
-            render={({ field }) => (
+            render={({ field: { value, onChange, ...field } }) => (
               <FormItem className="h-full w-full">
-                <FormLabel>Image</FormLabel>
+                <FormLabel>Picture</FormLabel>
                 <FormControl className="flex items-center content-center">
-                  <Input className="h-full w-full" type="file" {...field} />
+                  <Input
+                    className="h-full w-full"
+                    type="file"
+                    {...field}
+                    onChange={(event) =>
+                      onChange(event.target.files && event.target.files[0])
+                    }
+                  />
                 </FormControl>
               </FormItem>
             )}
           />
         </div>
 
-        <Button className="w-1/2" type="submit">
-          Post
+        <Button disabled={isLoading} className="w-1/2" type="submit">
+          {isLoading ? "Posting...":"Post"}
         </Button>
       </form>
     </Form>

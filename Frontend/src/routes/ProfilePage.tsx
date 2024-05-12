@@ -19,6 +19,25 @@ export default function ProfilePage() {
   const [profile, setProfile] = useState<UserProfile>(profileData);
   const [IsEditing, setIsEditing] = useState(false);
 
+
+  async function onProfileEdit(newProfile: {description: string, imageUrl: string} | null){
+    setIsEditing(false)
+
+    console.log(newProfile)
+    console.log("newProfile")
+
+
+    if(newProfile)
+      {
+        console.warn("yes")
+        setProfile((prevState) => ({...prevState, description: newProfile.description, imageUrl: newProfile.imageUrl}));
+      }
+
+
+    console.log(profile);
+
+  }
+
   async function onCommentSubmit() {
     const response = await fetch(
       `http://localhost:5095/api/profiles/${profile.id}/comments`
@@ -44,10 +63,10 @@ export default function ProfilePage() {
                 <div className="flex flex-row justify-between p-3">
                   <div className="flex flex-col justify-between">
                     <div className="text-2xl font-bold">
-                      {profileData.username}
+                      {profile.username}
                     </div>
                     <div className="text-xl">
-                      reputation: {profileData.reputation}
+                      reputation: {profile.reputation}
                     </div>
                     <div className="text-2xl flex items-center">
                       About
@@ -61,21 +80,21 @@ export default function ProfilePage() {
                   </div>
                   <div className="max-w-48 max-h-48 relative">
                     <img
-                      src={profileData.imageUrl}
+                      src={profile.imageUrl}
                       className="w-48 h-32 object-cover rounded-sm m-auto"
                     />
                   </div>
                 </div>
 
                 <ScrollArea className="bg-muted p-3 rounded-sm ">
-                  <div>{profileData.description}</div>
+                  <div>{profile.description}</div>
                 </ScrollArea>
               </>
             ) : (
               <>
                 <ProfileEditForm
-                  endEdit={() => setIsEditing(false)}
-                  profileData={profileData}
+                  endEdit={onProfileEdit}
+                  profileData={profile}
                   userId={profile.id}
                 />
               </>
@@ -87,7 +106,7 @@ export default function ProfilePage() {
             <span>Comments</span>
             <div>
               <ScrollArea>
-                {profileData.profileComments.map((comment: any) => (
+                {profile.profileComments.map((comment: any) => (
                   <div
                     key={comment.id}
                     className="bg-muted p-2 m-2 rounded-md hover:brightness-110"

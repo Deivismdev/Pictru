@@ -36,6 +36,8 @@ export default function ImagePage() {
 
   const imageData = useLoaderData() as Image;
 
+  document.title = `PICTRU | "${imageData.name}"`
+
   const [image, setImage] = useState<Image>(imageData);
 
   async function onCommentSubmit() {
@@ -122,12 +124,12 @@ export default function ImagePage() {
               </div>
             </div>
           </div>
-          <div className="flex-1 h-full">
-            <div className="m-auto h-full w-full flex items-center justify-center overflow-hidden">
-              <div className="m-auto h-max w-auto max-h-full max-w-full relative">
+          <div className="flex-1 h-full w-full flex items-center justify-center">
+            <div className="m-auto flex items-center h-max w-full justify-center">
+              <div className="m-auto h-full w-full relative">
                 <img
                   src={image.imageUrl}
-                  className="w-full h-full object-scale-down m-auto"
+                  className="w-full h-full object-contain m-auto"
                   onClick={() => setIsEnlarged(true)}
                   style={isEnlarged ? { display: "none" } : {}}
                 />

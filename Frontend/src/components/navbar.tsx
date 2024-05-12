@@ -10,10 +10,9 @@ export default function Navbar() {
       links = (
         <>
           <Link to={"/gallery"}>Gallery</Link>
-          <Link to={"/login"}>My account</Link>
+          <Link to={`/user/${user.userId}`}>My account</Link>
           <Link to={"/register"}>My images</Link>
           <Link to={"/upload"}>Upload</Link>
-          <Link to={"/upload"}>Logout</Link>
           <button onClick={() => logout()}>Logout</button>
         </>
       );

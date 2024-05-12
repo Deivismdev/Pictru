@@ -121,7 +121,7 @@ namespace API.Controllers
                 System.Console.WriteLine("No! yay");
                 System.Console.WriteLine("\n\n");
 
-                var maxSize = 1 * 1024 * 1024;
+                var maxSize = 5 * 1024 * 1024;
                 if (userDto.File.Length > maxSize)
                 {
                     return BadRequest(new ProblemDetails { Title = "File size exceeds the limit of 5MB." });

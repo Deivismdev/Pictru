@@ -41,16 +41,7 @@ namespace API.Controllers
         // [Authorize]
         public async Task<IActionResult> CreateImage(CreateImageDto imageDto)
         {
-            System.Console.WriteLine("--------------------------------------------");
-            System.Console.WriteLine("\n\n");
-            System.Console.WriteLine(imageDto.Name);
-            System.Console.WriteLine(imageDto.Description);
-            System.Console.WriteLine(imageDto.File.FileName);
-            System.Console.WriteLine("\n\n");
-            System.Console.WriteLine("--------------------------------------------");
             var userId = User.Claims.SingleOrDefault(x => x.Type.Equals("http://schemas.xmlsoap.org/ws/2005/05/identity/claims/nameidentifier")).Value;
-
-
 
             var image = new Image
             {
