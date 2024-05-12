@@ -22,32 +22,38 @@ import {
   MasonryInfiniteGrid,
   PackingInfiniteGrid,
 } from "@egjs/react-infinitegrid";
-import { useState } from "react";
-
-export async function loader({ params }: any) {
-  const response = await fetch(
-    `http://localhost:5095/api/image?orderBy=uploadDate&pageNumber=1&pageSize=25`
-  );
-
-  if (!response.ok) return [];
-
-  return response;
-}
+import { useEffect, useState } from "react";
 
 export default function Gallery() {
-  const images = useLoaderData() as GalleryImage[];
+  const [images, setImages] = useState<GalleryImage[]>([]);
+  const [page, setPage] = useState(1);
 
-  const [items, setItems] = useState(images);
+  const [stopFetching, setStopFetching] = useState(false);
 
-  if (images.length === 0) {
-    return (
-      <div>
-        <h1 className="text-3xl py-2 text-foreground text-center w-full">
-          No more images{" "}
-        </h1>
-      </div>
+  async function fetchPictures() {
+    if (stopFetching) return;
+
+    const result = await fetch(
+      `http://localhost:5095/api/image?state=0&orderBy=uploadDate&pageNumber=${page}&pageSize=5`
     );
+    if (result.ok) {
+      const res = await result.json();
+      setImages([...images, ...res]);
+      setPage((p) => p + 1);
+    } else if (result.status == 404) {
+      setStopFetching(true);
+    }
   }
+
+  // if (images.length === 0) {
+  //   return (
+  //     <div>
+  //       <h1 className="text-3xl py-2 text-foreground text-center w-full">
+  //         No more images{" "}
+  //       </h1>
+  //     </div>
+  //   );
+  // }
 
   return (
     <div className="text-foreground m-auto w-9/12">
@@ -96,10 +102,17 @@ export default function Gallery() {
       </ScrollArea>
 
       <MasonryInfiniteGrid
+        loading={<div className="animate-spin">/</div>}
         gap={3}
         column={4}
         onRequestAppend={(e) => {
-          console.log("REQUEST FOR MROE IMAGES");
+          if (stopFetching) return;
+          e.wait();
+          setTimeout(() => {
+            e.ready();
+            fetchPictures();
+            console.log("fetching" + page);
+          }, 1000);
         }}
       >
         {images.map((image) => {

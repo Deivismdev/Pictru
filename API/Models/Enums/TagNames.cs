@@ -11,8 +11,8 @@ namespace API.Models.Enums
         Painting,
         Photography,
         DigitalArt,
-        Nature,
-        Animals,
-        Food
+        Render,
+        Drawing,
+        Other
     }
 }

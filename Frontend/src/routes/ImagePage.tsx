@@ -2,6 +2,7 @@ import CoordinateSelector from "@/components/CoordinateSelector";
 import ImageCommentForm from "@/components/forms/ImageCommentForm";
 import { Badge } from "@/components/ui/badge";
 import { ScrollArea } from "@/components/ui/scroll-area";
+import { TagNames } from "@/lib/tags";
 import { Image } from "@/lib/types";
 import { BadgeInfoIcon, Eye, MousePointerClick, ThumbsUp } from "lucide-react";
 import React, { useState } from "react";
@@ -75,10 +76,9 @@ export default function ImagePage() {
             </span>
           </div>
           <div className="flex gap-2 pt-3">
-            <Badge>sad</Badge>
-            <Badge>cat</Badge>
-            <Badge>nature</Badge>
-            <Badge>ai-generated</Badge>
+            {image.tags.map((tag) => (
+              <Badge>{TagNames[tag]}</Badge>
+            ))}
           </div>
         </div>
         <div className="col-span-1 flex self-center justify-between text-2xl">

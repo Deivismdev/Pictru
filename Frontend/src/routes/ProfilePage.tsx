@@ -33,7 +33,7 @@ export default function ProfilePage() {
     if (stopFetching) return;
 
     const result = await fetch(
-      `http://localhost:5095/api/image?orderBy=uploadDate&pageNumber=${page}&pageSize=5&username=${profile.username}`
+      `http://localhost:5095/api/image?state=0&orderBy=uploadDate&pageNumber=${page}&pageSize=3&username=${profile.username}`
     );
     if (result.ok) {
       const res = await result.json();

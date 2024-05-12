@@ -3,7 +3,7 @@ export enum TagNames {
     Painting,
     Photography,
     DigitalArt,
-    Nature,
-    Animals,
-    Food
+    Render,
+    Drawing,
+    Other
 }

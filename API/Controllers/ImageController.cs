@@ -257,7 +257,9 @@ namespace API.Controllers
 
             image.Tags.Clear();
 
-            image.State = ImageStates.Protected;
+            //TODO: state should change to protected
+            // but fetching by two states (active and protected) is not supported rn too bad
+            image.State = ImageStates.Active;
             image.ReportCount = 0;
 
             context.Images.Update(image);
