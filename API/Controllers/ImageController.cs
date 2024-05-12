@@ -109,7 +109,7 @@ namespace API.Controllers
         }
 
         [HttpGet]
-        public async Task<IActionResult> GetImages(string orderBy = "uploadDate", TagNames? tag = null, string username = null, int pageNumber = 1, int pageSize = 10)
+        public async Task<IActionResult> GetImages(string orderBy = "uploadDate", TagNames? tag = null, ImageStates? state = null, string username = null, int pageNumber = 1, int pageSize = 10)
         {
             var query = context.Images
                    .Include(i => i.User)
@@ -117,6 +117,7 @@ namespace API.Controllers
                    //    .Include(i => i.ImageComments).ThenInclude(ic => ic.User)
                    .Sort(orderBy)
                    .FilterByTag(tag)
+                   .FilterByState(state)
                    .FilterByUsername(username)
                    .AsQueryable();
 
@@ -213,7 +214,7 @@ namespace API.Controllers
             }
 
 
-            if (image.State != ImageState.Suspended)
+            if (image.State != ImageStates.Suspended)
             {
                 return BadRequest("Image is not suspended.");
             }
@@ -226,7 +227,7 @@ namespace API.Controllers
                 image.Tags.Add(tag);
             }
             // if user:
-            image.State = ImageState.Appealed;
+            image.State = ImageStates.Appealed;
 
             // if admin:
             // image.State = ImageState.Protected;
@@ -249,14 +250,14 @@ namespace API.Controllers
                 return NotFound();
             }
 
-            if (image.State != ImageState.Suspended)
+            if (image.State != ImageStates.Suspended)
             {
                 return BadRequest("Image is not suspended.");
             }
 
             image.Tags.Clear();
 
-            image.State = ImageState.Protected;
+            image.State = ImageStates.Protected;
             image.ReportCount = 0;
 
             context.Images.Update(image);

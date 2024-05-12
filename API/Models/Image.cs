@@ -22,7 +22,7 @@ namespace API.Models
         public int ReportCount { get; set; } = 0;
         public DateTime UploadDate { get; set; } = DateTime.UtcNow;
         public string UserId { get; set; }
-        public ImageState State { get; set; } = ImageState.Active;
+        public ImageStates State { get; set; } = ImageStates.Active;
 
         public ICollection<ImageComment> ImageComments { get; }
         public ICollection<Like> Likes { get; }
@@ -68,7 +68,7 @@ namespace API.Models
         public int LikeCount { get; set; }
         public int ReportCount { get; set; }
         public DateTime UploadDate { get; set; }
-        public ImageState ImageState { get; set; }
+        public ImageStates ImageState { get; set; }
         public GetUserDto User { get; set; }
         public ICollection<TagNames> Tags { get; set; }
 
@@ -83,7 +83,7 @@ namespace API.Models
         public int LikeCount { get; set; }
         public int ReportCount { get; set; }
         public DateTime UploadDate { get; set; }
-        public ImageState ImageState { get; set; }
+        public ImageStates ImageState { get; set; }
         public GetUserDto User { get; set; }
         public ICollection<GetImageCommentDto> ImageComments { get; set; }
         public ICollection<TagNames> Tags { get; set; }

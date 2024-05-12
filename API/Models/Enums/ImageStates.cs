@@ -1,6 +1,6 @@
 namespace API.Models
 {
-    public enum ImageState
+    public enum ImageStates
     {
         Active = 0,
         Suspended,
