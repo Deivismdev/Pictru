@@ -12,11 +12,13 @@ import { Button } from "@/components/ui/button";
 import { useForm } from "react-hook-form";
 import { ProfileEditValidation } from "@/lib/validation";
 import { CheckIcon, XIcon } from "lucide-react";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { UserProfile } from "@/lib/types";
 
 interface CommentFormProps {
-  endEdit: (newProfile: {description: string, imageUrl: string} | null) => void;
+  endEdit: (
+    newProfile: { description: string; imageUrl: string } | null
+  ) => void;
   profileData: any;
   userId: string;
 }
@@ -32,8 +34,27 @@ const ProfileEditForm = ({
   const [isLoading, setIsLoading] = useState(false);
   const [file, setFile] = useState<File | null>(null);
 
-  async function onSubmit(values: any) {
+  useEffect(() => {
+    form.setValue("description", profileData.description);
+    form.setValue("imageUrl", profileData.imageUrl);
+    const imageUrl = profileData.imageUrl;
 
+    createFileFromUrl(imageUrl).then((file) => {
+      setFile(file);
+    });
+  }, [profileData.imageUrl]);
+
+  async function createFileFromUrl(url: string) {
+    const response = await fetch(url);
+    const blob = await response.blob();
+
+    const file = new File([blob], "image.jpg", { type: blob.type });
+
+    return file;
+  }
+  // setFile(profileData.imageUrl);
+
+  async function onSubmit(values: any) {
     setIsLoading(true);
     const token = localStorage.getItem("token");
 
@@ -62,9 +83,8 @@ const ProfileEditForm = ({
 
     form.reset();
 
-
     setIsLoading(false);
-    endEdit({description: res.description, imageUrl: res.imageUrl});
+    endEdit({ description: res.description, imageUrl: res.imageUrl });
   }
 
   const handleDescriptionChange = (event: any) => {
@@ -136,7 +156,7 @@ const ProfileEditForm = ({
           <Button disabled={isLoading} type="submit" className="px-4">
             <CheckIcon />
           </Button>
-          <Button onClick={()=>endEdit(null)} className="px-4">
+          <Button onClick={() => endEdit(null)} className="px-4">
             <XIcon />
           </Button>
         </div>

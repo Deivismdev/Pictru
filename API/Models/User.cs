@@ -16,7 +16,7 @@ namespace API.Models
 
         public DateTime RegisterDate { get; set; } = DateTime.UtcNow;
         // TODO: this is stupid, create another table for everything payment related
-        public string PaymentIntentId { get; set; } // stripe TODO: not sure if this is where I want this to be 
+        public string PaymentIntentId { get; set; } // stripe TODO: not sure if this is where I want this to be
         public string ClientSecret { get; set; }    // stripe
         public ICollection<ProfileComment> ProfileComments { get; }
         [JsonIgnore]
@@ -60,6 +60,7 @@ namespace API.Models
     }
     public class GetUserDto
     {
+        public string Id {get; set;}
         public string Username { get; set; }
         public string Description { get; set; }
         public string ImageUrl { get; set; }

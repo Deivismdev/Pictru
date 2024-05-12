@@ -42,7 +42,10 @@ export default function Navbar() {
           {" "}
           PICTRU
         </Link>
-        <div className="flex gap-10 items-center">{links}</div>
+        <div className="flex gap-10 items-center">
+          {links}
+          {user && <div>logged in as {user?.userName}</div>}
+        </div>
       </nav>
     );
   };

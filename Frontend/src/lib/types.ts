@@ -29,6 +29,7 @@ export type Image = {
   uploadDate: string;
   imageState: number;
   user: {
+    id: string;
     username: string;
     description: string;
     reputation: number;

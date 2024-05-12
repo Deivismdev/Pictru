@@ -75,7 +75,8 @@ namespace API.Controllers
             var comment = new ProfileComment
             {
                 Text = commentDto.Text,
-                UserId = currentUserId
+                UserId = currentUserId,
+                User = user,
             };
 
             context.ProfileComments.Add(comment);

@@ -42,6 +42,9 @@ const ProfileCommentForm = ({
       text: values.comment,
     };
 
+    console.log("this not your id:")
+    console.log(userId)
+
     const response = await fetch(
       `http://localhost:5095/api/profiles/${userId}/comments`,
       {

@@ -18,6 +18,7 @@ namespace API.RequestHelpers
                .ForMember(dest => dest.Tags, opt => opt.MapFrom(src => src.Tags.Select(t => t.Name)))
                 .ForMember(dest => dest.ImageState, opt => opt.MapFrom(src => src.State));
 
+
             CreateMap<Image, GetImagesDto>()
                .ForMember(dest => dest.Tags, opt => opt.MapFrom(src => src.Tags.Select(t => t.Name)))
                 .ForMember(dest => dest.ImageState, opt => opt.MapFrom(src => src.State));

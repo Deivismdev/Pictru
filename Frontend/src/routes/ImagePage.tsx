@@ -5,13 +5,14 @@ import { ScrollArea } from "@/components/ui/scroll-area";
 import { Image } from "@/lib/types";
 import { BadgeInfoIcon, Eye, MousePointerClick, ThumbsUp } from "lucide-react";
 import React, { useState } from "react";
-import { useLoaderData } from "react-router-dom";
+import { NavLink, useLoaderData } from "react-router-dom";
 
 export async function loader({ params }: any) {
   console.log(params);
   const response = await fetch(
     `http://localhost:5095/api/image/${params.imageId}`
   );
+
   if (!response.ok) throw new Error("Error loading images");
 
   return response;
@@ -36,9 +37,11 @@ export default function ImagePage() {
 
   const imageData = useLoaderData() as Image;
 
-  document.title = `PICTRU | "${imageData.name}"`
+  document.title = `PICTRU | "${imageData.name}"`;
 
   const [image, setImage] = useState<Image>(imageData);
+
+  // if image is wider, w-full h-max, if taller, h-full w-max
 
   async function onCommentSubmit() {
     const response = await fetch(
@@ -61,7 +64,15 @@ export default function ImagePage() {
             <span>"{image.name}"</span>
           </div>
           <div className="flex gap-12 text-xl">
-            <span>Uploaded by: {image.user.username}</span>
+            <span>
+              Uploaded by:{" "}
+              <NavLink
+                className="font-bold hover:underline"
+                to={`/user/${image.user.id}`}
+              >
+                {image.user.username}
+              </NavLink>
+            </span>
           </div>
           <div className="flex gap-2 pt-3">
             <Badge>sad</Badge>
@@ -137,7 +148,7 @@ export default function ImagePage() {
                   <div
                     className={`${
                       isEnlarged && "hidden"
-                    } absolute w-[30px] h-[30px] border-2 bg-primary/20 border-secondary rounded-full`}
+                    } absolute w-[50px] h-[50px] border-2 bg-primary/20 border-secondary rounded-full`}
                     style={{
                       left: `${selectedCoordinates.x}%`,
                       top: `${selectedCoordinates.y}%`,
@@ -149,7 +160,7 @@ export default function ImagePage() {
                   <div
                     className={`${
                       isEnlarged && "hidden"
-                    } absolute w-[30px] h-[30px] border-2 bg-primary/30 border-secondary rounded-full backdrop-invert`}
+                    } absolute w-[50px] h-[50px] border-2 bg-primary/30 border-secondary rounded-full backdrop-invert`}
                     style={{
                       left: `${commentCoordinates.x}%`,
                       top: `${commentCoordinates.y}%`,

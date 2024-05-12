@@ -61,6 +61,16 @@ const ImageCommentForm = ({
         body: JSON.stringify(data),
       }
     );
+
+    if(!response.ok)
+      {
+        throw new Error(response.statusText);
+      }
+
+    const res = await response.json();
+
+    console.log(res);
+
     onCommentSubmit();
 
     form.reset();

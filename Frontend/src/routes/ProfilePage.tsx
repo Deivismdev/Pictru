@@ -1,10 +1,14 @@
+import ImageCard from "@/components/ImageCard";
 import ProfileCommentForm from "@/components/forms/ProfileCommentForm";
 import ProfileEditForm from "@/components/forms/ProfileEditForm";
 import { ScrollArea } from "@/components/ui/scroll-area";
+import { useAuth } from "@/context/useAuth";
 import { UserProfile } from "@/lib/types";
-import { PencilIcon } from "lucide-react";
-import { useState } from "react";
+import { MasonryInfiniteGrid } from "@egjs/react-infinitegrid";
+import { Loader2Icon, PencilIcon, Scroll } from "lucide-react";
+import { useEffect, useState } from "react";
 import { useLoaderData } from "react-router-dom";
+import { LoadingSpinner } from "../components/LoadingSpinner";
 
 export async function loader({ params }: any) {
   const response = await fetch(
@@ -18,24 +22,46 @@ export default function ProfilePage() {
   const profileData = useLoaderData() as any;
   const [profile, setProfile] = useState<UserProfile>(profileData);
   const [IsEditing, setIsEditing] = useState(false);
+  const [page, setPage] = useState(1);
 
+  const [images, setImages] = useState<any>([]);
+  const { user } = useAuth();
 
-  async function onProfileEdit(newProfile: {description: string, imageUrl: string} | null){
-    setIsEditing(false)
+  const [stopFetching, setStopFetching] = useState(false);
 
-    console.log(newProfile)
-    console.log("newProfile")
+  async function fetchPictures() {
+    if (stopFetching) return;
 
+    const result = await fetch(
+      `http://localhost:5095/api/image?orderBy=uploadDate&pageNumber=${page}&pageSize=5&username=${profile.username}`
+    );
+    if (result.ok) {
+      const res = await result.json();
+      setImages([...images, ...res]);
+      setPage((p) => p + 1);
+    } else if (result.status == 404) {
+      setStopFetching(true);
+    }
+  }
 
-    if(newProfile)
-      {
-        console.warn("yes")
-        setProfile((prevState) => ({...prevState, description: newProfile.description, imageUrl: newProfile.imageUrl}));
-      }
+  async function onProfileEdit(
+    newProfile: { description: string; imageUrl: string } | null
+  ) {
+    setIsEditing(false);
 
+    console.log(newProfile);
+    console.log("newProfile");
+
+    if (newProfile) {
+      console.warn("yes");
+      setProfile((prevState) => ({
+        ...prevState,
+        description: newProfile.description,
+        imageUrl: newProfile.imageUrl,
+      }));
+    }
 
     console.log(profile);
-
   }
 
   async function onCommentSubmit() {
@@ -54,7 +80,7 @@ export default function ProfilePage() {
 
   return (
     <div className="xl:px-36 px-12 flex flex-col text-foreground bg-background items-center">
-      <div className="w-2/3 xl:w-92 mt-12 flex flex-row gap-24 justify-between h-1/2">
+      <div className="w-2/3 xl:w-92 mt-12 flex flex-row gap-24 justify-between h-full">
         <div className="flex-1 border-border border p-6 rounded-md">
           <div className="flex flex-col justify-between w-full">
             {!IsEditing ? (
@@ -62,20 +88,20 @@ export default function ProfilePage() {
                 <div className="font-bold text-3xl px-3 pb-6">user profile</div>
                 <div className="flex flex-row justify-between p-3">
                   <div className="flex flex-col justify-between">
-                    <div className="text-2xl font-bold">
-                      {profile.username}
-                    </div>
+                    <div className="text-2xl font-bold">{profile.username}</div>
                     <div className="text-xl">
                       reputation: {profile.reputation}
                     </div>
                     <div className="text-2xl flex items-center">
                       About
-                      <button
-                        onClick={() => setIsEditing(true)}
-                        className="px-4"
-                      >
-                        <PencilIcon className="stroke-primary" />
-                      </button>
+                      {profile.id === user?.userId && (
+                        <button
+                          onClick={() => setIsEditing(true)}
+                          className="px-4"
+                        >
+                          <PencilIcon className="stroke-primary" />
+                        </button>
+                      )}
                     </div>
                   </div>
                   <div className="max-w-48 max-h-48 relative">
@@ -86,9 +112,12 @@ export default function ProfilePage() {
                   </div>
                 </div>
 
-                <ScrollArea className="bg-muted p-3 rounded-sm ">
-                  <div>{profile.description}</div>
-                </ScrollArea>
+                {/* <ScrollArea className="bg-muted p-3 rounded-sm h-full bg-red-200">
+                  {profile.description}
+                </ScrollArea> */}
+                <div className="overflow-y-auto text-wrap bg-muted p-3 rounded-sm h-32 w-full break-all ">
+                  {profile.description}
+                </div>
               </>
             ) : (
               <>
@@ -101,11 +130,11 @@ export default function ProfilePage() {
             )}
           </div>
         </div>
-        <div className="flex-1 h-full rounded-md border-border border p-4 ">
+        <div className="flex-1 h-full rounded-md border-border border p-4">
           <div>
             <span>Comments</span>
             <div>
-              <ScrollArea>
+              <ScrollArea className="h-72">
                 {profile.profileComments.map((comment: any) => (
                   <div
                     key={comment.id}
@@ -125,6 +154,30 @@ export default function ProfilePage() {
             </div>
           </div>
         </div>
+      </div>
+      <div className=" w-full py-6">
+        <div className="text-xl text-center w-full pb-6">
+          images uploaded by{" "}
+          <span className="font-bold">{profile.username}</span>
+        </div>
+        <MasonryInfiniteGrid
+          loading={<div className="animate-spin">/</div>}
+          gap={3}
+          column={4}
+          onRequestAppend={(e) => {
+            if (stopFetching) return;
+            e.wait();
+            setTimeout(() => {
+              e.ready();
+              fetchPictures();
+              console.log("fetching" + page);
+            }, 1000);
+          }}
+        >
+          {images.map((image: any) => {
+            return <ImageCard image={image} key={image.id} />;
+          })}
+        </MasonryInfiniteGrid>
       </div>
     </div>
   );
