@@ -3,6 +3,7 @@ import ImageCommentForm from "@/components/forms/ImageCommentForm";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { ScrollArea } from "@/components/ui/scroll-area";
+import { useAuth } from "@/context/useAuth";
 import { TagNames } from "@/lib/tags";
 import { Image as imageType } from "@/lib/types";
 import {
@@ -12,7 +13,7 @@ import {
   ThumbsUp,
 } from "lucide-react";
 import React, { useEffect, useRef, useState } from "react";
-import { NavLink, useLoaderData } from "react-router-dom";
+import { NavLink, useLoaderData, useNavigate } from "react-router-dom";
 import { number } from "zod";
 
 export async function loader({ params }: any) {
@@ -45,11 +46,12 @@ export default function ImagePage() {
 
   const imageData = useLoaderData() as imageType;
 
-  document.title = `PICTRU | "${imageData.name}"`;
-
+  // document.title = `PICTRU | "${imageData.name}"`;
+  const { token, user } = useAuth();
   const [image, setImage] = useState<imageType>(imageData);
   const [liked, setLiked] = useState<Boolean>(false);
   const [imageClass, setImageClass] = useState(""); // State to hold the CSS class for the image
+  const navigate = useNavigate();
 
   const imageRef = useRef<HTMLImageElement>(null); // Ref to access the image element
 
@@ -64,7 +66,7 @@ export default function ImagePage() {
           setImageClass("w-full h-max");
         } else {
           // Image is taller
-          setImageClass("h-full w-max");
+          setImageClass("h-full w-auto ");
         }
       }
     };
@@ -81,6 +83,30 @@ export default function ImagePage() {
       const data = await response.json();
 
       setImage((prevImage) => ({ ...prevImage, imageComments: data }));
+    }
+  }
+
+  async function onDeleteClick(imageId: number) {
+    try {
+      const response = await fetch(
+        `http://localhost:5095/api/image/${imageId}`,
+        {
+          method: "DELETE",
+          headers: {
+            Accept: "application/json",
+            Authorization: `bearer ${token}`,
+          },
+        }
+      );
+
+      if (!response.ok) {
+        throw new Error("Failed to delete image");
+      }
+
+      console.log("Image deleted successfully");
+      navigate(`/user/${imageData.user.id}`);
+    } catch (error) {
+      console.error("An error occurred:", error);
     }
   }
 
@@ -164,7 +190,7 @@ export default function ImagePage() {
             </span>
           </div>
           <span className="flex gap-5 items-center">
-            <span className="text-sm">Report mistagged image</span>
+            <span className="text-sm ">Report mistagged image</span>
             {/* Change badge to more report like? */}
             <button onClick={() => onReportClick(image.id)}>
               <MessageCircleWarningIcon className="hover:stroke-red-700 size-10" />
@@ -267,6 +293,29 @@ export default function ImagePage() {
         <div className="border border-border h-max p-2 mt-6">
           <h6 className="font-bold">Description</h6>
           <ScrollArea className="h-full">{image.description}</ScrollArea>
+        </div>
+
+        <div className="flex gap-6 pt-4">
+          {(image.user.id === user?.userId ||
+            user?.roles.includes("Moderator")) && (
+            <>
+              <Button
+                className="w-16"
+                type="submit"
+                onClick={() => navigate(`/editImage/${image.id}`)}
+              >
+                Edit
+              </Button>
+              <Button
+                variant="destructive"
+                className="w-16"
+                type="submit"
+                onClick={() => onDeleteClick(image.id)}
+              >
+                Delete
+              </Button>
+            </>
+          )}
         </div>
       </div>
     </div>

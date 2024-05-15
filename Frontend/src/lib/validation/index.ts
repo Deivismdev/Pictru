@@ -15,6 +15,12 @@ export const UploadValidation = z.object({
 });
 
 export const EditValidation = z.object({
+  Name: z.string().min(1, { message: "Title is required" }).default(""),
+  Description: z.string().min(1, { message: "Title is required" }).default(""),
+  Tags: z.array(z.nativeEnum(TagNames)).default([]),
+});
+
+export const AppealValidation = z.object({
   Tags: z.array(z.nativeEnum(TagNames)).default([]),
 });
 

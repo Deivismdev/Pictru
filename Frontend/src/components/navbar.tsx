@@ -1,5 +1,14 @@
 import { useAuth } from "@/context/useAuth";
 import { Link } from "react-router-dom";
+import {
+  DropdownMenu,
+  DropdownMenuContent,
+  DropdownMenuItem,
+  DropdownMenuLabel,
+  DropdownMenuSeparator,
+  DropdownMenuTrigger,
+} from "@/components/ui/dropdown-menu";
+import { ChevronDown } from "lucide-react";
 
 export default function Navbar() {
   const { user, logout } = useAuth();
@@ -11,7 +20,7 @@ export default function Navbar() {
         <>
           <Link to={"/gallery"}>Gallery</Link>
           <Link to={`/user/${user.userId}`}>My account</Link>
-          <Link to={"/suspended"}>Suspended images</Link>
+          <Link to={"/suspendedmy"}>Suspended images</Link>
           <Link to={"/upload"}>Upload</Link>
           <button onClick={() => logout()}>Logout</button>
         </>
@@ -19,12 +28,39 @@ export default function Navbar() {
     } else if (user?.roles.includes("Moderator")) {
       links = (
         <>
-          <Link to={"/suspended"}>Suspended images</Link>
-          {/* <Link to={"/appealed"}>Appealed suspensions</Link> */}
+          <Link to={"/suspendedmy"}>Suspended images</Link>
           <Link to={"/gallery"}>Gallery</Link>
-          <Link to={`/user/${user.userId}`}>My account</Link>
           <Link to={"/upload"}>Upload</Link>
-          <button onClick={() => logout()}>Logout</button>
+          <DropdownMenu>
+            <DropdownMenuTrigger className="font-semibold text-primary">
+              <span className="flex">Admin</span>{" "}
+            </DropdownMenuTrigger>
+            <DropdownMenuContent>
+              <DropdownMenuItem>
+                <Link to={"/appealed"}>Appealed suspensions</Link>
+              </DropdownMenuItem>
+              <DropdownMenuSeparator />
+              <DropdownMenuItem>
+                <Link to={"/suspendedall"}>Suspended (admin)</Link>
+              </DropdownMenuItem>
+            </DropdownMenuContent>
+          </DropdownMenu>
+          <DropdownMenu>
+            <DropdownMenuTrigger className="font-semibold text-primary">
+              {user.userName}
+            </DropdownMenuTrigger>
+            <DropdownMenuContent>
+              <DropdownMenuItem>
+                <Link to={`/user/${user.userId}`}>My account</Link>
+              </DropdownMenuItem>
+              <DropdownMenuSeparator />
+              <DropdownMenuItem>
+                <button className="text-red-700" onClick={() => logout()}>
+                  Logout
+                </button>
+              </DropdownMenuItem>
+            </DropdownMenuContent>
+          </DropdownMenu>
         </>
       );
     } else {
@@ -42,10 +78,7 @@ export default function Navbar() {
           {" "}
           PICTRU
         </Link>
-        <div className="flex gap-10 items-center">
-          {links}
-          {user && <div>logged in as {user?.userName}</div>}
-        </div>
+        <div className="flex gap-10 items-center">{links}</div>
       </nav>
     );
   };

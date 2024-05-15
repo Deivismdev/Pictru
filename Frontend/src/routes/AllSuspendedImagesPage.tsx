@@ -4,7 +4,7 @@ import { useAuth } from "@/context/useAuth";
 import { MasonryInfiniteGrid } from "@egjs/react-infinitegrid";
 import { useState } from "react";
 
-export default function SuspendedImagePage() {
+export default function AllSuspendedImagePage() {
   //   const profileData = useLoaderData() as any;
   //   const [profile, setProfile] = useState<UserProfile>(profileData);
   const [page, setPage] = useState(1);
@@ -18,7 +18,7 @@ export default function SuspendedImagePage() {
     if (stopFetching) return;
 
     const result = await fetch(
-      `http://localhost:5095/api/image?state=1&orderBy=uploadDate&pageNumber=${page}&pageSize=3&username=${user?.userName}`
+      `http://localhost:5095/api/image?state=1&orderBy=uploadDate&pageNumber=${page}&pageSize=3`
     );
     if (result.ok) {
       const res = await result.json();
@@ -31,10 +31,7 @@ export default function SuspendedImagePage() {
 
   return (
     <div className=" w-full py-6 text-foreground m-auto">
-      <div className="text-xl text-center w-full pb-6">
-        Suspended images uploaded by
-        <span className="font-bold"> {user?.userName}</span>
-      </div>
+      <div className="text-xl text-center w-full pb-6">Suspended images</div>
 
       <div className="px-36">
         <MasonryInfiniteGrid

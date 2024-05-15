@@ -42,7 +42,7 @@ export const UserProvider = ({ children }: Props) => {
       setToken(token);
     }
     setIsReady(true);
-  }, []);
+  }, [token]);
 
   const isLoggedIn = () => {
     return !!user;

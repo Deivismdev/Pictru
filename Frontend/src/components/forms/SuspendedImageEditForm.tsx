@@ -13,7 +13,8 @@ import { useForm } from "react-hook-form";
 import { TagNames } from "@/lib/tags";
 import { useEffect, useState } from "react";
 import { ToggleGroup, ToggleGroupItem } from "../ui/toggle-group";
-import { EditValidation } from "@/lib/validation";
+// import { UploadValidation } from "@/lib/validation";
+import { AppealValidation } from "@/lib/validation";
 import { useAuth } from "@/context/useAuth";
 import { Image } from "@/lib/types";
 import { useNavigate } from "react-router-dom";
@@ -22,18 +23,9 @@ interface EditFormProps {
   imageData: Image;
 }
 
-export default function ImageEditForm({ imageData }: EditFormProps) {
-  const form = useForm<z.infer<typeof EditValidation>>({
-    resolver: zodResolver(EditValidation),
-    defaultValues: {
-      Name: imageData.name,
-      Description: imageData.description,
-      // Tags: imageData.tags.map((tag) =>
-      //   Object.keys(TagNames).find(
-      //     (key) => TagNames[key as keyof typeof TagNames] === tag
-      //   )
-      // ), TODO: idk if its possible with shadcn toggle group
-    },
+export default function SuspendedImageEditForm({ imageData }: EditFormProps) {
+  const form = useForm<z.infer<typeof AppealValidation>>({
+    resolver: zodResolver(AppealValidation),
   });
 
   const { token } = useAuth();
@@ -43,12 +35,12 @@ export default function ImageEditForm({ imageData }: EditFormProps) {
   useEffect(() => {
     setPicturePreview(imageData.imageUrl);
   }, []);
-  const onSubmit = async (values: z.infer<typeof EditValidation>) => {
+  const onSubmit = async (values: z.infer<typeof AppealValidation>) => {
     const response = await fetch(
-      `http://localhost:5095/api/image/${imageData.id}`,
+      `http://localhost:5095/api/image/suspended/${imageData.id}`,
       {
         method: "PATCH",
-        body: JSON.stringify(values),
+        body: JSON.stringify({ tags: values.Tags }),
         headers: {
           "Content-Type": "application/json",
           Accept: "application/json",
@@ -58,7 +50,7 @@ export default function ImageEditForm({ imageData }: EditFormProps) {
     );
 
     if (!response.ok) {
-      throw new Error("oof");
+      throw new Error("Network response was not OK");
     }
 
     if (response.ok) {
@@ -81,19 +73,10 @@ export default function ImageEditForm({ imageData }: EditFormProps) {
         className="gap-5 w-full mt-4 grid grid-cols-2"
       >
         <div className="col-span-1">
-          <FormField
-            control={form.control}
-            name="Name"
-            render={({ field }) => (
-              <FormItem>
-                <FormLabel>Title</FormLabel>
-                <FormControl>
-                  <Input type="text" placeholder="title" {...field} />
-                </FormControl>
-              </FormItem>
-            )}
-          />
-
+          <FormItem>
+            <FormLabel>Title</FormLabel>
+            <div>{imageData.name}</div>
+          </FormItem>
           <FormLabel>Tags:</FormLabel>
           <ToggleGroup
             type="multiple"
@@ -116,18 +99,10 @@ export default function ImageEditForm({ imageData }: EditFormProps) {
               );
             })}
           </ToggleGroup>
-          <FormField
-            control={form.control}
-            name="Description"
-            render={({ field }) => (
-              <FormItem>
-                <FormLabel>Description</FormLabel>
-                <FormControl>
-                  <Input type="text" placeholder="description" {...field} />
-                </FormControl>
-              </FormItem>
-            )}
-          />
+          <FormItem>
+            <FormLabel>Description</FormLabel>
+            <div>{imageData.description}</div>
+          </FormItem>
 
           <Button className="w-1/2 mt-10" type="submit">
             Save changes
@@ -136,6 +111,14 @@ export default function ImageEditForm({ imageData }: EditFormProps) {
         <div className="m-auto h-4/5 w-4/5 relative">
           <img src={picturePreview} />
         </div>
+        {/* <div className="col-span-1 relative h-full">
+          <img
+            src={picturePreview}
+            className={`absolute top-10 left-0 h-full w-full z-0 object-contain ${
+              picturePreview ? "block" : "hidden"
+            }`}
+          />
+        </div> */}
       </form>
     </Form>
   );

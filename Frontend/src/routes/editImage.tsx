@@ -1,5 +1,4 @@
-import SuspendedImageEditForm from "@/components/forms/SuspendedImageEditForm";
-import ImageEditForm from "@/components/forms/SuspendedImageEditForm";
+import ImageEditForm from "@/components/forms/ImageEditForm";
 import { Image } from "@/lib/types";
 import { useState } from "react";
 import { useLoaderData } from "react-router-dom";
@@ -15,23 +14,19 @@ export async function loader({ params }: any) {
   return response;
 }
 
-export default function SuspendedImage() {
+export default function EditImage() {
   const imageData = useLoaderData() as Image;
-
-  // document.title = `PICTRU | "${imageData.name}"`;
 
   const [image, setImage] = useState<Image>(imageData);
 
   return (
     <div className="xl:px-36 px-12 flex flex-col text-foreground bg-background pt-4">
       <div className="flex gap-12 text-4xl">
-        <span>Your image has been suspended</span>
+        <span>Edit image</span>
       </div>
-      <div className="flex gap-12 text-xl">
-        <span>Modify the tags to represent image's nature</span>
-      </div>
+
       <div>
-        <SuspendedImageEditForm imageData={image} />
+        <ImageEditForm imageData={image} />
       </div>
     </div>
   );
