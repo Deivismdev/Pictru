@@ -19,10 +19,24 @@ export default function Navbar() {
       links = (
         <>
           <Link to={"/gallery"}>Gallery</Link>
-          <Link to={`/user/${user.userId}`}>My account</Link>
           <Link to={"/suspendedmy"}>Suspended images</Link>
           <Link to={"/upload"}>Upload</Link>
-          <button onClick={() => logout()}>Logout</button>
+          <DropdownMenu>
+            <DropdownMenuTrigger className="font-semibold text-primary">
+              {user.userName}
+            </DropdownMenuTrigger>
+            <DropdownMenuContent>
+              <DropdownMenuItem>
+                <Link to={`/user/${user.userId}`}>My account</Link>
+              </DropdownMenuItem>
+              <DropdownMenuSeparator />
+              <DropdownMenuItem>
+                <button className="text-red-700" onClick={() => logout()}>
+                  Logout
+                </button>
+              </DropdownMenuItem>
+            </DropdownMenuContent>
+          </DropdownMenu>
         </>
       );
     } else if (user?.roles.includes("Moderator")) {
@@ -74,7 +88,7 @@ export default function Navbar() {
     }
     return (
       <nav className="w-9/12 m-auto py-2 flex justify-between">
-        <Link className="font-bold text-3xl" to={"/"}>
+        <Link className="font-bold text-3xl" to={"/home"}>
           {" "}
           PICTRU
         </Link>

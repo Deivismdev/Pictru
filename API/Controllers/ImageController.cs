@@ -38,7 +38,7 @@ namespace API.Controllers
             _imageService = imageService;
         }
         [HttpPost]
-        // [Authorize]
+        [Authorize]
         public async Task<IActionResult> CreateImage(CreateImageDto imageDto)
         {
             var userId = User.Claims.SingleOrDefault(x => x.Type.Equals("http://schemas.xmlsoap.org/ws/2005/05/identity/claims/nameidentifier")).Value;
@@ -88,7 +88,7 @@ namespace API.Controllers
         }
 
         [HttpGet("{imageId}")]
-        public async Task<IActionResult> GetImage(int imageId)
+        public async Task<IActionResult> GetImage(int imageId, string userId = null)
         {
             var image = context.Images
                 .Include(i => i.User)
@@ -130,6 +130,7 @@ namespace API.Controllers
             {
                 return NotFound();
             }
+
             var readImagesDto = mapper.Map<IEnumerable<GetImagesDto>>(images);
 
             return Ok(readImagesDto);
@@ -225,16 +226,12 @@ namespace API.Controllers
                 var tag = await context.Tags.FirstOrDefaultAsync(t => t.Name == tagName);
                 image.Tags.Add(tag);
             }
-            // if user:
-            // image.State = ImageStates.Appealed;
-
-            // if admin:
-            // image.State = ImageState.Protected;
-            // image.ReportCount = 0;
-            //
-
-            //TODO: TEMPORARY SOLUTION 
-            image.State = ImageStates.Active;
+            image.State = ImageStates.Appealed;
+            if (await _userManager.IsInRoleAsync(await _userManager.FindByIdAsync(userId), "Moderator"))
+            {
+                image.State = ImageStates.Active;
+                image.ReportCount = 0;
+            }
 
             context.Images.Update(image);
             await context.SaveChangesAsync();
@@ -260,6 +257,7 @@ namespace API.Controllers
 
             //TODO: state should change to protected
             // but fetching by two states (active and protected) is not supported rn too bad
+            // (image can only have one state the way it is now)
             image.State = ImageStates.Active;
             image.ReportCount = 0;
             // image.reports should be cleared

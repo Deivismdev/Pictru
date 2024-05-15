@@ -87,7 +87,7 @@ export const UserProvider = ({ children }: Props) => {
     localStorage.clear();
     setUser(null);
     setToken("");
-    navigate("/");
+    navigate("/home");
   };
 
   return (

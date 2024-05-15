@@ -28,7 +28,7 @@ export default function SuspendedImage() {
         <span>Your image has been suspended</span>
       </div>
       <div className="flex gap-12 text-xl">
-        <span>Modify the tags to represent image's nature</span>
+        <span>Please select correct tags</span>
       </div>
       <div>
         <SuspendedImageEditForm imageData={image} />

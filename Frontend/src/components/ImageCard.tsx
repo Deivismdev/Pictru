@@ -9,8 +9,11 @@ interface ImageCardProps {
 
 export default function ImageCard({ image }: ImageCardProps) {
   return (
-    <NavLink  className="w-[400px] group relative" to={`/gallery/image/${image.id}`}>
-      <div className="hidden p-2 justify-between text-xl flex-col text-center items-center group-hover:flex absolute backdrop-brightness-[0.20] w-full h-full">
+    <NavLink
+      className="w-[400px] group relative"
+      to={`/gallery/image/${image.id}`}
+    >
+      <div className="hidden p-2 justify-between text-white text-xl flex-col text-center items-center group-hover:flex absolute backdrop-brightness-[0.20] w-full h-full">
         <div className="">
           <div>
             {image.user.isPremium && "⭐"} {image.user.username}{" "}

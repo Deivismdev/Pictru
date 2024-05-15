@@ -82,6 +82,7 @@ namespace API.Models
         public int ViewCount { get; set; }
         public int LikeCount { get; set; }
         public int ReportCount { get; set; }
+        public bool Liked { get; set; } = false;
         public DateTime UploadDate { get; set; }
         public ImageStates ImageState { get; set; }
         public GetUserDto User { get; set; }

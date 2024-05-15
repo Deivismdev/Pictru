@@ -30,6 +30,7 @@ namespace API.Controllers
         public async Task<IActionResult> LikeImage(int imageId)
         {
             var userId = User.Claims.SingleOrDefault(x => x.Type.Equals("http://schemas.xmlsoap.org/ws/2005/05/identity/claims/nameidentifier")).Value;
+            System.Console.WriteLine($"\n\n\nUser {userId} has liked Image {imageId}\n\n\n");
             var existingLike = await context.Likes
                 .FirstOrDefaultAsync(l => l.ImageId == imageId && l.UserId == userId);
 
@@ -55,7 +56,7 @@ namespace API.Controllers
             return Ok();
         }
 
-        [HttpDelete()]
+        [HttpDelete]
         [Authorize]
         public async Task<IActionResult> DislikeImage(int imageId)
         {
@@ -78,6 +79,27 @@ namespace API.Controllers
 
             var image = await context.Images.FindAsync(imageId);
             image.LikeCount--;
+            await context.SaveChangesAsync();
+
+            return NoContent();
+        }
+
+        [HttpDelete]
+        [Route("all")]
+        [Authorize]
+        public async Task<IActionResult> RemoveLikes(int imageId)
+        {
+            var userId = User.Claims.SingleOrDefault(x => x.Type.Equals("http://schemas.xmlsoap.org/ws/2005/05/identity/claims/nameidentifier")).Value;
+
+            var image = await context.Images.Include(i => i.User).FirstOrDefaultAsync(i => i.Id == imageId);
+            if (image == null)
+            {
+                return NotFound("Image not found.");
+            }
+
+            var LikesToRemove = await context.Likes.Where(r => r.ImageId == imageId).ToListAsync();
+            image.LikeCount = 0;
+            context.Likes.RemoveRange(LikesToRemove);
             await context.SaveChangesAsync();
 
             return NoContent();

@@ -18,6 +18,8 @@ import { number } from "zod";
 
 export async function loader({ params }: any) {
   console.log(params);
+  // const { user } = useAuth();
+  // const userId = user ? `?userId=${encodeURIComponent(user.userId)}` : "";
   const response = await fetch(
     `http://localhost:5095/api/image/${params.imageId}`
   );
@@ -59,14 +61,17 @@ export default function ImagePage() {
     const img = new Image();
     img.src = image.imageUrl;
     img.onload = () => {
+      console.log(imageRef);
       if (imageRef.current) {
         const aspectRatio = img.width / img.height;
         if (aspectRatio > 1) {
           // Image is wider
           setImageClass("w-full h-max");
+          console.log("WIDER");
         } else {
           // Image is taller
-          setImageClass("h-full w-auto ");
+          setImageClass("h-full w-max");
+          console.log("TALLER");
         }
       }
     };
@@ -238,14 +243,13 @@ export default function ImagePage() {
             </div>
           </div>
           <div className="flex-1 h-full w-full flex items-center justify-center">
-            <div
-              className={`m-auto flex items-center  ${imageClass} justify-center `}
-            >
-              <div className="m-auto h-full w-full relative">
+            <div className={`m-auto flex items-center h-full justify-center `}>
+              <div className={`m-auto ${imageClass} relative`}>
                 <img
                   src={image.imageUrl}
+                  ref={imageRef}
                   // TODO: IMAGE OVERFLOWS REEE
-                  className={`object-contain m-auto`}
+                  className={`object-contain m-auto w-full h-full`}
                   onClick={() => setIsEnlarged(true)}
                   style={isEnlarged ? { display: "none" } : {}}
                 />

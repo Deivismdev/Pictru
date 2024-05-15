@@ -67,5 +67,26 @@ namespace API.Controllers
 
             return Ok();
         }
+
+        [HttpDelete]
+        [Authorize]
+        public async Task<IActionResult> RemoveReports(int imageId)
+        {
+            var userId = User.Claims.SingleOrDefault(x => x.Type.Equals("http://schemas.xmlsoap.org/ws/2005/05/identity/claims/nameidentifier")).Value;
+
+            var image = await context.Images.Include(i => i.User).FirstOrDefaultAsync(i => i.Id == imageId);
+            if (image == null)
+            {
+                return NotFound("Image not found.");
+            }
+
+            var reportsToRemove = await context.Reports.Where(r => r.ImageId == imageId).ToListAsync();
+            image.ReportCount = 0;
+            context.Reports.RemoveRange(reportsToRemove);
+            await context.SaveChangesAsync();
+
+            return NoContent();
+
+        }
     }
 }
