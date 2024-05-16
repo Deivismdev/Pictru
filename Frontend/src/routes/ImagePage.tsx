@@ -11,6 +11,7 @@ import {
   MessageCircleWarningIcon,
   MousePointerClick,
   ThumbsUp,
+  Trash,
 } from "lucide-react";
 import React, { useEffect, useRef, useState } from "react";
 import {
@@ -107,11 +108,10 @@ export default function ImagePage() {
     else {
       console.log(response.body);
       const data = await response.json();
-
+      console.warn(data.comments);
       const updatedImage = {
         ...(image as imageType),
-        imageComments: data.comments, // Adjust based on actual structure of `data`
-        // Add other fields here if necessary, ensuring they are not `undefined`
+        imageComments: data,
       };
 
       setImage(updatedImage);
@@ -137,6 +137,39 @@ export default function ImagePage() {
 
       console.log("Image deleted successfully");
       navigate(`/user/${image?.user.id}`);
+    } catch (error) {
+      console.error("An error occurred:", error);
+    }
+  }
+
+  async function onDeleteCommentClick(imageId: number, commentId: number) {
+    console.log(imageId, commentId);
+    try {
+      const response = await fetch(
+        `http://localhost:5095/api/images/${imageId}/comments/${commentId}`,
+        {
+          method: "DELETE",
+          headers: {
+            Accept: "application/json",
+            Authorization: `bearer ${token}`,
+          },
+        }
+      );
+      console.log(response);
+      if (!response.ok) {
+        throw new Error("Failed to delete image");
+      }
+
+      const updatedComments =
+        image?.imageComments.filter((c) => c.id != commentId) ?? [];
+      const updatedImage = {
+        ...(image as imageType),
+        imageComments: updatedComments,
+      };
+
+      setImage(updatedImage);
+
+      console.log("Image deleted successfully");
     } catch (error) {
       console.error("An error occurred:", error);
     }
@@ -203,7 +236,7 @@ export default function ImagePage() {
             </span>
           </div>
           <div className="flex gap-2 pt-3">
-            {image.tags.map((tag) => (
+            {image?.tags.map((tag) => (
               <Badge key={TagNames[tag]}>{TagNames[tag]}</Badge>
             ))}
           </div>
@@ -240,7 +273,7 @@ export default function ImagePage() {
           <div className="flex-1 ">
             <div className="border border-border rounded-sm flex flex-col h-full justify-between">
               <ScrollArea>
-                {image.imageComments.map((comment) => (
+                {image?.imageComments.map((comment) => (
                   <div
                     key={comment.id}
                     className="bg-muted p-2 m-2 rounded-md hover:brightness-110"
@@ -259,7 +292,25 @@ export default function ImagePage() {
                         <MousePointerClick className="stroke-white" />
                       )}
                     </div>
-                    <div>{comment.text}</div>
+                    <div className="flex flex-row justify-between items-center">
+                      <div>{comment.text}</div>
+                      <div>
+                        {(comment.userId === user?.userId ||
+                          user?.roles.includes("Moderator")) && (
+                          <Trash
+                            className="cursor-pointer hover:scale-105"
+                            onClick={() =>
+                              onDeleteCommentClick(image.id, comment.id)
+                            }
+                          />
+                        )}
+                        {/* <Trash
+                          onClick={() =>
+                            onDeleteCommentClick(comment.userId, comment.id)
+                          }
+                        /> */}
+                      </div>
+                    </div>
                   </div>
                 ))}
               </ScrollArea>

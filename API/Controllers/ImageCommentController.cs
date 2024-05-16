@@ -108,6 +108,7 @@ namespace API.Controllers
         [HttpDelete("{commentId}")]
         public async Task<IActionResult> DeleteImageComment(int imageId, int commentId)
         {
+            System.Console.WriteLine($"\n\n\n ???? {imageId} {commentId}\n\n\n");
             var userId = User.Claims.SingleOrDefault(x => x.Type.Equals("http://schemas.xmlsoap.org/ws/2005/05/identity/claims/nameidentifier")).Value;
             var comment = await context.ImageComments
                 .Where(i => i.Image.Id == imageId && i.Id == commentId)
@@ -126,7 +127,7 @@ namespace API.Controllers
             context.ImageComments.Remove(comment);
             await context.SaveChangesAsync();
 
-            return NoContent();
+            return Ok();
         }
 
     }
