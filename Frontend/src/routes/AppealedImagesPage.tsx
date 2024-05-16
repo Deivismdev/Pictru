@@ -1,3 +1,4 @@
+import AppealedImageCard from "@/components/AppealedImageCard";
 import ImageCard from "@/components/ImageCard";
 import SuspendedImageCard from "@/components/SuspendedImageCard";
 import { useAuth } from "@/context/useAuth";
@@ -31,7 +32,9 @@ export default function AppealedImagePage() {
 
   return (
     <div className=" w-full py-6 text-foreground m-auto">
-      <div className="text-xl text-center w-full pb-6">Suspended images</div>
+      <div className="text-xl text-center w-full pb-6">
+        Appealed suspended images
+      </div>
 
       <div className="px-36">
         <MasonryInfiniteGrid
@@ -49,7 +52,7 @@ export default function AppealedImagePage() {
           }}
         >
           {images.map((image: any) => {
-            return <SuspendedImageCard image={image} key={image.id} />;
+            return <AppealedImageCard image={image} key={image.id} />;
           })}
         </MasonryInfiniteGrid>
       </div>

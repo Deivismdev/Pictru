@@ -134,7 +134,6 @@ namespace API.Controllers
             {
                 var like = await context.Likes
                    .FirstOrDefaultAsync(l => l.ImageId == imageId && l.UserId == userId);
-                System.Console.WriteLine($"\n\n{like.UserId} {like.ImageId}\n\n");
                 hasLiked = like != null;
             }
             System.Console.WriteLine($"\n\n{hasLiked}\n\n");
@@ -279,28 +278,26 @@ namespace API.Controllers
         }
 
         [HttpPatch("appealed/{imageId}")]
+        [Authorize]
         public async Task<IActionResult> ApproveAppealedImageSuspension(int imageId)
         {
-            var image = await context.Images.Include(i => i.Tags).FirstOrDefaultAsync(i => i.Id == imageId);
+            var image = await context.Images.Include(i => i.Tags).Include(i => i.Reports).FirstOrDefaultAsync(i => i.Id == imageId);
             if (image == null)
             {
                 return NotFound();
             }
 
-            if (image.State != ImageStates.Suspended)
+            if (image.State != ImageStates.Appealed)
             {
-                return BadRequest("Image is not suspended.");
+                return BadRequest("Image suspensions is not suspended.");
             }
-
-            image.Tags.Clear();
 
             //TODO: state should change to protected
             // but fetching by two states (active and protected) is not supported rn too bad
             // (image can only have one state the way it is now)
             image.State = ImageStates.Active;
             image.ReportCount = 0;
-            // image.reports should be cleared
-
+            image.Reports.Clear();
             context.Images.Update(image);
             await context.SaveChangesAsync();
 

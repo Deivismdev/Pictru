@@ -27,11 +27,11 @@ namespace API.Controllers
             System.Console.WriteLine("Hello?");
             // TODO: Prevent low rep users from reporting?
             var userId = User.Claims.SingleOrDefault(x => x.Type.Equals("http://schemas.xmlsoap.org/ws/2005/05/identity/claims/nameidentifier")).Value;
-            const int reportThreshold = 1;
+            const int reportThreshold = 2;
 
             // increase threshold,
             // if mod reports, change state immediately to suspended
-
+            // or just delete? what's the point of reporting
             var existingReport = await context.Reports
                 .FirstOrDefaultAsync(l => l.ImageId == imageId && l.UserId == userId);
 

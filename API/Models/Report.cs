@@ -13,6 +13,5 @@ namespace API.Models
         public Image Image { get; set; }
         public string UserId { get; set; }
         public User User { get; set; }
-
     }
 }

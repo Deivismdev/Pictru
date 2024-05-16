@@ -1,32 +1,36 @@
 import CoordinateSelector from "@/components/CoordinateSelector";
-import ImageCommentForm from "@/components/forms/ImageCommentForm";
+import SuspendedImageEditForm from "@/components/forms/SuspendedImageEditForm";
+import ImageEditForm from "@/components/forms/SuspendedImageEditForm";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { ScrollArea } from "@/components/ui/scroll-area";
 import { useAuth } from "@/context/useAuth";
 import { TagNames } from "@/lib/tags";
-import { Image as imageType } from "@/lib/types";
-import {
-  Eye,
-  MessageCircleWarningIcon,
-  MousePointerClick,
-  ThumbsUp,
-} from "lucide-react";
-import React, { useEffect, useRef, useState } from "react";
-import {
-  NavLink,
-  useLoaderData,
-  useNavigate,
-  useParams,
-} from "react-router-dom";
-import { number } from "zod";
+// import { Image } from "@/lib/types";
+import { Eye, MousePointerClick, ThumbsUp } from "lucide-react";
+import { useEffect, useRef, useState } from "react";
+import { useLoaderData } from "react-router-dom";
+import { NavLink, useNavigate, useParams } from "react-router-dom";
 
-export default function ImagePage() {
+export async function loader({ params }: any) {
+  console.log(params);
+  const response = await fetch(
+    `http://localhost:5095/api/image/${params.imageId}`
+  );
+
+  if (!response.ok) throw new Error("Error loading images");
+
+  return response;
+}
+
+export default function AppealedImage() {
+  const imageData = useLoaderData() as any;
+  const navigate = useNavigate();
+  const { token, user } = useAuth();
+  const [image, setImage] = useState<any>(imageData);
+  const imageRef = useRef<HTMLImageElement>(null);
+  const [imageClass, setImageClass] = useState("");
   const [isEnlarged, setIsEnlarged] = useState(false);
-
-  const { imageId } = useParams();
-
-  console.log(imageId);
 
   const [selectedCoordinates, setIsSelectedCoordinates] = useState<{
     x: number;
@@ -41,41 +45,6 @@ export default function ImagePage() {
     setIsEnlarged(false);
     setIsSelectedCoordinates(coordinates);
   };
-
-  // const imageData = useLoaderData() as imageType;
-
-  // document.title = `PICTRU | "${imageData.name}"`;
-  const { token, user } = useAuth();
-  const [image, setImage] = useState<imageType | null>(null);
-  const [liked, setLiked] = useState<Boolean>(false);
-  const [imageClass, setImageClass] = useState(""); // State to hold the CSS class for the image
-  const navigate = useNavigate();
-
-  const imageRef = useRef<HTMLImageElement>(null); // Ref to access the image element
-
-  useEffect(() => {
-    async function fetchImage() {
-      const url = user
-        ? `http://localhost:5095/api/image/loggedin/${imageId}`
-        : `http://localhost:5095/api/image/${imageId}`;
-
-      const headers: HeadersInit = user
-        ? { Authorization: `Bearer ${token}` }
-        : {};
-
-      try {
-        const response = await fetch(url, { headers });
-        if (!response.ok) throw new Error("Error loading image");
-        const data = await response.json();
-        console.log(data);
-        setImage(data);
-      } catch (error) {
-        console.error(error);
-      }
-    }
-
-    fetchImage();
-  }, [imageId, token, user]);
 
   useEffect(() => {
     if (!image) return;
@@ -97,33 +66,13 @@ export default function ImagePage() {
       }
     };
   }, [image?.imageUrl]);
-  // if image is wider, w-full h-max, if taller, h-full w-max
 
-  async function onCommentSubmit() {
-    const response = await fetch(
-      `http://localhost:5095/api/images/${image?.id}/comments`
-    );
-    if (!response.ok) throw new Error("Error loading comments");
-    else {
-      console.log(response.body);
-      const data = await response.json();
-
-      const updatedImage = {
-        ...(image as imageType),
-        imageComments: data.comments, // Adjust based on actual structure of `data`
-        // Add other fields here if necessary, ensuring they are not `undefined`
-      };
-
-      setImage(updatedImage);
-    }
-  }
-
-  async function onDeleteClick(imageId: number) {
+  async function onApproveClick(imageId: number) {
     try {
       const response = await fetch(
-        `http://localhost:5095/api/image/${imageId}`,
+        `http://localhost:5095/api/image/appealed/${imageId}`,
         {
-          method: "DELETE",
+          method: "PATCH",
           headers: {
             Accept: "application/json",
             Authorization: `bearer ${token}`,
@@ -135,53 +84,11 @@ export default function ImagePage() {
         throw new Error("Failed to delete image");
       }
 
-      console.log("Image deleted successfully");
-      navigate(`/user/${image?.user.id}`);
+      console.log("Image activated!");
+      navigate(`/gallery/image/${imageId}`);
     } catch (error) {
       console.error("An error occurred:", error);
     }
-  }
-
-  async function onLikeClick(imageId: any) {
-    const token = localStorage.getItem("token");
-    //TODO: Need new endpoint to get image like count
-    const response = await fetch(`http://localhost:5095/api/${imageId}/likes`, {
-      method: "POST",
-      headers: {
-        Accept: "application/json",
-        Authorization: `bearer ${token}`,
-      },
-    });
-    if (!response.ok) {
-      throw new Error("oof");
-    }
-
-    // setImage({ ...image, likeCount: image.likeCount + 1 });
-    setLiked(true);
-    console.log("Imageliked");
-  }
-
-  async function onReportClick(imageId: any) {
-    const token = localStorage.getItem("token");
-
-    const response = await fetch(
-      `http://localhost:5095/api/${imageId}/reports`,
-      {
-        method: "POST",
-        headers: {
-          Accept: "application/json",
-          Authorization: `bearer ${token}`,
-        },
-      }
-    );
-    if (!response.ok) {
-      throw new Error("oof");
-    }
-    console.log("Image reported");
-  }
-
-  if (!image) {
-    return <div>Loading...</div>; // Show loading indicator if image is null
   }
 
   return (
@@ -189,11 +96,8 @@ export default function ImagePage() {
       <div className="grid grid-cols-2 p-2">
         <div className="col-span-1 flex flex-col">
           <div className="flex gap-12 text-4xl">
-            <span>"{image.name}"</span>
-          </div>
-          <div className="flex gap-12 text-xl">
             <span>
-              Uploaded by:{" "}
+              Appealed by:{" "}
               <NavLink
                 className="font-bold hover:underline"
                 to={`/user/${image.user.id}`}
@@ -202,36 +106,16 @@ export default function ImagePage() {
               </NavLink>
             </span>
           </div>
+          <div className="flex gap-12 text-xl">
+            <span>Check if tags represent the image:</span>
+          </div>
           <div className="flex gap-2 pt-3">
-            {image.tags.map((tag) => (
-              <Badge key={TagNames[tag]}>{TagNames[tag]}</Badge>
+            {image.tags.map((tag: any) => (
+              <Badge className="text-3xl" key={TagNames[tag]}>
+                {TagNames[tag]}
+              </Badge>
             ))}
           </div>
-        </div>
-        <div className="col-span-1 flex self-center justify-between text-2xl">
-          <div className="flex flex-row gap-12 items-center">
-            <span className="flex gap-1 items-center">
-              <Eye className="size-10" />
-              {image.viewCount}
-            </span>
-            <span className="flex gap-1 items-center">
-              <button onClick={() => onLikeClick(image.id)}>
-                <ThumbsUp
-                  className={`size-10 hover:stroke-green-500 ${
-                    (liked || image.liked) && "fill-white "
-                  }`}
-                />
-              </button>
-              {image.likeCount + Number(liked)}
-            </span>
-          </div>
-          <span className="flex gap-5 items-center">
-            <span className="text-sm ">Report mistagged image</span>
-            {/* Change badge to more report like? */}
-            <button onClick={() => onReportClick(image.id)}>
-              <MessageCircleWarningIcon className="hover:stroke-red-700 size-10" />
-            </button>
-          </span>
         </div>
       </div>
 
@@ -240,7 +124,7 @@ export default function ImagePage() {
           <div className="flex-1 ">
             <div className="border border-border rounded-sm flex flex-col h-full justify-between">
               <ScrollArea>
-                {image.imageComments.map((comment) => (
+                {image.imageComments.map((comment: any) => (
                   <div
                     key={comment.id}
                     className="bg-muted p-2 m-2 rounded-md hover:brightness-110"
@@ -263,14 +147,6 @@ export default function ImagePage() {
                   </div>
                 ))}
               </ScrollArea>
-              <div className="p-2">
-                <ImageCommentForm
-                  onCommentSubmit={onCommentSubmit}
-                  imageId={image.id}
-                  onSelectImagePoint={() => setIsEnlarged(true)}
-                  coordinates={selectedCoordinates}
-                />
-              </div>
             </div>
           </div>
           <div className="flex-1 h-full w-full flex items-center justify-center">
@@ -324,30 +200,26 @@ export default function ImagePage() {
             )}
           </div>
         </div>
-        <div className="border border-border h-max p-2 mt-6">
-          <h6 className="font-bold">Description</h6>
-          <ScrollArea className="h-full">{image.description}</ScrollArea>
-        </div>
-
         <div className="flex gap-6 pt-4">
           {(image.user.id === user?.userId ||
             user?.roles.includes("Moderator")) && (
             <>
               <Button
-                className="w-16"
+                className="w-26"
                 type="submit"
-                onClick={() => navigate(`/editImage/${image.id}`)}
+                onClick={() => onApproveClick(image.id)}
               >
-                Edit
+                Approve image
               </Button>
-              <Button
+              {/* TODO: ahh this is stupid need new endpoint to change state to suspended */}
+              {/* <Button
                 variant="destructive"
-                className="w-16"
+                className="w-26"
                 type="submit"
-                onClick={() => onDeleteClick(image.id)}
+                onClick={() => onSuspendedClick(image.id)}
               >
-                Delete
-              </Button>
+                Move to suspended
+              </Button> */}
             </>
           )}
         </div>

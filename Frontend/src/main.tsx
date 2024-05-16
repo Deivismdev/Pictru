@@ -20,6 +20,8 @@ import LandingPage from "./routes/landingPage";
 import SuspendedImagesPage from "./routes/SuspendedImagesPage";
 import AllSuspendedImagesPage from "./routes/AllSuspendedImagesPage";
 import EditImage, { loader as editLoader } from "./routes/editImage";
+import AppealedImagesPage from "./routes/AppealedImagesPage";
+import AppealedImage, { loader } from "./routes/appealedImage";
 
 const router = createBrowserRouter([
   {
@@ -84,19 +86,37 @@ const router = createBrowserRouter([
         path: "/appealed",
         element: (
           <ProtectedRoute>
-            <AllSuspendedImagesPage />
+            <AppealedImagesPage />
           </ProtectedRoute>
         ),
       },
 
       {
+        path: "/appealed/:imageId",
+        element: (
+          <ProtectedRoute>
+            <AppealedImage />
+          </ProtectedRoute>
+        ),
+        loader: loader
+      },
+
+      {
         path: "/suspended/:imageId",
-        element: <SuspendedImage />,
+        element: (
+          <ProtectedRoute>
+            <SuspendedImage />
+          </ProtectedRoute>
+        ),
         loader: suspendedLoader,
       },
       {
         path: "/editImage/:imageId",
-        element: <EditImage />,
+        element: (
+          <ProtectedRoute>
+            <EditImage />
+          </ProtectedRoute>
+        ),
         loader: editLoader,
       },
     ],
