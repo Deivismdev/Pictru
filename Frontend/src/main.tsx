@@ -7,7 +7,7 @@ import Login from "./routes/login";
 import Register from "./routes/register";
 import "./globals.css";
 import Gallery from "./routes/gallery";
-import ImagePage, { loader as imageLoader } from "./routes/ImagePage";
+import ImagePage from "./routes/ImagePage";
 import UploadPage from "./routes/UploadPage";
 import ProfilePage, { loader as profileLoader } from "./routes/ProfilePage";
 import ProtectedRoute from "./routes/protectedRoute";
@@ -46,7 +46,7 @@ const router = createBrowserRouter([
       {
         path: "/gallery/image/:imageId",
         element: <ImagePage />,
-        loader: imageLoader,
+        // loader: imageLoader,
       },
       {
         path: "/upload",

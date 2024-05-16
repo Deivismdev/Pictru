@@ -1,3 +1,5 @@
+import { BlobOptions } from "buffer";
+
 export type GalleryImage = {
   id: number;
   name: string;
@@ -28,6 +30,7 @@ export type Image = {
   reportCount: number;
   uploadDate: string;
   imageState: number;
+  liked: boolean;
   user: {
     id: string;
     username: string;

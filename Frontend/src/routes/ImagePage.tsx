@@ -13,24 +13,33 @@ import {
   ThumbsUp,
 } from "lucide-react";
 import React, { useEffect, useRef, useState } from "react";
-import { NavLink, useLoaderData, useNavigate } from "react-router-dom";
+import {
+  NavLink,
+  useLoaderData,
+  useNavigate,
+  useParams,
+} from "react-router-dom";
 import { number } from "zod";
 
-export async function loader({ params }: any) {
-  console.log(params);
-  // const { user } = useAuth();
-  // const userId = user ? `?userId=${encodeURIComponent(user.userId)}` : "";
-  const response = await fetch(
-    `http://localhost:5095/api/image/${params.imageId}`
-  );
+// export async function loader({ params }: any) {
+//   console.log(params);
+//   // const { user } = useAuth();
+//   // const userId = user ? `?userId=${encodeURIComponent(user.userId)}` : "";
+//   const response = await fetch(
+//     `http://localhost:5095/api/image/${params.imageId}`
+//   );
 
-  if (!response.ok) throw new Error("Error loading images");
+//   if (!response.ok) throw new Error("Error loading images");
 
-  return response;
-}
+//   return response;
+// }
 
 export default function ImagePage() {
   const [isEnlarged, setIsEnlarged] = useState(false);
+
+  const { imageId } = useParams();
+
+  console.log(imageId);
 
   const [selectedCoordinates, setIsSelectedCoordinates] = useState<{
     x: number;
@@ -46,11 +55,11 @@ export default function ImagePage() {
     setIsSelectedCoordinates(coordinates);
   };
 
-  const imageData = useLoaderData() as imageType;
+  // const imageData = useLoaderData() as imageType;
 
   // document.title = `PICTRU | "${imageData.name}"`;
   const { token, user } = useAuth();
-  const [image, setImage] = useState<imageType>(imageData);
+  const [image, setImage] = useState<imageType | null>(null);
   const [liked, setLiked] = useState<Boolean>(false);
   const [imageClass, setImageClass] = useState(""); // State to hold the CSS class for the image
   const navigate = useNavigate();
@@ -58,6 +67,31 @@ export default function ImagePage() {
   const imageRef = useRef<HTMLImageElement>(null); // Ref to access the image element
 
   useEffect(() => {
+    async function fetchImage() {
+      const url = user
+        ? `http://localhost:5095/api/image/loggedin/${imageId}`
+        : `http://localhost:5095/api/image/${imageId}`;
+
+      const headers: HeadersInit = user
+        ? { Authorization: `Bearer ${token}` }
+        : {};
+
+      try {
+        const response = await fetch(url, { headers });
+        if (!response.ok) throw new Error("Error loading image");
+        const data = await response.json();
+        console.log(data);
+        setImage(data);
+      } catch (error) {
+        console.error(error);
+      }
+    }
+
+    fetchImage();
+  }, [imageId, token, user]);
+
+  useEffect(() => {
+    if (!image) return;
     const img = new Image();
     img.src = image.imageUrl;
     img.onload = () => {
@@ -75,19 +109,25 @@ export default function ImagePage() {
         }
       }
     };
-  }, [image.imageUrl]);
+  }, [image?.imageUrl]);
   // if image is wider, w-full h-max, if taller, h-full w-max
 
   async function onCommentSubmit() {
     const response = await fetch(
-      `http://localhost:5095/api/images/${image.id}/comments`
+      `http://localhost:5095/api/images/${image?.id}/comments`
     );
     if (!response.ok) throw new Error("Error loading comments");
     else {
       console.log(response.body);
       const data = await response.json();
 
-      setImage((prevImage) => ({ ...prevImage, imageComments: data }));
+      const updatedImage = {
+        ...(image as imageType),
+        imageComments: data.comments, // Adjust based on actual structure of `data`
+        // Add other fields here if necessary, ensuring they are not `undefined`
+      };
+
+      setImage(updatedImage);
     }
   }
 
@@ -109,7 +149,7 @@ export default function ImagePage() {
       }
 
       console.log("Image deleted successfully");
-      navigate(`/user/${imageData.user.id}`);
+      navigate(`/user/${image?.user.id}`);
     } catch (error) {
       console.error("An error occurred:", error);
     }
@@ -153,6 +193,10 @@ export default function ImagePage() {
     console.log("Image reported");
   }
 
+  if (!image) {
+    return <div>Loading...</div>; // Show loading indicator if image is null
+  }
+
   return (
     <div className="xl:px-36 px-12 flex flex-col text-foreground bg-background">
       <div className="grid grid-cols-2 p-2">
@@ -173,7 +217,7 @@ export default function ImagePage() {
           </div>
           <div className="flex gap-2 pt-3">
             {image.tags.map((tag) => (
-              <Badge>{TagNames[tag]}</Badge>
+              <Badge key={TagNames[tag]}>{TagNames[tag]}</Badge>
             ))}
           </div>
         </div>
@@ -187,7 +231,7 @@ export default function ImagePage() {
               <button onClick={() => onLikeClick(image.id)}>
                 <ThumbsUp
                   className={`size-10 hover:stroke-green-500 ${
-                    liked && "fill-white "
+                    (liked || image.liked) && "fill-white "
                   }`}
                 />
               </button>

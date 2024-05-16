@@ -88,8 +88,10 @@ namespace API.Controllers
         }
 
         [HttpGet("{imageId}")]
-        public async Task<IActionResult> GetImage(int imageId, string userId = null)
+        public async Task<IActionResult> GetImage(int imageId)
         {
+            System.Console.WriteLine("\n\nGetting image (Guest)");
+
             var image = context.Images
                 .Include(i => i.User)
                 .Include(i => i.Tags)
@@ -105,6 +107,43 @@ namespace API.Controllers
             await context.SaveChangesAsync();
 
             var readImageDto = mapper.Map<GetImageDto>(image);
+            return Ok(readImageDto);
+        }
+
+        [HttpGet("loggedin/{imageId}")]
+        [Authorize]
+        // TODO: idk how else to do this, i need to check for user id to check for likes
+        // There has to be a better way
+        public async Task<IActionResult> GetImageLoggedIn(int imageId)
+        {
+            System.Console.WriteLine("\n\nGetting image (logged in)");
+            var image = context.Images
+                .Include(i => i.User)
+                .Include(i => i.Tags)
+                .Include(i => i.ImageComments).ThenInclude(ic => ic.User)
+                .FirstOrDefault(i => i.Id == imageId);
+
+            if (image == null)
+            {
+                return NotFound();
+            }
+            var userId = User.Claims.SingleOrDefault(x => x.Type.Equals("http://schemas.xmlsoap.org/ws/2005/05/identity/claims/nameidentifier")).Value;
+            System.Console.WriteLine($"\n\nuserId = {userId}\n\n");
+            bool hasLiked = false;
+            if (!string.IsNullOrEmpty(userId))
+            {
+                var like = await context.Likes
+                   .FirstOrDefaultAsync(l => l.ImageId == imageId && l.UserId == userId);
+                System.Console.WriteLine($"\n\n{like.UserId} {like.ImageId}\n\n");
+                hasLiked = like != null;
+            }
+            System.Console.WriteLine($"\n\n{hasLiked}\n\n");
+            image.ViewCount += 1;
+            await context.SaveChangesAsync();
+
+            var readImageDto = mapper.Map<GetImageDto>(image);
+            readImageDto.Liked = hasLiked;
+            System.Console.WriteLine("\n\n\n");
             return Ok(readImageDto);
         }
 

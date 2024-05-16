@@ -57,7 +57,7 @@ export default function LandingPage() {
 
       <div className=" w-full px-96">
         <div className="text-xl text-center w-full pb-6">
-          images uploaded by
+          images uploaded by our users
         </div>
         <MasonryInfiniteGrid
           loading={<div className="animate-spin">/</div>}
