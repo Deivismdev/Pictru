@@ -5,7 +5,9 @@ import { ScrollArea } from "@/components/ui/scroll-area";
 import { useAuth } from "@/context/useAuth";
 import { UserProfile } from "@/lib/types";
 import { MasonryInfiniteGrid } from "@egjs/react-infinitegrid";
-import { PencilIcon } from "lucide-react";
+import { Console } from "console";
+import { PencilIcon, Trash } from "lucide-react";
+import { cwd } from "process";
 import { useState } from "react";
 import { useLoaderData } from "react-router-dom";
 
@@ -24,7 +26,7 @@ export default function ProfilePage() {
   const [page, setPage] = useState(1);
 
   const [images, setImages] = useState<any>([]);
-  const { user } = useAuth();
+  const { token, user } = useAuth();
 
   const [stopFetching, setStopFetching] = useState(false);
 
@@ -42,7 +44,7 @@ export default function ProfilePage() {
       setStopFetching(true);
     }
   }
-
+  console.log(profile);
   async function onProfileEdit(
     newProfile: { description: string; imageUrl: string } | null
   ) {
@@ -64,6 +66,9 @@ export default function ProfilePage() {
   }
 
   async function onCommentSubmit() {
+    console.log(
+      `The profile that we're leaving the comment on: ${profile.username} ${profile.id}`
+    );
     const response = await fetch(
       `http://localhost:5095/api/profiles/${profile.id}/comments`
     );
@@ -74,6 +79,40 @@ export default function ProfilePage() {
       const data = await response.json();
 
       setProfile((prevProfile) => ({ ...prevProfile, profileComments: data }));
+    }
+  }
+
+  async function onDeleteProfileCommentClick(
+    profileId: string,
+    commentId: number
+  ) {
+    console.log(profileId, commentId);
+    try {
+      const response = await fetch(
+        `http://localhost:5095/api/profiles/${profileId}/comments/${commentId}`,
+        {
+          method: "DELETE",
+          headers: {
+            Accept: "application/json",
+            Authorization: `bearer ${token}`,
+          },
+        }
+      );
+      console.log(response);
+      if (!response.ok) {
+        throw new Error("Failed to delete comment");
+      }
+
+      const updatedComments =
+        profile.profileComments.filter((c) => c.id !== commentId) ?? [];
+      setProfile((prevProfile) => ({
+        ...prevProfile,
+        profileComments: updatedComments,
+      }));
+
+      console.log("Comment deleted successfully");
+    } catch (error) {
+      console.error("An error occurred:", error);
     }
   }
 
@@ -142,7 +181,24 @@ export default function ProfilePage() {
                     <div className="flex flex-row justify-between items-center">
                       <div className="brightness-75">{comment.userName}</div>
                     </div>
-                    <div>{comment.text}</div>
+                    <div className="flex flex-row justify-between items-center">
+                      {comment.text}
+                      <div>
+                        {(comment.userId === user?.userId ||
+                          user?.roles.includes("Moderator") ||
+                          profile.id === user?.userId) && (
+                          <Trash
+                            className="cursor-pointer hover:scale-105"
+                            onClick={() =>
+                              onDeleteProfileCommentClick(
+                                profile.id,
+                                comment.id
+                              )
+                            }
+                          />
+                        )}
+                      </div>
+                    </div>
                   </div>
                 ))}
               </ScrollArea>

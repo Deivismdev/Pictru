@@ -151,8 +151,11 @@ namespace API.Controllers
         public IActionResult GetUser(string userId)
         {
             var user = _context.Users
-            .Include(i => i.ProfileComments)
             .FirstOrDefault(i => i.Id == userId);
+
+            var comments = _context.ProfileComments.Where(c => c.ProfileId == user.Id).Include(i => i.User).ToList();
+
+            user.ProfileComments = comments;
 
             if (user == null)
             {

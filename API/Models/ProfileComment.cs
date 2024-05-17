@@ -13,6 +13,12 @@ namespace API.Models
         public string Text { get; set; }
         public DateTime Date { get; set; } = DateTime.UtcNow;
         public bool Edited = false;
+
+        // TODO: this is confusing
+        // profile id is the id of the user's on who's profile the comment is being created
+        public string ProfileId { get; set; }
+
+        // below is for the user that left the comment
         public string UserId { get; set; }
         [JsonIgnore]
         public User User { get; set; }

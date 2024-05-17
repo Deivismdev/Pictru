@@ -304,11 +304,6 @@ export default function ImagePage() {
                             }
                           />
                         )}
-                        {/* <Trash
-                          onClick={() =>
-                            onDeleteCommentClick(comment.userId, comment.id)
-                          }
-                        /> */}
                       </div>
                     </div>
                   </div>

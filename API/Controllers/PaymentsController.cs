@@ -33,8 +33,8 @@ namespace API.Controllers
             var user = await _context.Users.FirstOrDefaultAsync(i => i.Id == userId);
             var intent = await _paymentService.CreatePaymentIntent(user);
             if (intent == null) return BadRequest(new ProblemDetails { Title = "Died creating payment intent" });
-            user.PaymentIntentId = intent.Id;
-            user.ClientSecret = intent.ClientSecret;
+            // user.PaymentIntentId = intent.Id;
+            // user.ClientSecret = intent.ClientSecret;
             _context.Update(user);
 
             var result = await _context.SaveChangesAsync() > 0;

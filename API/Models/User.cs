@@ -15,14 +15,13 @@ namespace API.Models
         public string PublicId { get; set; } = "PICTRU_mvhgee";
 
         public DateTime RegisterDate { get; set; } = DateTime.UtcNow;
-        // TODO: this is stupid, create another table for everything payment related
-        public string PaymentIntentId { get; set; } // stripe TODO: not sure if this is where I want this to be
-        public string ClientSecret { get; set; }    // stripe
-        public ICollection<ProfileComment> ProfileComments { get; }
+        public ICollection<Subscription> Subscriptions { get; set; }
+        public ICollection<ProfileComment> ProfileComments { get; set; }
         [JsonIgnore]
         public ICollection<Image> Images { get; }
         public int Reputation { get; set; } = 0;
         public bool IsPremium { get; set; }
+
     }
 
     public class LoginDto
@@ -60,7 +59,7 @@ namespace API.Models
     }
     public class GetUserDto
     {
-        public string Id {get; set;}
+        public string Id { get; set; }
         public string Username { get; set; }
         public string Description { get; set; }
         public string ImageUrl { get; set; }
