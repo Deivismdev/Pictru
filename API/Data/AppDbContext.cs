@@ -24,7 +24,7 @@ namespace API.Data
         public DbSet<ProfileComment> ProfileComments { get; set; }
         public DbSet<Like> Likes { get; set; }
         public DbSet<Report> Reports { get; set; }
-        public DbSet<Subscription> Subscriptions { get; set; }
+        public DbSet<PremiumSubscription> PremiumSubscriptions { get; set; }
 
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {

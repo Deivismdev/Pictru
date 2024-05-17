@@ -15,21 +15,20 @@ namespace API.Services
             _config = config;
         }
 
-        public async Task<PaymentIntent> CreatePaymentIntent(User user)
+        public async Task<PaymentIntent> CreateOrUpdatePaymentIntent(PremiumSubscription subscription)
         {
             StripeConfiguration.ApiKey = _config["StripeSettings:SecretKey"];
             var service = new PaymentIntentService();
             var intent = new PaymentIntent();
 
-            // TODO: this could be simplefied even more I think
             var options = new PaymentIntentCreateOptions
             {
-                Amount = 5,
+                Amount = 500,
                 Currency = "usd",
                 PaymentMethodTypes = new List<string> { "card" }
             };
-            intent = await service.CreateAsync(options);
 
+            intent = await service.CreateAsync(options);
             return intent;
         }
     }

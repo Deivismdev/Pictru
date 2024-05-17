@@ -36,9 +36,6 @@ namespace API.Controllers
         [HttpPost("login")]
         public async Task<ActionResult<UserDto>> Login(LoginDto loginDto)
         {
-            System.Console.WriteLine("\n\n\n");
-            System.Console.WriteLine(loginDto.UserName);
-            System.Console.WriteLine(loginDto.Password);
             var user = await _userManager.FindByNameAsync(loginDto.UserName);
             if (user == null || !await _userManager.CheckPasswordAsync(user, loginDto.Password))
             {
@@ -59,9 +56,6 @@ namespace API.Controllers
         [HttpPost("register")]
         public async Task<ActionResult> Register(RegisterDto registerDto)
         {
-            System.Console.WriteLine(registerDto.UserName);
-            System.Console.WriteLine(registerDto.Password);
-            System.Console.WriteLine(registerDto.Email);
             var user = new User { UserName = registerDto.UserName, Email = registerDto.Email };
 
             var result = await _userManager.CreateAsync(user, registerDto.Password);
@@ -109,27 +103,15 @@ namespace API.Controllers
             {
                 return Unauthorized();
             }
-            System.Console.WriteLine("--------------------------------------------");
-
-            System.Console.WriteLine("\n\n");
-            Console.WriteLine(userDto.Description);
-            Console.WriteLine(userDto.File.Length);
-            System.Console.WriteLine("--------------------------------------------");
 
             if (userDto.File != null)
             {
-                System.Console.WriteLine("No! yay");
-                System.Console.WriteLine("\n\n");
-
                 var maxSize = 5 * 1024 * 1024;
                 if (userDto.File.Length > maxSize)
                 {
                     return BadRequest(new ProblemDetails { Title = "File size exceeds the limit of 5MB." });
                 }
                 var imageResult = await _imageService.AddImageAsync(userDto.File);
-                System.Console.WriteLine("DONE MAYBE");
-                System.Console.WriteLine(imageResult);
-                System.Console.WriteLine("\n\n");
                 if (imageResult.Error != null) return BadRequest(new ProblemDetails { Title = imageResult.Error.Message });
 
                 if (!string.IsNullOrEmpty(user.PublicId)) await _imageService.DeleteImageAsync(user.PublicId);

@@ -15,7 +15,7 @@ namespace API.Models
         public string PublicId { get; set; } = "PICTRU_mvhgee";
 
         public DateTime RegisterDate { get; set; } = DateTime.UtcNow;
-        public ICollection<Subscription> Subscriptions { get; set; }
+        public ICollection<PremiumSubscription> Subscriptions { get; set; }
         public ICollection<ProfileComment> ProfileComments { get; set; }
         [JsonIgnore]
         public ICollection<Image> Images { get; }
@@ -99,15 +99,4 @@ namespace API.Models
         public bool IsPremium { get; set; }
     }
 
-    // TODO: this is just stupid. Make separate table "payments"?
-    public class UserPaymentDto
-    {
-
-        public string UserId { get; set; }
-        public string UserName { get; set; }
-
-        // TODO: ClientSecret is enough here
-        public string ClientSecret { get; set; }
-        public string PaymentIntentId { get; set; }
-    }
 }

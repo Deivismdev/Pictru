@@ -4,6 +4,7 @@ using System.Linq;
 using System.Threading.Tasks;
 using API.Data;
 using API.Models;
+using API.Models.Enums;
 using API.Services;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
@@ -26,22 +27,39 @@ namespace API.Controllers
         }
         [Authorize]
         [HttpPost]
-        public async Task<IActionResult> CreatePaymentIntent()
+        public async Task<ActionResult<PremiumSubscriptionDto>> CreateNewSubscriptionAndPaymentIntent()
         {
             var userId = User.Claims.SingleOrDefault(x => x.Type.Equals("http://schemas.xmlsoap.org/ws/2005/05/identity/claims/nameidentifier")).Value;
 
-            var user = await _context.Users.FirstOrDefaultAsync(i => i.Id == userId);
-            var intent = await _paymentService.CreatePaymentIntent(user);
-            if (intent == null) return BadRequest(new ProblemDetails { Title = "Died creating payment intent" });
-            // user.PaymentIntentId = intent.Id;
-            // user.ClientSecret = intent.ClientSecret;
-            _context.Update(user);
+            var subscription = new PremiumSubscription
+            {
+                UserId = userId,
+                SubscriptionStart = DateTime.UtcNow,
+                SubscriptionEnd = DateTime.UtcNow.AddMonths(1),
+                PaymentStatus = PaymentStatus.Pending
+            };
 
+            _context.PremiumSubscriptions.Add(subscription);
+            await _context.SaveChangesAsync();
+
+            var intent = await _paymentService.CreateOrUpdatePaymentIntent(subscription);
+            if (intent == null) return BadRequest(new ProblemDetails { Title = "Creating payment intent failed" });
+
+            subscription.PaymentIntentId = intent.Id;
+            subscription.ClientSecret = intent.ClientSecret;
+
+            _context.Update(subscription);
             var result = await _context.SaveChangesAsync() > 0;
-            if (!result) return BadRequest(new ProblemDetails { Title = "Died updating user's payment intent" });
+            if (!result) return BadRequest(new ProblemDetails { Title = "Failed to update subscription with payment intent" });
 
-            //TODO: OK? created? eh what is rest anyway
-            return Ok();
+            var SubscriptionDto = new PremiumSubscriptionDto
+            {
+                Id = subscription.Id,
+                UserId = userId,
+                PaymentIntentId = subscription.PaymentIntentId,
+                ClientSecret = subscription.ClientSecret,
+            };
+            return Ok(SubscriptionDto);
         }
     }
 }

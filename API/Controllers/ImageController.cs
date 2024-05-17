@@ -128,7 +128,6 @@ namespace API.Controllers
                 return NotFound();
             }
             var userId = User.Claims.SingleOrDefault(x => x.Type.Equals("http://schemas.xmlsoap.org/ws/2005/05/identity/claims/nameidentifier")).Value;
-            System.Console.WriteLine($"\n\nuserId = {userId}\n\n");
             bool hasLiked = false;
             if (!string.IsNullOrEmpty(userId))
             {
@@ -136,13 +135,11 @@ namespace API.Controllers
                    .FirstOrDefaultAsync(l => l.ImageId == imageId && l.UserId == userId);
                 hasLiked = like != null;
             }
-            System.Console.WriteLine($"\n\n{hasLiked}\n\n");
             image.ViewCount += 1;
             await context.SaveChangesAsync();
 
             var readImageDto = mapper.Map<GetImageDto>(image);
             readImageDto.Liked = hasLiked;
-            System.Console.WriteLine("\n\n\n");
             return Ok(readImageDto);
         }
 
