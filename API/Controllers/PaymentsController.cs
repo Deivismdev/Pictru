@@ -30,6 +30,9 @@ namespace API.Controllers
         public async Task<ActionResult<PremiumSubscriptionDto>> CreateNewSubscriptionAndPaymentIntent()
         {
             var userId = User.Claims.SingleOrDefault(x => x.Type.Equals("http://schemas.xmlsoap.org/ws/2005/05/identity/claims/nameidentifier")).Value;
+            System.Console.WriteLine($"\n\n\nUSER: {userId} IS DOING STUFF\n\n\n");
+            // TODO: this is a bit stupid, UserController has (un)SetPremiumAsync where this should be done
+            // doing it like this basically assumes that user clicking to get premium WILL pay for it
 
             var subscription = new PremiumSubscription
             {

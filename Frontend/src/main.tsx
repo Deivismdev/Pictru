@@ -22,6 +22,8 @@ import AllSuspendedImagesPage from "./routes/AllSuspendedImagesPage";
 import EditImage, { loader as editLoader } from "./routes/editImage";
 import AppealedImagesPage from "./routes/AppealedImagesPage";
 import AppealedImage, { loader } from "./routes/appealedImage";
+import CheckoutPage from "./routes/CheckoutPage";
+import CheckoutWrapper from "./routes/CheckoutWrapper";
 
 const router = createBrowserRouter([
   {
@@ -98,7 +100,7 @@ const router = createBrowserRouter([
             <AppealedImage />
           </ProtectedRoute>
         ),
-        loader: loader
+        loader: loader,
       },
 
       {
@@ -118,6 +120,15 @@ const router = createBrowserRouter([
           </ProtectedRoute>
         ),
         loader: editLoader,
+      },
+
+      {
+        path: "/getPremium",
+        element: (
+          <ProtectedRoute>
+            <CheckoutWrapper />
+          </ProtectedRoute>
+        ),
       },
     ],
   },

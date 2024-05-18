@@ -147,5 +147,42 @@ namespace API.Controllers
             return Ok(getUserDto);
         }
 
+
+        [HttpPatch("setPremium/{userId}")]
+        public async Task<IActionResult> SetPremiumAsync(string userId)
+        {
+            var user = _context.Users
+            .FirstOrDefault(i => i.Id == userId);
+
+            if (user == null)
+            {
+                return NotFound();
+            }
+
+            user.IsPremium = true;
+            _context.Users.Update(user);
+            await _context.SaveChangesAsync();
+            var getUserDto = _mapper.Map<GetUserProfileDto>(user);
+            return Ok(getUserDto);
+        }
+
+        [HttpPatch("unsetPremium/{userId}")]
+        public async Task<IActionResult> UnsetPremiumAsync(string userId)
+        {
+            var user = _context.Users
+            .FirstOrDefault(i => i.Id == userId);
+
+            if (user == null)
+            {
+                return NotFound();
+            }
+
+            user.IsPremium = false;
+            _context.Users.Update(user);
+            await _context.SaveChangesAsync();
+            var getUserDto = _mapper.Map<GetUserProfileDto>(user);
+            return Ok(getUserDto);
+        }
+
     }
 }
