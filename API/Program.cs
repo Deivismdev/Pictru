@@ -72,8 +72,8 @@ builder.Services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme)
         });
 builder.Services.AddAuthorization();
 
-builder.Services.AddScoped<TokenService>();
-builder.Services.AddScoped<ImageService>();
+builder.Services.AddScoped<ITokenService,TokenService>();
+builder.Services.AddScoped<IImageService,ImageService>();
 builder.Services.AddScoped<PaymentService>();
 var app = builder.Build();
 

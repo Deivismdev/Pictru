@@ -17,23 +17,22 @@ namespace API.Controllers
     [ApiController]
     public class UserController : ControllerBase
     {
-        private readonly AppDbContext _context;
-        private readonly UserManager<User> _userManager;
-        private readonly TokenService _tokenService;
-        private readonly IMapper _mapper;
-        private readonly ImageService _imageService;
+		private readonly AppDbContext _context;
+		private readonly UserManager<User> _userManager;
+		private readonly ITokenService _tokenService;
+		private readonly IMapper _mapper;
+		private readonly IImageService _imageService;
 
-        public UserController(AppDbContext context, UserManager<User> userManager, TokenService tokenService, IMapper mapper, ImageService imageService)
-        {
-            _context = context;
-            _tokenService = tokenService;
-            _userManager = userManager;
-            _mapper = mapper;
-            _imageService = imageService;
+		public UserController(AppDbContext context, UserManager<User> userManager, ITokenService tokenService, IMapper mapper, IImageService imageService)
+		{
+			_context = context;
+			_tokenService = tokenService;
+			_userManager = userManager;
+			_mapper = mapper;
+			_imageService = imageService;
+		}
 
-        }
-
-        [HttpPost("login")]
+		[HttpPost("login")]
         public async Task<ActionResult<UserDto>> Login(LoginDto loginDto)
         {
             var user = await _userManager.FindByNameAsync(loginDto.UserName);
@@ -184,5 +183,11 @@ namespace API.Controllers
             return Ok(getUserDto);
         }
 
-    }
+		[HttpGet("test")]
+		public IActionResult Test()
+		{
+			return Ok("Test successful");
+		}
+
+	}
 }
