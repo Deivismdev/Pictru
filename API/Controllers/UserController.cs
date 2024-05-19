@@ -17,24 +17,28 @@ namespace API.Controllers
     [ApiController]
     public class UserController : ControllerBase
     {
-		private readonly AppDbContext _context;
-		private readonly UserManager<User> _userManager;
-		private readonly ITokenService _tokenService;
-		private readonly IMapper _mapper;
-		private readonly IImageService _imageService;
+        private readonly AppDbContext _context;
+        private readonly UserManager<User> _userManager;
+        private readonly ITokenService _tokenService;
+        private readonly IMapper _mapper;
+        private readonly IImageService _imageService;
 
-		public UserController(AppDbContext context, UserManager<User> userManager, ITokenService tokenService, IMapper mapper, IImageService imageService)
-		{
-			_context = context;
-			_tokenService = tokenService;
-			_userManager = userManager;
-			_mapper = mapper;
-			_imageService = imageService;
-		}
+        public UserController(AppDbContext context, UserManager<User> userManager, ITokenService tokenService, IMapper mapper, IImageService imageService)
+        {
+            _context = context;
+            _tokenService = tokenService;
+            _userManager = userManager;
+            _mapper = mapper;
+            _imageService = imageService;
+        }
 
-		[HttpPost("login")]
+        [HttpPost("login")]
         public async Task<ActionResult<UserDto>> Login(LoginDto loginDto)
         {
+            System.Console.WriteLine("\n\n\n\n");
+            System.Console.WriteLine(loginDto.UserName);
+            System.Console.WriteLine(loginDto.Password);
+            System.Console.WriteLine("\n\n\n\n");
             var user = await _userManager.FindByNameAsync(loginDto.UserName);
             if (user == null || !await _userManager.CheckPasswordAsync(user, loginDto.Password))
             {
@@ -42,30 +46,27 @@ namespace API.Controllers
             }
             var roles = await _userManager.GetRolesAsync(user);
 
-            return new UserDto
+            return Ok(new UserDto
             {
                 UserId = user.Id,
                 UserName = user.UserName,
                 Email = user.Email,
                 Token = await _tokenService.GenerateToken(user),
                 Roles = roles
-            };
+            });
         }
 
         [HttpPost("register")]
         public async Task<ActionResult> Register(RegisterDto registerDto)
         {
+            System.Console.WriteLine($"\n\n\n{registerDto.UserName}\n\n");
             var user = new User { UserName = registerDto.UserName, Email = registerDto.Email };
 
             var result = await _userManager.CreateAsync(user, registerDto.Password);
 
             if (!result.Succeeded)
             {
-                foreach (var error in result.Errors)
-                {
-                    ModelState.AddModelError(error.Code, error.Description);
-                }
-                return ValidationProblem();
+                return BadRequest();
             }
             await _userManager.AddToRoleAsync(user, "Member");
             return StatusCode(201);
@@ -183,11 +184,11 @@ namespace API.Controllers
             return Ok(getUserDto);
         }
 
-		[HttpGet("test")]
-		public IActionResult Test()
-		{
-			return Ok("Test successful");
-		}
+        [HttpGet("test")]
+        public IActionResult Test()
+        {
+            return Ok("Test successful");
+        }
 
-	}
+    }
 }

@@ -39,6 +39,44 @@ namespace API.tests
 
 			_controller = new UserController(_context, _mockUserManager.Object, _mockTokenService.Object, _mockMapper.Object, _mockImageService.Object);
 		}
+		//-----------Register
+		[Fact]
+		public async Task Register_ReturnsStatusCode201_WhenRegistrationIsSuccessful()
+		{
+			// Arrange
+			var registerDto = new RegisterDto { UserName = "newuser", Email = "newuser@example.com", Password = "P@ssword1" };
+			var user = new User { UserName = registerDto.UserName, Email = registerDto.Email };
+			var identityResult = IdentityResult.Success;
+
+			_mockUserManager.Setup(x => x.CreateAsync(It.IsAny<User>(), registerDto.Password)).ReturnsAsync(identityResult);
+			_mockUserManager.Setup(x => x.AddToRoleAsync(It.IsAny<User>(), "Member")).ReturnsAsync(IdentityResult.Success);
+
+			// Act
+			var result = await _controller.Register(registerDto);
+
+			// Assert
+			var statusCodeResult = result as StatusCodeResult;
+			Assert.NotNull(statusCodeResult);
+			Assert.Equal(201, statusCodeResult.StatusCode);
+		}
+
+		[Fact]
+		public async Task Register_ReturnsValidationProblem_WhenRegistrationFails()
+		{
+			// Arrange
+			var registerDto = new RegisterDto { UserName = "newuser", Email = "newuser@example.com", Password = "P@ssword1" };
+			var user = new User { UserName = registerDto.UserName, Email = registerDto.Email };
+			var identityResult = IdentityResult.Failed(new IdentityError { Code = "DuplicateUserName", Description = "User name 'newuser' is already taken." });
+
+			_mockUserManager.Setup(x => x.CreateAsync(It.IsAny<User>(), registerDto.Password)).ReturnsAsync(identityResult);
+
+			// Act
+			var result = await _controller.Register(registerDto);
+
+			// Assert
+			var badRequestResult = Assert.IsType<BadRequestResult>(result);
+			Assert.Equal(400, badRequestResult.StatusCode);
+		}
 
 		[Fact]
 		public void Test_ReturnsOkResult()
@@ -51,6 +89,7 @@ namespace API.tests
 			Assert.Equal("Test successful", okResult.Value);
 		}
 
+		//-----------Login
 		[Fact]
 		public async Task Login_ReturnsUnauthorized_WhenUserNotFound()
 		{
@@ -85,7 +124,7 @@ namespace API.tests
 		public async Task Login_ReturnsUserDto_WhenCredentialsAreValid()
 		{
 			// Arrange
-			var loginDto = new LoginDto { UserName = "testuser", Password = "correctpassword" };
+			var loginDto = new LoginDto { UserName = "testuser", Password = "P@ssword1" };
 			var user = new User { Id = "1", UserName = loginDto.UserName, Email = "test@example.com" };
 			var roles = new List<string> { "User" };
 
@@ -96,6 +135,7 @@ namespace API.tests
 
 			// Act
 			var result = await _controller.Login(loginDto);
+			System.Console.WriteLine($"\n\n\n{result}\n\n\n");
 			var okResult = result.Result as OkObjectResult;
 			var userDto = okResult.Value as UserDto;
 
@@ -108,5 +148,6 @@ namespace API.tests
 			Assert.Equal("fake-jwt-token", userDto.Token);
 			Assert.Equal(roles, userDto.Roles);
 		}
+
 	}
 }

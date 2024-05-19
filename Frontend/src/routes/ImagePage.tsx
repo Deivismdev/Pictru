@@ -232,6 +232,7 @@ export default function ImagePage() {
                 to={`/user/${image.user.id}`}
               >
                 {image.user.username}
+                {image.user.isPremium && "⭐"}
               </NavLink>
             </span>
           </div>

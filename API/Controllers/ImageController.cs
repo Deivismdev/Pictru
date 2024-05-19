@@ -24,12 +24,12 @@ namespace API.Controllers
     {
         private readonly AppDbContext context;
         private readonly IMapper mapper; // TODO: should use _ for private fields
-        private readonly TokenService _tokenService;
+        private readonly ITokenService _tokenService;
         private readonly UserManager<User> _userManager;
 
-        private readonly ImageService _imageService;
+        private readonly IImageService _imageService;
 
-        public ImageController(AppDbContext context, IMapper mapper, TokenService tokenService, UserManager<User> userManager, ImageService imageService)
+        public ImageController(AppDbContext context, IMapper mapper, ITokenService tokenService, UserManager<User> userManager, IImageService imageService)
         {
             this.context = context;
             this.mapper = mapper;

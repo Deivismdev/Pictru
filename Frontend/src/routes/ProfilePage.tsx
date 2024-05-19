@@ -123,10 +123,14 @@ export default function ProfilePage() {
           <div className="flex flex-col justify-between w-full">
             {!IsEditing ? (
               <>
-                <div className="font-bold text-3xl px-3 pb-6">user profile</div>
+                <div className="font-bold text-3xl px-3 pb-6">User profile</div>
                 <div className="flex flex-row justify-between p-3">
                   <div className="flex flex-col justify-between">
-                    <div className="text-2xl font-bold">{profile.username}</div>
+                    <div className="text-2xl font-bold">
+                      {profile.username}
+                      {profile.isPremium && "⭐"}
+                    </div>
+
                     <div className="text-xl">
                       reputation: {profile.reputation}
                     </div>
