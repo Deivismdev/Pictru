@@ -35,10 +35,6 @@ namespace API.Controllers
         [HttpPost("login")]
         public async Task<ActionResult<UserDto>> Login(LoginDto loginDto)
         {
-            System.Console.WriteLine("\n\n\n\n");
-            System.Console.WriteLine(loginDto.UserName);
-            System.Console.WriteLine(loginDto.Password);
-            System.Console.WriteLine("\n\n\n\n");
             var user = await _userManager.FindByNameAsync(loginDto.UserName);
             if (user == null || !await _userManager.CheckPasswordAsync(user, loginDto.Password))
             {
