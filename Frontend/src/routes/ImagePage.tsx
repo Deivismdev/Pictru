@@ -43,16 +43,13 @@ export default function ImagePage() {
     setIsSelectedCoordinates(coordinates);
   };
 
-  // const imageData = useLoaderData() as imageType;
-
-  // document.title = `PICTRU | "${imageData.name}"`;
   const { token, user } = useAuth();
   const [image, setImage] = useState<imageType | null>(null);
   const [liked, setLiked] = useState<Boolean>(false);
-  const [imageClass, setImageClass] = useState(""); // State to hold the CSS class for the image
+  const [imageClass, setImageClass] = useState("");
   const navigate = useNavigate();
 
-  const imageRef = useRef<HTMLImageElement>(null); // Ref to access the image element
+  const imageRef = useRef<HTMLImageElement>(null);
 
   useEffect(() => {
     async function fetchImage() {
@@ -98,7 +95,6 @@ export default function ImagePage() {
       }
     };
   }, [image?.imageUrl]);
-  // if image is wider, w-full h-max, if taller, h-full w-max
 
   async function onCommentSubmit() {
     const response = await fetch(
@@ -177,7 +173,6 @@ export default function ImagePage() {
 
   async function onLikeClick(imageId: any) {
     const token = localStorage.getItem("token");
-    //TODO: Need new endpoint to get image like count
     const response = await fetch(`http://localhost:5095/api/${imageId}/likes`, {
       method: "POST",
       headers: {
@@ -214,7 +209,7 @@ export default function ImagePage() {
   }
 
   if (!image) {
-    return <div>Loading...</div>; // Show loading indicator if image is null
+    return <div>Loading...</div>;
   }
 
   return (

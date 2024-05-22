@@ -78,6 +78,8 @@ export default function UploadForm({ onImageUpload }: UploadFormProps) {
 
   return (
     <Form {...form}>
+      <span className="text-3xl">Image Upload</span>
+
       <form
         encType="multipart/form-data"
         onSubmit={form.handleSubmit(onSubmit)}
@@ -96,7 +98,6 @@ export default function UploadForm({ onImageUpload }: UploadFormProps) {
               </FormItem>
             )}
           />
-
           <FormLabel>Tags:</FormLabel>
           <ToggleGroup
             type="multiple"
@@ -119,7 +120,6 @@ export default function UploadForm({ onImageUpload }: UploadFormProps) {
               );
             })}
           </ToggleGroup>
-
           <FormField
             control={form.control}
             name="Description"
@@ -133,7 +133,6 @@ export default function UploadForm({ onImageUpload }: UploadFormProps) {
             )}
           />
         </div>
-
         <div className="col-span-1 h-full">
           <FormField
             control={form.control}
@@ -158,13 +157,17 @@ export default function UploadForm({ onImageUpload }: UploadFormProps) {
                     }}
                   />
                 </FormControl>
-                <img src={picturePreview} className={`absolute top-10 left-0 h-full w-full z-0 object-contain ${picturePreview ? 'block' : 'hidden'}`} />
+                <img
+                  src={picturePreview}
+                  className={`absolute top-10 left-0 h-full w-full z-0 object-contain ${
+                    picturePreview ? "block" : "hidden"
+                  }`}
+                />
               </FormItem>
             )}
           />
         </div>
-
-        <Button disabled={isLoading} className="w-1/2" type="submit">
+        <Button disabled={isLoading} className="w-1/4" type="submit">
           {isLoading ? "Posting..." : "Post"}
         </Button>
       </form>
