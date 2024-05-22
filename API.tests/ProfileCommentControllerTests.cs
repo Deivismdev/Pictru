@@ -18,22 +18,25 @@ namespace API.tests
 {
     public class ProfileCommentControllerTests : IDisposable
     {
-        private readonly AppDbContext _context;
+        private AppDbContext _context;
         private readonly IMapper _mapper;
         private readonly Mock<UserManager<User>> _mockUserManager;
-        private readonly ProfileCommentController _controller;
+        private ProfileCommentController _controller;
 
         public ProfileCommentControllerTests()
         {
             var store = new Mock<IUserStore<User>>();
             _mockUserManager = new Mock<UserManager<User>>(store.Object, null, null, null, null, null, null, null, null);
 
+            _mapper = AutoMapperConfig.GetMapper();
+        }
+
+        private void SetupControllerWithFreshContext()
+        {
             var options = new DbContextOptionsBuilder<AppDbContext>()
-                .UseInMemoryDatabase(databaseName: "TestDatabase")
+                .UseInMemoryDatabase(databaseName: Guid.NewGuid().ToString()) // Unique database for each test
                 .Options;
             _context = new AppDbContext(options);
-
-            _mapper = AutoMapperConfig.GetMapper();
 
             _controller = new ProfileCommentController(_context, _mockUserManager.Object, _mapper);
 
@@ -55,12 +58,14 @@ namespace API.tests
 
         public void Dispose()
         {
-            _context.Database.EnsureDeleted();
+            _context?.Dispose();
         }
+
 
         [Fact]
         public async Task GetProfileComments_ReturnsOkResult_WhenCommentsExist()
         {
+            SetupControllerWithFreshContext();
             // Arrange
             var profileId = "test-profile-id";
             var comments = new List<ProfileComment>
@@ -85,6 +90,7 @@ namespace API.tests
         [Fact]
         public async Task GetProfileComments_ReturnsNotFoundResult_WhenNoCommentsExist()
         {
+            SetupControllerWithFreshContext();
             // Act
             var result = await _controller.GetProfileComments("non-existing-profile-id");
 
@@ -113,6 +119,7 @@ namespace API.tests
         [Fact]
         public async Task GetProfileComment_ReturnsNotFoundResult_WhenCommentDoesNotExist()
         {
+            SetupControllerWithFreshContext();
             // Arrange
             var profileId = "test-profile-id";
 
@@ -126,6 +133,7 @@ namespace API.tests
         [Fact]
         public async Task CreateProfileComment_ReturnsOkResult_WhenCommentIsCreated()
         {
+            SetupControllerWithFreshContext();
             // Arrange
             var profileId = "test-profile-id";
             var userId = "test-user-id";
@@ -151,6 +159,7 @@ namespace API.tests
         [Fact]
         public async Task DeleteProfileComment_ReturnsNoContent_WhenCommentIsDeleted()
         {
+            SetupControllerWithFreshContext();
             // Arrange
             var profileId = "test-profile-id";
             var commentId = 1;
@@ -175,6 +184,7 @@ namespace API.tests
         [Fact]
         public async Task DeleteProfileComment_ReturnsUnauthorizedResult_WhenUserIsNotAuthorized()
         {
+            SetupControllerWithFreshContext();
             // Arrange
             var profileId = "test-profile-id";
             var commentId = 1;

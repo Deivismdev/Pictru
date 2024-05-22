@@ -23,11 +23,11 @@ namespace API.tests
     public class ImageControllerTests : IDisposable
     {
         private readonly Mock<IImageService> _mockImageService;
-        private readonly AppDbContext _context;
         private readonly IMapper _mapper;
         private readonly Mock<ITokenService> _mockTokenService;
         private readonly Mock<UserManager<User>> _mockUserManager;
-        private readonly ImageController _controller;
+        private AppDbContext _context;
+        private ImageController _controller;
 
         public ImageControllerTests()
         {
@@ -37,20 +37,26 @@ namespace API.tests
             var store = new Mock<IUserStore<User>>();
             _mockUserManager = new Mock<UserManager<User>>(store.Object, null, null, null, null, null, null, null, null);
 
+            _mapper = AutoMapperConfig.GetMapper();
+        }
+
+        private void SetupControllerWithFreshContext()
+        {
             var options = new DbContextOptionsBuilder<AppDbContext>()
-                .UseInMemoryDatabase(databaseName: "TestDatabase")
+                .UseInMemoryDatabase(databaseName: Guid.NewGuid().ToString()) // Unique database for each test
                 .Options;
             _context = new AppDbContext(options);
 
-            _mapper = AutoMapperConfig.GetMapper();
-
             _controller = new ImageController(_context, _mapper, _mockTokenService.Object, _mockUserManager.Object, _mockImageService.Object);
+
+            SetUserClaims("test-user-id");
         }
+
         private void SetUserClaims(string userId)
         {
             var user = new ClaimsPrincipal(new ClaimsIdentity(new Claim[]
             {
-                new Claim(ClaimTypes.NameIdentifier, userId)
+            new Claim(ClaimTypes.NameIdentifier, userId)
             }, "mock"));
             _controller.ControllerContext = new ControllerContext
             {
@@ -60,13 +66,14 @@ namespace API.tests
 
         public void Dispose()
         {
-            _context.Database.EnsureDeleted();
+            _context?.Dispose();
         }
 
         [Fact]
         public async Task CreateImage_ReturnsOkResult_WhenImageIsCreatedSuccessfully()
         {
             // Arrange
+            SetupControllerWithFreshContext();
             var userId = "test-user-id";
             var createImageDto = new CreateImageDto
             {
@@ -90,6 +97,7 @@ namespace API.tests
             _context.SaveChanges();
 
             SetUserClaims(userId);
+
             // Act
             var result = await _controller.CreateImage(createImageDto);
 
@@ -103,10 +111,12 @@ namespace API.tests
             Assert.NotNull(updatedUser);
             Assert.Equal(10, updatedUser.Reputation);
         }
+
         [Fact]
         public async Task GetImage_ReturnsOkResult_WhenImageExists()
         {
             // Arrange
+            SetupControllerWithFreshContext();
             var userId = "test-user-id";
             var image = new Image
             {
@@ -135,6 +145,9 @@ namespace API.tests
         [Fact]
         public async Task GetImage_ReturnsNotFound_WhenImageDoesNotExist()
         {
+            // Arrange
+            SetupControllerWithFreshContext();
+
             // Act
             var result = await _controller.GetImage(999);
 
@@ -146,6 +159,7 @@ namespace API.tests
         public async Task GetImageLoggedIn_ReturnsOkResult_WithLikedFlag()
         {
             // Arrange
+            SetupControllerWithFreshContext();
             var userId = "test-user-id";
             var image = new Image
             {
@@ -179,6 +193,7 @@ namespace API.tests
         public async Task UpdateImage_ReturnsNoContent_WhenImageIsUpdated()
         {
             // Arrange
+            SetupControllerWithFreshContext();
             var userId = "test-user-id";
             var image = new Image
             {
@@ -215,6 +230,7 @@ namespace API.tests
         public async Task DeleteImage_ReturnsNoContent_WhenImageIsDeleted()
         {
             // Arrange
+            SetupControllerWithFreshContext();
             var userId = "test-user-id";
             var image = new Image
             {
@@ -244,17 +260,19 @@ namespace API.tests
             Assert.IsType<NoContentResult>(result);
             Assert.Null(_context.Images.FirstOrDefault(i => i.Id == image.Id));
         }
+
         [Fact]
         public async Task GetImages_ReturnsOkResult_WithPagedImages()
         {
             // Arrange
+            SetupControllerWithFreshContext();
             var userId = "test-user-id";
             var images = new List<Image>
-            {
-                new Image { Id = 1, Name = "Image1", Description = "Description1", UserId = userId },
-                new Image { Id = 2, Name = "Image2", Description = "Description2", UserId = userId },
-                new Image { Id = 3, Name = "Image3", Description = "Description3", UserId = userId }
-            };
+        {
+            new Image { Id = 1, Name = "Image1", Description = "Description1", UserId = userId },
+            new Image { Id = 2, Name = "Image2", Description = "Description2", UserId = userId },
+            new Image { Id = 3, Name = "Image3", Description = "Description3", UserId = userId }
+        };
             _context.Images.AddRange(images);
             _context.Users.Add(new User { Id = userId, UserName = "testuser" });
             _context.SaveChanges();
@@ -273,6 +291,7 @@ namespace API.tests
         public async Task AppealImageSuspension_ReturnsNoContent_WhenImageIsAppealed()
         {
             // Arrange
+            SetupControllerWithFreshContext();
             var userId = "test-user-id";
             var image = new Image
             {
