@@ -72,9 +72,9 @@ builder.Services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme)
         });
 builder.Services.AddAuthorization();
 
-builder.Services.AddScoped<ITokenService,TokenService>();
-builder.Services.AddScoped<IImageService,ImageService>();
-builder.Services.AddScoped<PaymentService>();
+builder.Services.AddScoped<ITokenService, TokenService>();
+builder.Services.AddScoped<IImageService, ImageService>();
+builder.Services.AddScoped<IPaymentService, PaymentService>();
 var app = builder.Build();
 
 // Configure the HTTP request pipeline.

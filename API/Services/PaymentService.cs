@@ -7,7 +7,11 @@ using Stripe;
 
 namespace API.Services
 {
-    public class PaymentService
+    public interface IPaymentService
+    {
+        Task<PaymentIntent> CreateOrUpdatePaymentIntent(PremiumSubscription subscription);
+    }
+    public class PaymentService : IPaymentService
     {
         private readonly IConfiguration _config;
         public PaymentService(IConfiguration config)
