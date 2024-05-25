@@ -1,3 +1,5 @@
+import { useState } from "react";
+import { NavLink, useLoaderData } from "react-router-dom";
 import ImageCard from "@/components/ImageCard";
 import ProfileCommentForm from "@/components/forms/ProfileCommentForm";
 import ProfileEditForm from "@/components/forms/ProfileEditForm";
@@ -5,11 +7,17 @@ import { ScrollArea } from "@/components/ui/scroll-area";
 import { useAuth } from "@/context/useAuth";
 import { UserProfile } from "@/lib/types";
 import { MasonryInfiniteGrid } from "@egjs/react-infinitegrid";
-import { Console } from "console";
 import { PencilIcon, Trash } from "lucide-react";
-import { cwd } from "process";
-import { useState } from "react";
-import { NavLink, useLoaderData } from "react-router-dom";
+import {
+  Dialog,
+  DialogContent,
+  DialogDescription,
+  DialogFooter,
+  DialogHeader,
+  DialogTitle,
+  DialogTrigger,
+} from "@/components/ui/dialog";
+import { Button } from "@/components/ui/button";
 
 export async function loader({ params }: any) {
   const response = await fetch(
@@ -19,16 +27,16 @@ export async function loader({ params }: any) {
 
   return response;
 }
+
 export default function ProfilePage() {
   const profileData = useLoaderData() as any;
   const [profile, setProfile] = useState<UserProfile>(profileData);
   const [IsEditing, setIsEditing] = useState(false);
   const [page, setPage] = useState(1);
-
   const [images, setImages] = useState<any>([]);
   const { token, user } = useAuth();
-
   const [stopFetching, setStopFetching] = useState(false);
+  const [commentToDelete, setCommentToDelete] = useState<null | number>(null);
 
   async function fetchPictures() {
     if (stopFetching) return;
@@ -44,52 +52,37 @@ export default function ProfilePage() {
       setStopFetching(true);
     }
   }
-  console.log(profile);
+
   async function onProfileEdit(
     newProfile: { description: string; imageUrl: string } | null
   ) {
     setIsEditing(false);
 
-    console.log(newProfile);
-    console.log("newProfile");
-
     if (newProfile) {
-      console.warn("yes");
       setProfile((prevState) => ({
         ...prevState,
         description: newProfile.description,
         imageUrl: newProfile.imageUrl,
       }));
     }
-
-    console.log(profile);
   }
 
   async function onCommentSubmit() {
-    console.log(
-      `The profile that we're leaving the comment on: ${profile.username} ${profile.id}`
-    );
     const response = await fetch(
       `http://localhost:5095/api/profiles/${profile.id}/comments`
     );
     if (!response.ok) throw new Error("Error loading comments");
-    else {
-      console.log("HEREEEEE AAAH");
-      console.log(response.body);
-      const data = await response.json();
 
-      setProfile((prevProfile) => ({ ...prevProfile, profileComments: data }));
-    }
+    const data = await response.json();
+    setProfile((prevProfile) => ({ ...prevProfile, profileComments: data }));
   }
 
-  async function onDeleteProfileCommentClick(
-    profileId: string,
-    commentId: number
-  ) {
-    console.log(profileId, commentId);
+  async function onDeleteProfileCommentClick() {
+    if (commentToDelete === null) return;
+
     try {
       const response = await fetch(
-        `http://localhost:5095/api/profiles/${profileId}/comments/${commentId}`,
+        `http://localhost:5095/api/profiles/${profile.id}/comments/${commentToDelete}`,
         {
           method: "DELETE",
           headers: {
@@ -98,13 +91,13 @@ export default function ProfilePage() {
           },
         }
       );
-      console.log(response);
+
       if (!response.ok) {
         throw new Error("Failed to delete comment");
       }
 
       const updatedComments =
-        profile.profileComments.filter((c) => c.id !== commentId) ?? [];
+        profile.profileComments.filter((c) => c.id !== commentToDelete) ?? [];
       setProfile((prevProfile) => ({
         ...prevProfile,
         profileComments: updatedComments,
@@ -113,6 +106,8 @@ export default function ProfilePage() {
       console.log("Comment deleted successfully");
     } catch (error) {
       console.error("An error occurred:", error);
+    } finally {
+      setCommentToDelete(null);
     }
   }
 
@@ -153,10 +148,6 @@ export default function ProfilePage() {
                     />
                   </div>
                 </div>
-
-                {/* <ScrollArea className="bg-muted p-3 rounded-sm h-full bg-red-200">
-                  {profile.description}
-                </ScrollArea> */}
                 <div className="overflow-y-auto text-wrap bg-muted p-3 rounded-sm h-32 w-full break-all ">
                   {profile.description}
                 </div>
@@ -198,15 +189,36 @@ export default function ProfilePage() {
                         {(comment.userId === user?.userId ||
                           user?.roles.includes("Moderator") ||
                           profile.id === user?.userId) && (
-                          <Trash
-                            className="cursor-pointer hover:scale-105"
-                            onClick={() =>
-                              onDeleteProfileCommentClick(
-                                profile.id,
-                                comment.id
-                              )
-                            }
-                          />
+                          <Dialog>
+                            <DialogTrigger asChild>
+                              <Trash
+                                className="cursor-pointer hover:scale-105"
+                                onClick={() => setCommentToDelete(comment.id)}
+                              />
+                            </DialogTrigger>
+                            <DialogContent className="sm:max-w-[425px]">
+                              <DialogHeader className="text-white">
+                                <DialogTitle>Delete Comment</DialogTitle>
+                                <DialogDescription>
+                                  Are you sure you want to delete this comment?
+                                </DialogDescription>
+                              </DialogHeader>
+                              <DialogFooter>
+                                <Button
+                                  variant="secondary"
+                                  onClick={() => setCommentToDelete(null)}
+                                >
+                                  Cancel
+                                </Button>
+                                <Button
+                                  variant="destructive"
+                                  onClick={onDeleteProfileCommentClick}
+                                >
+                                  Delete
+                                </Button>
+                              </DialogFooter>
+                            </DialogContent>
+                          </Dialog>
                         )}
                       </div>
                     </div>

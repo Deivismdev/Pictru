@@ -1,9 +1,16 @@
+import React, { useEffect, useRef, useState } from "react";
+import {
+  NavLink,
+  useLoaderData,
+  useNavigate,
+  useParams,
+} from "react-router-dom";
+import { useAuth } from "@/context/useAuth";
 import CoordinateSelector from "@/components/CoordinateSelector";
 import ImageCommentForm from "@/components/forms/ImageCommentForm";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { ScrollArea } from "@/components/ui/scroll-area";
-import { useAuth } from "@/context/useAuth";
 import { TagNames } from "@/lib/tags";
 import { Image as imageType } from "@/lib/types";
 import {
@@ -13,20 +20,19 @@ import {
   ThumbsUp,
   Trash,
 } from "lucide-react";
-import React, { useEffect, useRef, useState } from "react";
 import {
-  NavLink,
-  useLoaderData,
-  useNavigate,
-  useParams,
-} from "react-router-dom";
-import { number } from "zod";
+  Dialog,
+  DialogContent,
+  DialogDescription,
+  DialogFooter,
+  DialogHeader,
+  DialogTitle,
+  DialogTrigger,
+} from "@/components/ui/dialog";
 
 export default function ImagePage() {
   const [isEnlarged, setIsEnlarged] = useState(false);
-
   const { imageId } = useParams();
-
   console.log(imageId);
 
   const [selectedCoordinates, setIsSelectedCoordinates] = useState<{
@@ -48,8 +54,9 @@ export default function ImagePage() {
   const [liked, setLiked] = useState<Boolean>(false);
   const [imageClass, setImageClass] = useState("");
   const navigate = useNavigate();
-
   const imageRef = useRef<HTMLImageElement>(null);
+  const [imageToDelete, setImageToDelete] = useState<null | number>(null);
+  const [commentToDelete, setCommentToDelete] = useState<null | number>(null); // New state for comment deletion
 
   useEffect(() => {
     async function fetchImage() {
@@ -114,10 +121,12 @@ export default function ImagePage() {
     }
   }
 
-  async function onDeleteClick(imageId: number) {
+  async function onDeleteImageClick() {
+    if (imageToDelete === null) return;
+
     try {
       const response = await fetch(
-        `http://localhost:5095/api/image/${imageId}`,
+        `http://localhost:5095/api/image/${imageToDelete}`,
         {
           method: "DELETE",
           headers: {
@@ -135,14 +144,21 @@ export default function ImagePage() {
       navigate(`/user/${image?.user.id}`);
     } catch (error) {
       console.error("An error occurred:", error);
+    } finally {
+      setImageToDelete(null);
     }
   }
 
   async function onDeleteCommentClick(imageId: number, commentId: number) {
-    console.log(imageId, commentId);
+    setCommentToDelete(commentId); // Set the state for comment deletion
+  }
+
+  async function handleCommentDelete() {
+    if (commentToDelete === null) return;
+
     try {
       const response = await fetch(
-        `http://localhost:5095/api/images/${imageId}/comments/${commentId}`,
+        `http://localhost:5095/api/images/${imageId}/comments/${commentToDelete}`,
         {
           method: "DELETE",
           headers: {
@@ -153,11 +169,11 @@ export default function ImagePage() {
       );
       console.log(response);
       if (!response.ok) {
-        throw new Error("Failed to delete image");
+        throw new Error("Failed to delete comment");
       }
 
       const updatedComments =
-        image?.imageComments.filter((c) => c.id != commentId) ?? [];
+        image?.imageComments.filter((c) => c.id != commentToDelete) ?? [];
       const updatedImage = {
         ...(image as imageType),
         imageComments: updatedComments,
@@ -165,9 +181,11 @@ export default function ImagePage() {
 
       setImage(updatedImage);
 
-      console.log("Image deleted successfully");
+      console.log("Comment deleted successfully");
     } catch (error) {
       console.error("An error occurred:", error);
+    } finally {
+      setCommentToDelete(null); // Reset the state for comment deletion
     }
   }
 
@@ -300,12 +318,40 @@ export default function ImagePage() {
                       <div>
                         {(comment.userId === user?.userId ||
                           user?.roles.includes("Moderator")) && (
-                          <Trash
-                            className="cursor-pointer hover:scale-105"
-                            onClick={() =>
-                              onDeleteCommentClick(image.id, comment.id)
-                            }
-                          />
+                          <Dialog>
+                            <DialogTrigger asChild>
+                              <Trash
+                                className="cursor-pointer hover:scale-105"
+                                onClick={() =>
+                                  onDeleteCommentClick(image.id, comment.id)
+                                }
+                              />
+                            </DialogTrigger>
+                            <DialogContent>
+                              <DialogHeader className="text-white">
+                                <DialogTitle>
+                                  Confirm Comment Deletion
+                                </DialogTitle>
+                                <DialogDescription>
+                                  Are you sure you want to delete this comment?
+                                  This action cannot be undone.
+                                </DialogDescription>
+                              </DialogHeader>
+                              <DialogFooter>
+                                <Button
+                                  onClick={() => setCommentToDelete(null)}
+                                >
+                                  Cancel
+                                </Button>
+                                <Button
+                                  variant="destructive"
+                                  onClick={handleCommentDelete}
+                                >
+                                  Delete
+                                </Button>
+                              </DialogFooter>
+                            </DialogContent>
+                          </Dialog>
                         )}
                       </div>
                     </div>
@@ -389,14 +435,35 @@ export default function ImagePage() {
               >
                 Edit
               </Button>
-              <Button
-                variant="destructive"
-                className="w-16"
-                type="submit"
-                onClick={() => onDeleteClick(image.id)}
-              >
-                Delete
-              </Button>
+              <Dialog>
+                <DialogTrigger asChild>
+                  <Button
+                    variant="destructive"
+                    className="w-16"
+                    type="submit"
+                    onClick={() => setImageToDelete(image.id)}
+                  >
+                    Delete
+                  </Button>
+                </DialogTrigger>
+                <DialogContent>
+                  <DialogHeader className="text-white">
+                    <DialogTitle>Confirm Image Deletion</DialogTitle>
+                    <DialogDescription>
+                      Are you sure you want to delete this image? This action
+                      cannot be undone.
+                    </DialogDescription>
+                  </DialogHeader>
+                  <DialogFooter>
+                    <Button onClick={() => setImageToDelete(null)}>
+                      Cancel
+                    </Button>
+                    <Button variant="destructive" onClick={onDeleteImageClick}>
+                      Delete
+                    </Button>
+                  </DialogFooter>
+                </DialogContent>
+              </Dialog>
             </>
           )}
         </div>
