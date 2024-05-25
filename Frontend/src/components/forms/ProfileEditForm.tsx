@@ -18,7 +18,6 @@ const ProfileEditForm = ({
   userId,
 }: CommentFormProps) => {
   const form = useForm();
-
   const [description, setDescription] = useState("");
   const [isLoading, setIsLoading] = useState(false);
   const [file, setFile] = useState<File | null>(null);
@@ -26,22 +25,20 @@ const ProfileEditForm = ({
   useEffect(() => {
     form.setValue("description", profileData.description);
     form.setValue("imageUrl", profileData.imageUrl);
-    const imageUrl = profileData.imageUrl;
-
-    createFileFromUrl(imageUrl).then((file) => {
-      setFile(file);
-    });
-  }, [profileData.imageUrl]);
+    setDescription(profileData.description);
+    if (profileData.imageUrl) {
+      createFileFromUrl(profileData.imageUrl).then((file) => {
+        setFile(file);
+      });
+    }
+  }, [profileData, form]);
 
   async function createFileFromUrl(url: string) {
     const response = await fetch(url);
     const blob = await response.blob();
-
     const file = new File([blob], "image.jpg", { type: blob.type });
-
     return file;
   }
-  // setFile(profileData.imageUrl);
 
   async function onSubmit(values: any) {
     setIsLoading(true);
@@ -60,18 +57,13 @@ const ProfileEditForm = ({
         Authorization: `bearer ${token}`,
       },
     });
-    console.log(response);
 
     if (!response.ok) {
       throw new Error("Network response was not OK");
     }
 
     const res = await response.json();
-
-    console.log(res);
-
     form.reset();
-
     setIsLoading(false);
     endEdit({ description: res.description, imageUrl: res.imageUrl });
   }
@@ -79,6 +71,7 @@ const ProfileEditForm = ({
   const handleDescriptionChange = (event: any) => {
     setDescription(event.target.value);
   };
+
   const handleFileChange = (event: any) => {
     setFile(event.target.files[0]);
   };
@@ -88,7 +81,6 @@ const ProfileEditForm = ({
       <form
         encType="multipart/form-data"
         onSubmit={form.handleSubmit(onSubmit)}
-        className=""
       >
         <div className="font-bold text-3xl px-3 pb-6">
           Edit your description or profile picture
@@ -96,48 +88,26 @@ const ProfileEditForm = ({
         <div className="flex flex-row justify-between p-3">
           <div className="flex flex-col justify-between">
             <div className="text-2xl font-bold">{profileData.username}</div>
-            <span className="text-2xl font-bold w-24 rounded-full bg-muted"></span>
-            <div className="text-xl w-16 rounded-full bg-muted" />
-            <div className="text-2xl flex items-center"></div>
           </div>
           <div className="max-w-48 max-h-48 relative">
-            {/* <FormField
-              control={form.control}
-              name="image"
-              render={({ field }) => (
-                <FormItem className="h-full w-full">
-                  <FormLabel>Image</FormLabel>
-                  <FormControl className="flex items-center content-center">
-                    <Input
-                      className="w-48 h-32"
-                      type="file"
-                      accept="image/*"
-                      {...field}
-                    />
-                  </FormControl>
-                </FormItem>
-              )}
-            /> */}
+            {file ? (
+              <img
+                src={URL.createObjectURL(file)}
+                className="w-48 h-32 object-cover rounded-sm m-auto"
+              />
+            ) : (
+              <img
+                src={profileData.imageUrl}
+                className="w-48 h-32 object-cover rounded-sm m-auto"
+              />
+            )}
             <input type="file" onChange={handleFileChange} />
           </div>
         </div>
         <div>
-          {/* <FormField
-            control={form.control}
-            name="description"
-            render={({ field }) => (
-              <FormItem>
-                <FormControl>
-                  <textarea
-                    className="h-full w-full text-start bg-background border-border border rounded-md text-xl text-foreground p-2"
-                    {...field}
-                  />
-                </FormControl>
-              </FormItem>
-            )}
-          /> */}
           <textarea
             className="h-full w-full text-start bg-background border-border border rounded-md text-xl text-foreground p-2"
+            value={description}
             onChange={handleDescriptionChange}
           />
         </div>
