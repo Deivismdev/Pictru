@@ -230,7 +230,7 @@ namespace API.Controllers
             return NoContent();
         }
 
-        // idk about thi
+
         // also appeal is not a good name, since mods could set directly to protected
         [HttpPatch("suspended/{imageId}")]
         [Authorize]

@@ -283,7 +283,14 @@ export default function ImagePage() {
                     onMouseLeave={() => setCommentCoordinates(null)}
                   >
                     <div className="flex flex-row justify-between items-center">
-                      <div className="brightness-75">{comment.userName}</div>
+                      <div className="brightness-75">
+                        <NavLink
+                          className="hover:underline"
+                          to={`/user/${comment.userId}`}
+                        >
+                          {comment.userName}
+                        </NavLink>
+                      </div>
                       {comment.xCoord && comment.yCoord && (
                         <MousePointerClick className="stroke-white" />
                       )}

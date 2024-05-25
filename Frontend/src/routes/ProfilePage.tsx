@@ -9,7 +9,7 @@ import { Console } from "console";
 import { PencilIcon, Trash } from "lucide-react";
 import { cwd } from "process";
 import { useState } from "react";
-import { useLoaderData } from "react-router-dom";
+import { NavLink, useLoaderData } from "react-router-dom";
 
 export async function loader({ params }: any) {
   const response = await fetch(
@@ -183,7 +183,14 @@ export default function ProfilePage() {
                     className="bg-muted p-2 m-2 rounded-md hover:brightness-110"
                   >
                     <div className="flex flex-row justify-between items-center">
-                      <div className="brightness-75">{comment.userName}</div>
+                      <div className="brightness-75">
+                        <NavLink
+                          className="hover:underline"
+                          to={`/user/${comment.userId}`}
+                        >
+                          {comment.userName}
+                        </NavLink>
+                      </div>
                     </div>
                     <div className="flex flex-row justify-between items-center">
                       {comment.text}
