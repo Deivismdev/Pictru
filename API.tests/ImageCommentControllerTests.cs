@@ -227,5 +227,98 @@ namespace API.tests
             // Assert
             Assert.IsType<UnauthorizedResult>(result);
         }
+
+        [Fact]
+        public async Task UpdateImageComment_ReturnsNoContentResult_WhenCommentIsUpdated()
+        {
+            // Arrange
+            var imageId = 1;
+            var commentId = 1;
+            var userId = "test-user-id";
+            var commentDto = new UpdateImageCommentDto { Text = "Updated Comment" };
+            var image = new Image { Id = imageId, UserId = userId };
+            var comment = new ImageComment { Id = commentId, Text = "Old Comment", UserId = userId, ImageId = imageId };
+
+            _context.Images.Add(image);
+            _context.ImageComments.Add(comment);
+            _context.SaveChanges();
+
+            SetUserClaims(userId);
+
+            // Act
+            var result = await _controller.UpdateImageComment(imageId, commentId, commentDto);
+
+            // Assert
+            Assert.IsType<NoContentResult>(result);
+            var updatedComment = await _context.ImageComments.FindAsync(commentId);
+            Assert.Equal("Updated Comment", updatedComment.Text);
+        }
+
+        [Fact]
+        public async Task UpdateImageComment_ReturnsNotFoundResult_WhenImageDoesNotExist()
+        {
+            // Arrange
+            var imageId = 999;
+            var commentId = 1;
+            var userId = "test-user-id";
+            var commentDto = new UpdateImageCommentDto { Text = "Updated Comment" };
+
+            SetUserClaims(userId);
+
+            // Act
+            var result = await _controller.UpdateImageComment(imageId, commentId, commentDto);
+
+            // Assert
+            Assert.IsType<NotFoundResult>(result);
+        }
+
+        [Fact]
+        public async Task UpdateImageComment_ReturnsNotFoundResult_WhenCommentDoesNotExist()
+        {
+            // Arrange
+            var imageId = 1;
+            var commentId = 999;
+            var userId = "test-user-id";
+            var commentDto = new UpdateImageCommentDto { Text = "Updated Comment" };
+            var image = new Image { Id = imageId, UserId = userId };
+
+            _context.Images.Add(image);
+            _context.SaveChanges();
+
+            SetUserClaims(userId);
+
+            // Act
+            var result = await _controller.UpdateImageComment(imageId, commentId, commentDto);
+
+            // Assert
+            Assert.IsType<NotFoundResult>(result);
+        }
+
+        [Fact]
+        public async Task UpdateImageComment_ReturnsUnauthorizedResult_WhenUserIsNotAuthorized()
+        {
+            // Arrange
+            var imageId = 1;
+            var commentId = 1;
+            var userId = "test-user-id";
+            var differentUserId = "different-user-id";
+            var commentDto = new UpdateImageCommentDto { Text = "Updated Comment" };
+            var image = new Image { Id = imageId, UserId = userId };
+            var comment = new ImageComment { Id = commentId, Text = "Old Comment", UserId = differentUserId, ImageId = imageId };
+
+            _context.Images.Add(image);
+            _context.ImageComments.Add(comment);
+            _context.SaveChanges();
+
+            _mockUserManager.Setup(x => x.IsInRoleAsync(It.IsAny<User>(), It.IsAny<string>())).ReturnsAsync(false);
+
+            SetUserClaims(userId);
+
+            // Act
+            var result = await _controller.UpdateImageComment(imageId, commentId, commentDto);
+
+            // Assert
+            Assert.IsType<UnauthorizedResult>(result);
+        }
     }
 }
