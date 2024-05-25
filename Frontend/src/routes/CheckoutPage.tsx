@@ -92,13 +92,35 @@ export default function CheckoutPage() {
   };
 
   return (
-    <div className="text-xl border border-border rounded-md m-auto w-2/3 mt-32 text-foreground p-3">
-      <span>GET PREMIUM</span>
-      <div className=" content-center max-w-5xl items  py-12 px-32">
+    <div className="text-xl m-auto w-2/3 text-foreground p-3">
+      <h1 className="text-3xl py-2">Become Premium</h1>
+      <div className="content-center">
+        <div>
+          Elevate your profile and <span className="font-bold">stand out </span>{" "}
+          from the crowd with our premium membership.
+        </div>
+        <div>
+          Gain a{" "}
+          <span className="font-bold text-amber-600"> shining star badge </span>
+          next to your name, signaling to fellow users that you're a valued
+          supporter of our platform.
+        </div>
+        <div>
+          Enjoy exclusive benefits and be the first to access new features.
+        </div>
+        <div>Only 5.00$ for a lifetime premium status!</div>
+      </div>
+      <div className="pt-4 text-2xl">
+        This could be you: ⭐{user?.userName}⭐
+      </div>
+      <div className=" content-center max-w-5xl items py-12 px-32 text-white">
+        <span>Enter card details:</span>
         <form onSubmit={handleSubmit}>
-          <CardElement />
-          <Button type="submit" disabled={!stripe}>
-            Pay
+          <div className="bg-purple-100 rounded-full py-5 px-5">
+            <CardElement />
+          </div>
+          <Button className="mt-7" type="submit" disabled={!stripe}>
+            Become Premium!
           </Button>
         </form>
       </div>

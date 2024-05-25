@@ -31,10 +31,17 @@ export default function Navbar() {
               </DropdownMenuItem>
               <DropdownMenuSeparator />
               <DropdownMenuItem>
+                <Link to={"/getpremium"} className="text-amber-500">
+                  Become premium
+                </Link>
+              </DropdownMenuItem>
+              <DropdownMenuSeparator />
+              <DropdownMenuItem>
                 <button className="text-red-700" onClick={() => logout()}>
                   Logout
                 </button>
               </DropdownMenuItem>
+              <DropdownMenuSeparator />
             </DropdownMenuContent>
           </DropdownMenu>
         </>

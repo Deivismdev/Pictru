@@ -66,11 +66,6 @@ namespace API.Controllers
         [Authorize]
         public async Task<IActionResult> CreateImageComment(int imageId, CreateImageCommentDto commentDto)
         {
-            System.Console.WriteLine("\n\n");
-            Console.WriteLine(commentDto.Text);
-            Console.WriteLine(commentDto.XCoord);
-            Console.WriteLine(commentDto.YCoord);
-            System.Console.WriteLine("\n\n");
             var image = await context.Images.FindAsync(imageId);
             if (image == null)
             {
@@ -96,19 +91,38 @@ namespace API.Controllers
             // return CreatedAtAction("GetComment", new { imageId, commentId = comment.Id }, comment);
         }
 
-        // [HttpPut("{commentId}")]
-        // public async Task<IActionResult> UpdateImageComment(int imageId, int commentId, UpdateImageCommentDto imageDto)
-        // {
+        [HttpPatch("{commentId}")]
+        public async Task<IActionResult> UpdateImageComment(int imageId, int commentId, UpdateImageCommentDto commentDto)
+        {
+            System.Console.WriteLine($"\n\n{commentDto.Text}\n\n");
+            var image = await context.Images.FindAsync(imageId);
+            if (image == null)
+            {
+                return NotFound();
+            }
 
+            var comment = await context.ImageComments.FindAsync(commentId);
+            if (comment == null)
+            {
+                return NotFound();
+            }
 
-        //     return Ok();
-        // }
+            var userId = User.Claims.SingleOrDefault(x => x.Type.Equals("http://schemas.xmlsoap.org/ws/2005/05/identity/claims/nameidentifier")).Value;
+            if (comment.UserId != userId && !await _userManager.IsInRoleAsync(await _userManager.FindByIdAsync(userId), "Moderator"))
+            {
+                return Unauthorized();
+            }
+
+            comment.Text = commentDto.Text;
+            await context.SaveChangesAsync();
+
+            return NoContent();
+        }
 
         [Authorize]
         [HttpDelete("{commentId}")]
         public async Task<IActionResult> DeleteImageComment(int imageId, int commentId)
         {
-            System.Console.WriteLine($"\n\n\n ???? {imageId} {commentId}\n\n\n");
             var userId = User.Claims.SingleOrDefault(x => x.Type.Equals("http://schemas.xmlsoap.org/ws/2005/05/identity/claims/nameidentifier")).Value;
             var comment = await context.ImageComments
                 .Where(i => i.Image.Id == imageId && i.Id == commentId)

@@ -54,7 +54,7 @@ namespace API.Models
 
     public class UpdateImageCommentDto
     {
-        public int Text { get; set; }
+        public string Text { get; set; }
         public DateTime Date = DateTime.UtcNow;
         public int XCoord { get; set; }
         public int YCoord { get; set; }

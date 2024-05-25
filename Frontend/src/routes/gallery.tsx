@@ -18,9 +18,7 @@ import {
   Laptop2Icon,
   PaletteIcon,
 } from "lucide-react";
-import {
-  MasonryInfiniteGrid,
-} from "@egjs/react-infinitegrid";
+import { MasonryInfiniteGrid } from "@egjs/react-infinitegrid";
 import { useState } from "react";
 
 export default function Gallery() {
@@ -29,6 +27,7 @@ export default function Gallery() {
 
   const [stopFetching, setStopFetching] = useState(false);
   const [filter, setFilter] = useState<number | null>(null);
+  const [sort, setSort] = useState<string | null>(null);
 
   const filterOptions = [
     {
@@ -76,8 +75,13 @@ export default function Gallery() {
       filterURL = `tag=${filter}&`;
     }
 
+    let sortURL = "orderBy=uploaddatedesc";
+    if (sort) {
+      sortURL = `orderBy=${sort}&`;
+    }
+
     const result = await fetch(
-      `http://localhost:5095/api/image?${filterURL}state=0&orderBy=uploadDate&pageNumber=${page}&pageSize=5`
+      `http://localhost:5095/api/image?${filterURL}state=0&${sortURL}&pageNumber=${page}&pageSize=5`
     );
     if (result.ok) {
       const res = await result.json();
@@ -96,14 +100,31 @@ export default function Gallery() {
           <DropdownMenu>
             <DropdownMenuTrigger asChild>
               <Button>
-                New
+                {sort === "viewcountdesc" ? "Top" : "New"}
                 <ChevronDown className="ml-2" />
               </Button>
             </DropdownMenuTrigger>
             <DropdownMenuContent>
-              <DropdownMenuItem>Hot</DropdownMenuItem>
-              <DropdownMenuItem>Top</DropdownMenuItem>
-              <DropdownMenuItem>Best</DropdownMenuItem>
+              <DropdownMenuItem
+                onClick={() => {
+                  setSort("viewcountdesc");
+                  setImages([]);
+                  setPage(1);
+                  setStopFetching(false);
+                }}
+              >
+                Top
+              </DropdownMenuItem>
+              <DropdownMenuItem
+                onClick={() => {
+                  setSort("uploaddatedesc");
+                  setImages([]);
+                  setPage(1);
+                  setStopFetching(false);
+                }}
+              >
+                New
+              </DropdownMenuItem>
             </DropdownMenuContent>
           </DropdownMenu>
           {filterOptions.map((option) => (

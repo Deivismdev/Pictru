@@ -17,6 +17,7 @@ import {
   Eye,
   MessageCircleWarningIcon,
   MousePointerClick,
+  Pencil,
   ThumbsUp,
   Trash,
 } from "lucide-react";
@@ -56,8 +57,11 @@ export default function ImagePage() {
   const navigate = useNavigate();
   const imageRef = useRef<HTMLImageElement>(null);
   const [imageToDelete, setImageToDelete] = useState<null | number>(null);
-  const [commentToDelete, setCommentToDelete] = useState<null | number>(null); // New state for comment deletion
-
+  const [commentToDelete, setCommentToDelete] = useState<null | number>(null);
+  const [commentToEdit, setCommentToEdit] = useState<null | {
+    id: number;
+    comment: string;
+  }>(null);
   useEffect(() => {
     async function fetchImage() {
       const url = user
@@ -119,6 +123,8 @@ export default function ImagePage() {
 
       setImage(updatedImage);
     }
+
+    setCommentToEdit(null);
   }
 
   async function onDeleteImageClick() {
@@ -205,6 +211,14 @@ export default function ImagePage() {
     // setImage({ ...image, likeCount: image.likeCount + 1 });
     setLiked(true);
     console.log("Imageliked");
+  }
+
+  async function onEditCommentClick(commentId: number, commentText: string) {
+    setCommentToEdit({ id: commentId, comment: commentText });
+  }
+
+  async function onCancelEdit() {
+    setCommentToEdit(null);
   }
 
   async function onReportClick(imageId: any) {
@@ -315,7 +329,15 @@ export default function ImagePage() {
                     </div>
                     <div className="flex flex-row justify-between items-center">
                       <div>{comment.text}</div>
-                      <div>
+                      <div className="flex space-x-2">
+                        {user?.userId === comment.userId && (
+                          <Pencil
+                            onClick={() =>
+                              onEditCommentClick(comment.id, comment.text)
+                            }
+                            className="cursor-pointer hover:scale-105"
+                          />
+                        )}
                         {(comment.userId === user?.userId ||
                           user?.roles.includes("Moderator")) && (
                           <Dialog>
@@ -359,6 +381,8 @@ export default function ImagePage() {
                   imageId={image.id}
                   onSelectImagePoint={() => setIsEnlarged(true)}
                   coordinates={selectedCoordinates}
+                  commentToEdit={commentToEdit}
+                  onCancelEdit={onCancelEdit}
                 />
               </div>
             </div>
