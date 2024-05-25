@@ -6,6 +6,7 @@ import {
   FormField,
   FormItem,
   FormLabel,
+  FormMessage,
 } from "@/components/ui/form";
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
@@ -114,6 +115,7 @@ export default function UploadForm({ onImageUpload }: UploadFormProps) {
                 <FormControl>
                   <Input type="text" placeholder="title" {...field} />
                 </FormControl>
+                <FormMessage />
               </FormItem>
             )}
           />
@@ -151,9 +153,12 @@ export default function UploadForm({ onImageUpload }: UploadFormProps) {
                     placeholder="description"
                     {...field}
                     value={description}
-                    onChange={(e) => setDescription(e.target.value)}
+                    onChange={(e) => {
+                      setDescription(e.target.value), console.log("CHANGE");
+                    }}
                   />
                 </FormControl>
+                <FormMessage />
               </FormItem>
             )}
           />
@@ -185,6 +190,7 @@ export default function UploadForm({ onImageUpload }: UploadFormProps) {
                     picturePreview ? "block" : "hidden"
                   }`}
                 />
+                <FormMessage />
               </FormItem>
             )}
           />

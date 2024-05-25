@@ -1,5 +1,6 @@
 import ImageCard from "@/components/ImageCard";
 import { Button, buttonVariants } from "@/components/ui/button";
+import { useAuth } from "@/context/useAuth";
 import { MasonryInfiniteGrid } from "@egjs/react-infinitegrid";
 import { useState } from "react";
 import { useNavigate } from "react-router-dom";
@@ -9,6 +10,7 @@ export default function LandingPage() {
   const [stopFetching, setStopFetching] = useState(false);
   const [images, setImages] = useState<any>([]);
   const [page, setPage] = useState(1);
+  const { user } = useAuth();
 
   async function fetchPictures() {
     if (stopFetching) return;
@@ -44,12 +46,21 @@ export default function LandingPage() {
           </p>
 
           <div className="space-y-4 md:space-y-0 md:space-x-4">
-            <Button
-              className="w-full md:w-1/3 text-2xl"
-              onClick={() => navigate("/register")}
-            >
-              Join now
-            </Button>
+            {user ? (
+              <Button
+                className="w-full md:w-1/3 text-2xl"
+                onClick={() => navigate("/register")}
+              >
+                Upload
+              </Button>
+            ) : (
+              <Button
+                className="w-full md:w-1/3 text-2xl"
+                onClick={() => navigate("/register")}
+              >
+                Join now
+              </Button>
+            )}
           </div>
           <div>or explore images below</div>
         </div>

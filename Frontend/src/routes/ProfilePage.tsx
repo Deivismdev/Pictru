@@ -205,12 +205,6 @@ export default function ProfilePage() {
                               </DialogHeader>
                               <DialogFooter>
                                 <Button
-                                  variant="secondary"
-                                  onClick={() => setCommentToDelete(null)}
-                                >
-                                  Cancel
-                                </Button>
-                                <Button
                                   variant="destructive"
                                   onClick={onDeleteProfileCommentClick}
                                 >

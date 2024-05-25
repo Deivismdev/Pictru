@@ -9,7 +9,10 @@ export const RegisterValidation = z.object({
 
 export const UploadValidation = z.object({
   Name: z.string().min(1, { message: "Title is required" }).default(""),
-  Description: z.string().min(1, { message: "Title is required" }).default(""),
+  Description: z
+    .string()
+    // .min(1, { message: "Description is required" })
+    .default(""),
   File: z.instanceof(File),
   Tags: z.array(z.nativeEnum(TagNames)).default([]),
 });

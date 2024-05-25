@@ -339,11 +339,6 @@ export default function ImagePage() {
                               </DialogHeader>
                               <DialogFooter>
                                 <Button
-                                  onClick={() => setCommentToDelete(null)}
-                                >
-                                  Cancel
-                                </Button>
-                                <Button
                                   variant="destructive"
                                   onClick={handleCommentDelete}
                                 >

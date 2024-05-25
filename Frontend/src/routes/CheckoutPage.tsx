@@ -92,8 +92,8 @@ export default function CheckoutPage() {
   };
 
   return (
-    <div className="bg-purple-200 text-xl">
-      <span>REEEEEEEEEEEEEEEEEEEEEE</span>
+    <div className="text-xl border border-border rounded-md m-auto w-2/3 mt-32 text-foreground p-3">
+      <span>GET PREMIUM</span>
       <div className=" content-center max-w-5xl items  py-12 px-32">
         <form onSubmit={handleSubmit}>
           <CardElement />
