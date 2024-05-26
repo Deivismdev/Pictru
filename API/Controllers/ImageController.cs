@@ -186,16 +186,26 @@ namespace API.Controllers
             {
                 return Unauthorized();
             }
-            image.Name = imageDto.Name;
-            image.Description = imageDto.Description;
-
-            image.Tags.Clear();
-
-            foreach (var tagName in imageDto.Tags)
+            // hmm
+            if (imageDto.Name != null)
             {
-                var tag = await context.Tags.FirstOrDefaultAsync(t => t.Name == tagName);
-                image.Tags.Add(tag);
+                image.Name = imageDto.Name;
             }
+            if (imageDto.Description != null)
+            {
+                image.Description = imageDto.Description;
+            }
+            if (imageDto.Tags.Any())
+            {
+                image.Tags.Clear();
+
+                foreach (var tagName in imageDto.Tags)
+                {
+                    var tag = await context.Tags.FirstOrDefaultAsync(t => t.Name == tagName);
+                    image.Tags.Add(tag);
+                }
+            }
+
             await context.SaveChangesAsync();
 
             return NoContent();

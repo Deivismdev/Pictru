@@ -34,7 +34,6 @@ import {
 export default function ImagePage() {
   const [isEnlarged, setIsEnlarged] = useState(false);
   const { imageId } = useParams();
-  console.log(imageId);
 
   const [selectedCoordinates, setIsSelectedCoordinates] = useState<{
     x: number;
@@ -97,11 +96,9 @@ export default function ImagePage() {
         if (aspectRatio > 1) {
           // Image is wider
           setImageClass("w-full h-max");
-          console.log("WIDER");
         } else {
           // Image is taller
           setImageClass("h-full w-max");
-          console.log("TALLER");
         }
       }
     };
@@ -438,7 +435,7 @@ export default function ImagePage() {
             )}
           </div>
         </div>
-        <div className="border border-border h-max p-2 mt-6">
+        <div className="border border-border rounded-sm h-max p-2 mt-6">
           <h6 className="font-bold">Description</h6>
           <ScrollArea className="h-full">{image.description}</ScrollArea>
         </div>

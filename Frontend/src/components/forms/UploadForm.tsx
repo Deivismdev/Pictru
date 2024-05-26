@@ -154,7 +154,7 @@ export default function UploadForm({ onImageUpload }: UploadFormProps) {
                     {...field}
                     value={description}
                     onChange={(e) => {
-                      setDescription(e.target.value), console.log("CHANGE");
+                      setDescription(e.target.value);
                     }}
                   />
                 </FormControl>
