@@ -54,6 +54,8 @@ namespace API.Models
     public class AppealImageSuspensionImageDto()
     {
         public ICollection<TagNames> Tags { get; set; }
+        public string Description { get; set; }
+
 
     }
 

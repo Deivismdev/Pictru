@@ -45,11 +45,6 @@ export default function ImageEditForm({ imageData }: EditFormProps) {
     defaultValues: {
       Name: imageData.name,
       Description: imageData.description,
-      // Tags: imageData.tags.map((tag) =>
-      //   Object.keys(TagNames).find(
-      //     (key) => TagNames[key as keyof typeof TagNames] === tag
-      //   )
-      // ), TODO: idk if its possible with shadcn toggle group
     },
   });
 
@@ -57,8 +52,6 @@ export default function ImageEditForm({ imageData }: EditFormProps) {
   const [picturePreview, setPicturePreview] = useState<any>(null);
   const navigate = useNavigate();
   const [description, setDescription] = useState<string>(imageData.description);
-
-  // console.log(imageData);
 
   useEffect(() => {
     setPicturePreview(imageData.imageUrl);

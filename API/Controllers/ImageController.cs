@@ -253,11 +253,10 @@ namespace API.Controllers
                 return NotFound();
             }
 
-            if (image.UserId != userId)
+            if (image.UserId != userId && !await _userManager.IsInRoleAsync(await _userManager.FindByIdAsync(userId), "Moderator"))
             {
                 return Unauthorized();
             }
-
 
             if (image.State != ImageStates.Suspended)
             {
@@ -271,7 +270,9 @@ namespace API.Controllers
                 var tag = await context.Tags.FirstOrDefaultAsync(t => t.Name == tagName);
                 image.Tags.Add(tag);
             }
+            image.Description = imageDto.Description;
             image.State = ImageStates.Appealed;
+
             if (await _userManager.IsInRoleAsync(await _userManager.FindByIdAsync(userId), "Moderator"))
             {
                 image.State = ImageStates.Active;

@@ -11,6 +11,15 @@ import { Eye, MousePointerClick, ThumbsUp } from "lucide-react";
 import { useEffect, useRef, useState } from "react";
 import { useLoaderData } from "react-router-dom";
 import { NavLink, useNavigate, useParams } from "react-router-dom";
+import {
+  Dialog,
+  DialogContent,
+  DialogDescription,
+  DialogFooter,
+  DialogHeader,
+  DialogTitle,
+  DialogTrigger,
+} from "@/components/ui/dialog";
 
 export async function loader({ params }: any) {
   console.log(params);
@@ -31,6 +40,7 @@ export default function AppealedImage() {
   const imageRef = useRef<HTMLImageElement>(null);
   const [imageClass, setImageClass] = useState("");
   const [isEnlarged, setIsEnlarged] = useState(false);
+  const [imageToDelete, setImageToDelete] = useState<null | number>(null);
 
   const [selectedCoordinates, setIsSelectedCoordinates] = useState<{
     x: number;
@@ -66,6 +76,34 @@ export default function AppealedImage() {
       }
     };
   }, [image?.imageUrl]);
+
+  async function onDeleteImageClick() {
+    if (imageToDelete === null) return;
+
+    try {
+      const response = await fetch(
+        `http://localhost:5095/api/image/${imageToDelete}`,
+        {
+          method: "DELETE",
+          headers: {
+            Accept: "application/json",
+            Authorization: `bearer ${token}`,
+          },
+        }
+      );
+
+      if (!response.ok) {
+        throw new Error("Failed to delete image");
+      }
+
+      console.log("Image deleted successfully");
+      navigate(`/appealed`);
+    } catch (error) {
+      console.error("An error occurred:", error);
+    } finally {
+      setImageToDelete(null);
+    }
+  }
 
   async function onApproveClick(imageId: number) {
     try {
@@ -209,17 +247,37 @@ export default function AppealedImage() {
                 type="submit"
                 onClick={() => onApproveClick(image.id)}
               >
-                Approve image
+                Unsuspend
               </Button>
-              {/* TODO: ahh this is stupid need new endpoint to change state to suspended */}
-              {/* <Button
-                variant="destructive"
-                className="w-26"
-                type="submit"
-                onClick={() => onSuspendedClick(image.id)}
-              >
-                Move to suspended
-              </Button> */}
+              <Dialog>
+                <DialogTrigger asChild>
+                  <Button
+                    variant="destructive"
+                    className="w-16"
+                    type="submit"
+                    onClick={() => setImageToDelete(image.id)}
+                  >
+                    Delete
+                  </Button>
+                </DialogTrigger>
+                <DialogContent>
+                  <DialogHeader className="text-white">
+                    <DialogTitle>Confirm Image Deletion</DialogTitle>
+                    <DialogDescription>
+                      Are you sure you want to delete this image? This action
+                      cannot be undone.
+                    </DialogDescription>
+                  </DialogHeader>
+                  <DialogFooter>
+                    <Button onClick={() => setImageToDelete(null)}>
+                      Cancel
+                    </Button>
+                    <Button variant="destructive" onClick={onDeleteImageClick}>
+                      Delete
+                    </Button>
+                  </DialogFooter>
+                </DialogContent>
+              </Dialog>
             </>
           )}
         </div>
