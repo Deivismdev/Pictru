@@ -238,6 +238,10 @@ export default function AppealedImage() {
             )}
           </div>
         </div>
+        <div className="border border-border rounded-sm h-max p-2 mt-6">
+          <h6 className="font-bold">Description</h6>
+          <ScrollArea className="h-full">{image.description}</ScrollArea>
+        </div>
         <div className="flex gap-6 pt-4">
           {(image.user.id === user?.userId ||
             user?.roles.includes("Moderator")) && (
