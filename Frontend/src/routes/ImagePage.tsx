@@ -57,6 +57,8 @@ export default function ImagePage() {
   const imageRef = useRef<HTMLImageElement>(null);
   const [imageToDelete, setImageToDelete] = useState<null | number>(null);
   const [commentToDelete, setCommentToDelete] = useState<null | number>(null);
+  const [imageToReport, setImageToReport] = useState<null | number>(null);
+  const [open, setOpen] = useState(false);
   const [commentToEdit, setCommentToEdit] = useState<null | {
     id: number;
     comment: string;
@@ -222,7 +224,7 @@ export default function ImagePage() {
     const token = localStorage.getItem("token");
 
     const response = await fetch(
-      `http://localhost:5095/api/${imageId}/reports`,
+      `http://localhost:5095/api/${imageToReport}/reports`,
       {
         method: "POST",
         headers: {
@@ -231,9 +233,11 @@ export default function ImagePage() {
         },
       }
     );
-    if (!response.ok) {
-      throw new Error("oof");
-    }
+    // if (!response.ok) {
+    //   throw new Error("oof");
+    // }
+    setImageToReport(null);
+    setOpen(false);
     console.log("Image reported");
   }
 
@@ -285,10 +289,28 @@ export default function ImagePage() {
           </div>
           <span className="flex gap-5 items-center">
             <span className="text-sm ">Report mistagged image</span>
-            {/* Change badge to more report like? */}
-            <button onClick={() => onReportClick(image.id)}>
-              <MessageCircleWarningIcon className="hover:stroke-red-700 size-10" />
-            </button>
+            <Dialog open={open} onOpenChange={setOpen}>
+              <DialogTrigger asChild>
+                <button onClick={() => setImageToReport(image.id)}>
+                  <MessageCircleWarningIcon className="hover:stroke-red-700 size-10" />
+                </button>
+              </DialogTrigger>
+              <DialogContent>
+                <DialogHeader className="text-white">
+                  <DialogTitle>Confirm Report</DialogTitle>
+                  <DialogDescription>
+                    Are you sure you want to report this image? This action
+                    cannot be undone.
+                  </DialogDescription>
+                </DialogHeader>
+                <DialogFooter>
+                  {/* <Button onClick={() => setImageToReport(null)}>Cancel</Button> */}
+                  <Button variant="destructive" onClick={onReportClick}>
+                    Report
+                  </Button>
+                </DialogFooter>
+              </DialogContent>
+            </Dialog>
           </span>
         </div>
       </div>
@@ -471,9 +493,9 @@ export default function ImagePage() {
                     </DialogDescription>
                   </DialogHeader>
                   <DialogFooter>
-                    <Button onClick={() => setImageToDelete(null)}>
+                    {/* <Button onClick={() => setImageToDelete(null)}>
                       Cancel
-                    </Button>
+                    </Button> */}
                     <Button variant="destructive" onClick={onDeleteImageClick}>
                       Delete
                     </Button>

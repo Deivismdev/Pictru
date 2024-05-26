@@ -12,6 +12,7 @@ import { useEffect, useState } from "react";
 
 export default function CheckoutPage() {
   const [clientSecret, setClientSecret] = useState("");
+  const [paymentSuccess, setPaymentSuccess] = useState(false);
   const stripe = useStripe();
   const { token, user } = useAuth();
 
@@ -86,7 +87,9 @@ export default function CheckoutPage() {
             },
           }
         );
-        // set massages to update ui with "ty for supporting PICTRU, enjoy premium!. "
+        if (response.ok) {
+          setPaymentSuccess(true);
+        }
       }
     }
   };
@@ -123,6 +126,11 @@ export default function CheckoutPage() {
             Become Premium!
           </Button>
         </form>
+        {paymentSuccess && ( // Conditional rendering of the success message
+          <div className="mt-4 text-green-600 text-lg">
+            Thank you for supporting PICTRU! Enjoy your premium membership!
+          </div>
+        )}
       </div>
     </div>
   );
