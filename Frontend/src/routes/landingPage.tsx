@@ -49,7 +49,7 @@ export default function LandingPage() {
             {user ? (
               <Button
                 className="w-full md:w-1/3 text-2xl"
-                onClick={() => navigate("/register")}
+                onClick={() => navigate("/upload")}
               >
                 Upload
               </Button>
