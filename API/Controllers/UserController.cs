@@ -143,7 +143,7 @@ namespace API.Controllers
             return Ok(getUserDto);
         }
 
-
+        //TODO: uhh, oops. too late now :x
         [HttpPatch("setPremium/{userId}")]
         public async Task<IActionResult> SetPremiumAsync(string userId)
         {
