@@ -90,6 +90,7 @@ const RegisterForm = () => {
                 <FormControl>
                   <Input type="password" className="shadow-input" {...field} />
                 </FormControl>
+                <FormMessage />
               </FormItem>
             )}
           />

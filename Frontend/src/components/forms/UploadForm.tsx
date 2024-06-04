@@ -35,7 +35,7 @@ const tagDescriptionMap = {
     "Drawing\nMedium: <Please enter the medium used>\nPaper: <Please enter the paper details>",
   Other: "Other\nDetails: <Please provide relevant details>",
 };
-
+const MAX_FILE_SIZE = 5 * 1024 * 1024;
 export default function UploadForm({ onImageUpload }: UploadFormProps) {
   const form = useForm<z.infer<typeof UploadValidation>>({
     resolver: zodResolver(UploadValidation),
@@ -46,6 +46,7 @@ export default function UploadForm({ onImageUpload }: UploadFormProps) {
   const [isLoading, setIsLoading] = useState(false);
   const [picturePreview, setPicturePreview] = useState<any>(null);
   const [description, setDescription] = useState<string>("");
+  const [fileError, setFileError] = useState<string | null>(null);
 
   const onSubmit = async (values: z.infer<typeof UploadValidation>) => {
     setIsLoading(true);
@@ -59,25 +60,35 @@ export default function UploadForm({ onImageUpload }: UploadFormProps) {
       formData.append("Tags[]", tag.toString());
     }
 
-    const response = await fetch("http://localhost:5095/api/image", {
-      method: "POST",
-      body: formData,
-      headers: {
-        Accept: "application/json",
-        Authorization: `bearer ${token}`,
-      },
-    });
+    try {
+      const response = await fetch("http://localhost:5095/api/image", {
+        method: "POST",
+        body: formData,
+        headers: {
+          Accept: "application/json",
+          Authorization: `bearer ${token}`,
+        },
+      });
 
-    if (!response.ok) {
-      throw new Error("Network response was not OK");
+      if (!response.ok) {
+        setFileError("File was invalid or exceeded 5MB.");
+        setIsLoading(false);
+        return;
+      }
+
+      const res = await response.json();
+      onImageUpload(res.id);
+
+      form.reset({ Description: "", Name: "", Tags: [], File: undefined });
+      setDescription("");
+      setPicturePreview(null);
+      setFileError(null);
+      setIsLoading(false);
+    } catch (error) {
+      console.error("Upload error:", error);
+      setFileError("An unexpected error occurred during upload.");
+      setIsLoading(false);
     }
-
-    const res = await response.json();
-    onImageUpload(res.id);
-
-    form.reset({ Description: "", Name: "", Tags: [], File: undefined });
-    setDescription("");
-    setIsLoading(false);
   };
 
   const handleToggleChange = (newSelection: string[]) => {
@@ -92,7 +103,7 @@ export default function UploadForm({ onImageUpload }: UploadFormProps) {
   const updateDescription = (selectedTags: TagNames[]) => {
     const newDescription = selectedTags
       .map((tag) => tagDescriptionMap[TagNames[tag]])
-      .join("\n\n");
+      .join("\n");
     setDescription(newDescription);
   };
 
@@ -169,34 +180,46 @@ export default function UploadForm({ onImageUpload }: UploadFormProps) {
             name="File"
             render={({ field: { value, onChange, ...field } }) => (
               <FormItem className="h-full w-full relative">
-                <FormLabel>Picture</FormLabel>
+                <FormLabel>Image</FormLabel>
                 <FormControl className="flex items-center content-center absolute top-5 left-0 z-10">
                   <Input
                     type="file"
-                    placeholder="Select picture here"
+                    placeholder="Select image here"
                     {...field}
                     onChange={(event) => {
                       if (!event.target.files) return;
 
                       const file = event.target.files[0] ?? null;
+                      if (file && file.size > MAX_FILE_SIZE) {
+                        setFileError("File size exceeds the limit of 5MB.");
+                        setPicturePreview(null);
+                        onChange(null);
+                        return;
+                      }
+                      setFileError(null);
                       onChange(file);
                       setPicturePreview(URL.createObjectURL(file));
                     }}
                   />
                 </FormControl>
+
+                {fileError && (
+                  <div className="text-red-500 pt-11 text-sm">{fileError}</div>
+                )}
                 <img
                   src={picturePreview}
                   className={`absolute top-10 left-0 h-full w-full z-0 object-contain ${
                     picturePreview ? "block" : "hidden"
                   }`}
                 />
+
                 <FormMessage />
               </FormItem>
             )}
           />
         </div>
         <Button disabled={isLoading} className="w-1/4" type="submit">
-          {isLoading ? "Posting..." : "Post"}
+          {isLoading ? "Uploading..." : "Upload"}
         </Button>
       </form>
     </Form>

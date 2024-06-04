@@ -18,6 +18,7 @@ import {
   DialogTrigger,
 } from "@/components/ui/dialog";
 import { Button } from "@/components/ui/button";
+import React from "react";
 
 export async function loader({ params }: any) {
   const response = await fetch(
@@ -148,9 +149,14 @@ export default function ProfilePage() {
                     />
                   </div>
                 </div>
-                <div className="overflow-y-auto text-wrap bg-muted p-3 rounded-sm h-32 w-full break-all ">
-                  {profile.description}
-                </div>
+                <ScrollArea className="text-wrap bg-muted p-3 rounded-sm h-40 w-full break-words ">
+                  {profile.description.split("\n").map((line, index) => (
+                    <React.Fragment key={index}>
+                      {line}
+                      <br />
+                    </React.Fragment>
+                  ))}
+                </ScrollArea>
               </>
             ) : (
               <>
@@ -219,10 +225,12 @@ export default function ProfilePage() {
                   </div>
                 ))}
               </ScrollArea>
-              <ProfileCommentForm
-                onCommentSubmit={onCommentSubmit}
-                userId={profile.id}
-              />
+              {user?.roles.includes("Member") && (
+                <ProfileCommentForm
+                  onCommentSubmit={onCommentSubmit}
+                  userId={profile.id}
+                />
+              )}
             </div>
           </div>
         </div>

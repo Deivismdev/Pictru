@@ -5,6 +5,7 @@ using System.Threading.Tasks;
 using API.Data;
 using API.Models;
 using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 
@@ -15,9 +16,12 @@ namespace API.Controllers
     public class ReportController : ControllerBase
     {
         private readonly AppDbContext context;
-        public ReportController(AppDbContext context)
+        private readonly UserManager<User> _userManager;
+
+        public ReportController(UserManager<User> userManager, AppDbContext context)
         {
             this.context = context;
+            _userManager = userManager;
         }
 
         [HttpPost]
@@ -60,6 +64,10 @@ namespace API.Controllers
                 image.State = ImageStates.Suspended;
                 Console.WriteLine(image.User.Reputation);
                 image.User.Reputation -= 10;
+            }
+            if (await _userManager.IsInRoleAsync(await _userManager.FindByIdAsync(userId), "Moderator"))
+            {
+                image.State = ImageStates.Suspended;
             }
 
             context.Images.Update(image);

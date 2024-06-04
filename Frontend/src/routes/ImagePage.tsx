@@ -394,16 +394,18 @@ export default function ImagePage() {
                   </div>
                 ))}
               </ScrollArea>
-              <div className="p-2">
-                <ImageCommentForm
-                  onCommentSubmit={onCommentSubmit}
-                  imageId={image.id}
-                  onSelectImagePoint={() => setIsEnlarged(true)}
-                  coordinates={selectedCoordinates}
-                  commentToEdit={commentToEdit}
-                  onCancelEdit={onCancelEdit}
-                />
-              </div>
+              {user?.roles.includes("Member") && (
+                <div className="p-2">
+                  <ImageCommentForm
+                    onCommentSubmit={onCommentSubmit}
+                    imageId={image.id}
+                    onSelectImagePoint={() => setIsEnlarged(true)}
+                    coordinates={selectedCoordinates}
+                    commentToEdit={commentToEdit}
+                    onCancelEdit={onCancelEdit}
+                  />
+                </div>
+              )}
             </div>
           </div>
           <div className="flex-1 h-full w-full flex items-center justify-center">
@@ -448,6 +450,7 @@ export default function ImagePage() {
                   className="absolute inset-0"
                   onClick={() => setIsEnlarged(false)}
                 ></div>
+
                 <CoordinateSelector
                   onCoordinatesUpdate={handleCoordinatesUpdate}
                 >
@@ -457,12 +460,20 @@ export default function ImagePage() {
             )}
           </div>
         </div>
-        <div className="border border-border rounded-sm h-max p-2 mt-6">
+        {/* <div className="border border-border rounded-sm h-max p-2 mt-6">
           <h6 className="font-bold">Description</h6>
           <ScrollArea className="h-full">{image.description}</ScrollArea>
-        </div>
+        </div> */}
+        <ScrollArea className="border border-border text-wrap p-3 rounded-sm h-40 w-full break-words ">
+          {image.description.split("\n").map((line, index) => (
+            <React.Fragment key={index}>
+              {line}
+              <br />
+            </React.Fragment>
+          ))}
+        </ScrollArea>
 
-        <div className="flex gap-6 pt-4">
+        <div className="flex gap-6 pt-2 pb-12">
           {(image.user.id === user?.userId ||
             user?.roles.includes("Moderator")) && (
             <>

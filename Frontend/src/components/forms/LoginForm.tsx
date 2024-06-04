@@ -52,7 +52,7 @@ const LoginForm = () => {
               <FormItem>
                 <FormLabel>Password</FormLabel>
                 <FormControl>
-                  <Input type="text" {...field} />
+                  <Input type="password" {...field} />
                 </FormControl>
               </FormItem>
             )}

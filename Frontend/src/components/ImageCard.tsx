@@ -1,6 +1,6 @@
 import { TagNames } from "@/lib/tags";
 import { GalleryImage } from "@/lib/types";
-import { ThumbsUpIcon } from "lucide-react";
+import { ThumbsUpIcon, Eye } from "lucide-react";
 import { NavLink } from "react-router-dom";
 
 interface ImageCardProps {
@@ -34,6 +34,8 @@ export default function ImageCard({ image }: ImageCardProps) {
         <div className="flex flex-row gap-3 items-center self-end">
           <div>{image.likeCount}</div>
           <ThumbsUpIcon />
+          <div>{image.viewCount}</div>
+          <Eye />
         </div>
       </div>
       <div className="border-none overflow-hidden object-contain">
