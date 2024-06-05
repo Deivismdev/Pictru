@@ -35,7 +35,7 @@ export default function ImagePage() {
   const [isEnlarged, setIsEnlarged] = useState(false);
   const { imageId } = useParams();
 
-  const [selectedCoordinates, setIsSelectedCoordinates] = useState<{
+  const [selectedCoordinates, setSelectedCoordinates] = useState<{
     x: number;
     y: number;
   } | null>(null);
@@ -46,7 +46,8 @@ export default function ImagePage() {
 
   const handleCoordinatesUpdate = (coordinates: { x: number; y: number }) => {
     setIsEnlarged(false);
-    setIsSelectedCoordinates(coordinates);
+
+    if (isSelectingPoint) setSelectedCoordinates(coordinates);
   };
 
   const { token, user } = useAuth();
@@ -59,6 +60,7 @@ export default function ImagePage() {
   const [commentToDelete, setCommentToDelete] = useState<null | number>(null);
   const [imageToReport, setImageToReport] = useState<null | number>(null);
   const [open, setOpen] = useState(false);
+  const [isSelectingPoint, setIsSelectingPoint] = useState(false);
   const [commentToEdit, setCommentToEdit] = useState<null | {
     id: number;
     comment: string;
@@ -123,6 +125,7 @@ export default function ImagePage() {
       setImage(updatedImage);
     }
 
+    setSelectedCoordinates(null);
     setCommentToEdit(null);
   }
 
@@ -156,6 +159,7 @@ export default function ImagePage() {
 
   async function onDeleteCommentClick(imageId: number, commentId: number) {
     setCommentToDelete(commentId); // Set the state for comment deletion
+    setCommentCoordinates(null);
   }
 
   async function handleCommentDelete() {
@@ -399,7 +403,9 @@ export default function ImagePage() {
                   <ImageCommentForm
                     onCommentSubmit={onCommentSubmit}
                     imageId={image.id}
-                    onSelectImagePoint={() => setIsEnlarged(true)}
+                    onSelectImagePoint={() => {
+                      setIsEnlarged(true), setIsSelectingPoint(true);
+                    }}
                     coordinates={selectedCoordinates}
                     commentToEdit={commentToEdit}
                     onCancelEdit={onCancelEdit}
@@ -415,7 +421,9 @@ export default function ImagePage() {
                   src={image.imageUrl}
                   ref={imageRef}
                   className={`object-contain m-auto w-full h-full`}
-                  onClick={() => setIsEnlarged(true)}
+                  onClick={() => {
+                    setIsEnlarged(true), setIsSelectingPoint(false);
+                  }}
                   style={isEnlarged ? { display: "none" } : {}}
                 />
                 {selectedCoordinates && (

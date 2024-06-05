@@ -45,10 +45,10 @@ export default function LandingPage() {
             the authenticity of each frame.
           </p>
 
-          <div className="space-y-4 md:space-y-0 md:space-x-4">
+          <div className="space-y-4 md:space-y-0 md:space-x-4 ">
             {user ? (
               <Button
-                className="w-full md:w-1/3 text-2xl"
+                className="w-full md:w-1/3 text-2xl "
                 onClick={() => navigate("/upload")}
               >
                 Upload
@@ -71,7 +71,7 @@ export default function LandingPage() {
           images uploaded by our users
         </div>
         <MasonryInfiniteGrid
-          loading={<div className="animate-spin">/</div>}
+          loading={<div className="animate-spin text-primary text-2xl">/</div>}
           gap={3}
           column={4}
           onRequestAppend={(e) => {

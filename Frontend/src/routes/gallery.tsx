@@ -134,6 +134,7 @@ export default function Gallery() {
               variant={filter === option.id ? "default" : "outline"}
               onClick={() => {
                 setFilter(filter == option.id ? null : option.id);
+                console.log(filter == option.id ? null : option.id);
                 setImages([]);
                 setPage(1);
                 setStopFetching(false);
@@ -149,8 +150,8 @@ export default function Gallery() {
       </ScrollArea>
 
       <MasonryInfiniteGrid
-        loading={<div className="animate-spin">/</div>}
-        gap={3}
+        loading={<div className="animate-spin text-primary text-2xl">/</div>}
+        gap={3} //vertical gap
         column={4}
         onRequestAppend={(e) => {
           if (stopFetching) return;
