@@ -2,6 +2,9 @@
 
 ## Screenshots
 
+<p align="center"> <img src="Screenshots/Picture0.png"/></p>
+<p align="center">Database scheme</p>
+
 <p align="center"> <img src="Screenshots/Picture1.png"/></p>
 <p align="center">Main page (user not logged in)</p>
 
