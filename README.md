@@ -1,5 +1,19 @@
 # PICTRU
 
+## Project Motivation:
+
+The rise of AI-generated imagery and the ease of digital manipulation have made it increasingly difficult to discern real from fake content online. This project was conceived as a response to these challenges, aiming to:
+
+• Encourage transparency about image origins <br>
+• Facilitate more precise and meaningful discussions about visual content <br>
+• Promote digital literacy by making users more aware of different types of visual media <br>
+
+## Key Features:
+
+• Precise Image Commentary: Users can select specific points on images when commenting, allowing for more targeted and contextual discussions. <br>
+• Image Nature Tags: Each upload requires a tag indicating how the image was created (e.g., AI-generated, photograph, painting), promoting honesty about content origin. <br>
+• Smart Description Templates: Selecting an image tag automatically populates the description field with relevant prompts, encouraging users to provide accurate and detailed information about the image's creation. <br>
+
 ## Screenshots
 
 <p align="center"> <img src="Screenshots/Picture0.png"/></p>
