@@ -14,6 +14,277 @@ The rise of AI-generated imagery and the ease of digital manipulation have made 
 • Image Nature Tags: Each upload requires a tag indicating how the image was created (e.g., AI-generated, photograph, painting), promoting honesty about content origin. <br>
 • Smart Description Templates: Selecting an image tag automatically populates the description field with relevant prompts, encouraging users to provide accurate and detailed information about the image's creation. <br>
 
+## API Documentation
+
+### Image
+
+#### Upload an Image
+
+- **URL:** `/api/image`
+- **Method:** `POST`
+- **Parameters:**
+  - `Name` (query, required): `String`
+  - `Description` (query, required): `String`
+  - `Tags` (query, required): `Array of TagNames (enum)`
+- **Request Body:**
+  - `File` (multipart/form-data, required): `Binary file`
+- **Response:** `200 OK`
+
+#### Get Images
+
+- **URL:** `/api/image`
+- **Method:** `GET`
+- **Parameters:**
+  - `orderBy` (query, optional): `String`, default `uploadDate`
+  - `tag` (query, optional): `TagNames (enum)`
+  - `state` (query, optional): `ImageStates (enum)`
+  - `username` (query, optional): `String`
+  - `pageNumber` (query, optional): `Integer`, default `1`
+  - `pageSize` (query, optional): `Integer`, default `10`
+- **Response:** `200 OK`
+
+#### Get Image by ID
+
+- **URL:** `/api/image/{imageId}`
+- **Method:** `GET`
+- **Parameters:**
+  - `imageId` (path, required): `Integer`
+- **Response:** `200 OK`
+
+#### Update Image
+
+- **URL:** `/api/image/{imageId}`
+- **Method:** `PATCH`
+- **Parameters:**
+  - `imageId` (path, required): `Integer`
+- **Request Body:** `UpdateImageDto`
+- **Response:** `200 OK`
+
+#### Delete Image
+
+- **URL:** `/api/image/{imageId}`
+- **Method:** `DELETE`
+- **Parameters:**
+  - `imageId` (path, required): `Integer`
+- **Response:** `200 OK`
+
+#### Get Image (Logged In)
+
+- **URL:** `/api/image/loggedin/{imageId}`
+- **Method:** `GET`
+- **Parameters:**
+  - `imageId` (path, required): `Integer`
+- **Response:** `200 OK`
+
+#### Appeal Image Suspension
+
+- **URL:** `/api/image/suspended/{imageId}`
+- **Method:** `PATCH`
+- **Parameters:**
+  - `imageId` (path, required): `Integer`
+- **Request Body:** `AppealImageSuspensionImageDto`
+- **Response:** `200 OK`
+
+#### Process Appealed Image
+
+- **URL:** `/api/image/appealed/{imageId}`
+- **Method:** `PATCH`
+- **Parameters:**
+  - `imageId` (path, required): `Integer`
+- **Response:** `200 OK`
+
+### Image Comments
+
+#### Get Image Comments
+
+- **URL:** `/api/images/{imageId}/comments`
+- **Method:** `GET`
+- **Parameters:**
+  - `imageId` (path, required): `Integer`
+- **Response:** `200 OK`
+
+#### Create Image Comment
+
+- **URL:** `/api/images/{imageId}/comments`
+- **Method:** `POST`
+- **Parameters:**
+  - `imageId` (path, required): `Integer`
+- **Request Body:** `CreateImageCommentDto`
+- **Response:** `200 OK`
+
+#### Get Specific Image Comment
+
+- **URL:** `/api/images/{imageId}/comments/{commentId}`
+- **Method:** `GET`
+- **Parameters:**
+  - `imageId` (path, required): `Integer`
+  - `commentId` (path, required): `Integer`
+- **Response:** `200 OK`
+
+#### Update Image Comment
+
+- **URL:** `/api/images/{imageId}/comments/{commentId}`
+- **Method:** `PATCH`
+- **Parameters:**
+  - `imageId` (path, required): `Integer`
+  - `commentId` (path, required): `Integer`
+- **Request Body:** `UpdateImageCommentDto`
+- **Response:** `200 OK`
+
+#### Delete Image Comment
+
+- **URL:** `/api/images/{imageId}/comments/{commentId}`
+- **Method:** `DELETE`
+- **Parameters:**
+  - `imageId` (path, required): `Integer`
+  - `commentId` (path, required): `Integer`
+- **Response:** `200 OK`
+
+### Likes
+
+#### Like an Image
+
+- **URL:** `/api/{imageId}/likes`
+- **Method:** `POST`
+- **Parameters:**
+  - `imageId` (path, required): `Integer`
+- **Response:** `200 OK`
+
+#### Unlike an Image
+
+- **URL:** `/api/{imageId}/likes`
+- **Method:** `DELETE`
+- **Parameters:**
+  - `imageId` (path, required): `Integer`
+- **Response:** `200 OK`
+
+#### Remove All Likes from an Image
+
+- **URL:** `/api/{imageId}/likes/all`
+- **Method:** `DELETE`
+- **Parameters:**
+  - `imageId` (path, required): `Integer`
+- **Response:** `200 OK`
+
+### Payments
+
+#### Create Payment
+
+- **URL:** `/api/payments`
+- **Method:** `POST`
+- **Response:** `200 OK (PremiumSubscriptionDto)`
+
+### Profile Comments
+
+#### Get Profile Comments
+
+- **URL:** `/api/profiles/{userId}/comments`
+- **Method:** `GET`
+- **Parameters:**
+  - `userId` (path, required): `String`
+- **Response:** `200 OK`
+
+#### Create Profile Comment
+
+- **URL:** `/api/profiles/{userId}/comments`
+- **Method:** `POST`
+- **Parameters:**
+  - `userId` (path, required): `String`
+- **Request Body:** `CreateProfileCommentDto`
+- **Response:** `200 OK`
+
+#### Get Specific Profile Comment
+
+- **URL:** `/api/profiles/{userId}/comments/{commentId}`
+- **Method:** `GET`
+- **Parameters:**
+  - `userId` (path, required): `String`
+  - `commentId` (path, required): `Integer`
+- **Response:** `200 OK`
+
+#### Delete Profile Comment
+
+- **URL:** `/api/profiles/{userId}/comments/{commentId}`
+- **Method:** `DELETE`
+- **Parameters:**
+  - `userId` (path, required): `String`
+  - `commentId` (path, required): `Integer`
+- **Response:** `200 OK`
+
+### Reports
+
+#### Report an Image
+
+- **URL:** `/api/{imageId}/reports`
+- **Method:** `POST`
+- **Parameters:**
+  - `imageId` (path, required): `Integer`
+- **Response:** `200 OK`
+
+#### Remove Report from an Image
+
+- **URL:** `/api/{imageId}/reports`
+- **Method:** `DELETE`
+- **Parameters:**
+  - `imageId` (path, required): `Integer`
+- **Response:** `200 OK`
+
+### User
+
+#### User Login
+
+- **URL:** `/api/user/login`
+- **Method:** `POST`
+- **Request Body:** `LoginDto`
+- **Response:** `200 OK (UserDto)`
+
+#### User Registration
+
+- **URL:** `/api/user/register`
+- **Method:** `POST`
+- **Request Body:** `RegisterDto`
+- **Response:** `200 OK`
+
+#### Get Current User
+
+- **URL:** `/api/user/currentUser`
+- **Method:** `GET`
+- **Response:** `200 OK (GetLoggedInUserDto)`
+
+#### Update User Profile
+
+- **URL:** `/api/user/{userId}`
+- **Method:** `PATCH`
+- **Parameters:**
+  - `userId` (path, required): `String`
+  - `Description` (query, optional): `String`
+- **Request Body:** `File` (multipart/form-data)
+- **Response:** `200 OK`
+
+#### Get User Profile
+
+- **URL:** `/api/user/{userId}`
+- **Method:** `GET`
+- **Parameters:**
+  - `userId` (path, required): `String`
+- **Response:** `200 OK`
+
+#### Set User as Premium
+
+- **URL:** `/api/user/setPremium/{userId}`
+- **Method:** `PATCH`
+- **Parameters:**
+  - `userId` (path, required): `String`
+- **Response:** `200 OK`
+
+#### Unset User as Premium
+
+- **URL:** `/api/user/unsetPremium/{userId}`
+- **Method:** `PATCH`
+- **Parameters:**
+  - `userId` (path, required): `String`
+- **Response:** `200 OK`
+
 ## Screenshots
 
 <p align="center"> <img src="Screenshots/Picture0.png"/></p>
